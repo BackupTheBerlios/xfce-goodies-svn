@@ -9,7 +9,7 @@ AC_INIT([configure])
 
 AM_CONFIG_HEADER([config.h])
 
-AM_INIT_AUTOMAKE([xfce4-taskbar-plugin], [0.2.0])
+AM_INIT_AUTOMAKE([xfce4-taskbar-plugin], [0.2.1])
 
 AM_MAINTAINER_MODE
 
