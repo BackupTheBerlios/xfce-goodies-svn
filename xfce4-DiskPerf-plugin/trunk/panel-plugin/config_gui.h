@@ -24,7 +24,7 @@
  */
 #ifndef _config_gui_h
 #define _config_gui_h
-static char     _config_gui_h_id[] = "$Id: config_gui.h,v 1.1 2003/10/07 03:39:22 rogerms Exp $";
+static char     _config_gui_h_id[] = "$Id: config_gui.h,v 1.2 2003/11/04 10:26:13 rogerms Exp $";
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -44,12 +44,15 @@ typedef struct gui_t {
     GtkWidget      *wTB_Title;
     GtkWidget      *wTF_Title;
     GtkWidget      *wSc_Period;
+    GtkWidget      *wRB_IO;
+    GtkWidget      *wRB_BusyTime;
+    GtkWidget      *wHBox_MaxIO;
     GtkWidget      *wTF_MaxXfer;
     GtkWidget      *wTB_RWcombined;
     GtkWidget      *wTa_SingleBar;
     GtkWidget      *wTa_DualBars;
-    GtkWidget      *wTB_ReadWriteOrder;
-    GtkWidget      *wTB_WriteReadOrder;
+    GtkWidget      *wRB_ReadWriteOrder;
+    GtkWidget      *wRB_WriteReadOrder;
     GtkWidget      *wPB_RWcolor;
     GtkWidget      *wPB_Rcolor;
     GtkWidget      *wPB_Wcolor;
@@ -70,8 +73,14 @@ extern          "C" {
 #endif
 /*
 $Log: config_gui.h,v $
-Revision 1.1  2003/10/07 03:39:22  rogerms
-Initial revision
+Revision 1.2  2003/11/04 10:26:13  rogerms
+DiskPerf 1.3
+
+Revision 1.4  2003/11/04 09:42:07  RogerSeguin
+Added busy time statistics
+
+Revision 1.1.1.1  2003/10/07 03:39:22  rogerms
+Initial release - v1.0
 
 Revision 1.3  2003/09/25 09:32:35  RogerSeguin
 Added color configuration

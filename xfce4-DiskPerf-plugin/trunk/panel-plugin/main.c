@@ -24,7 +24,7 @@
  */
 
 static char     _main_id[] =
-    "$Id: main.c,v 1.4 2003/11/02 06:57:50 rogerms Exp $";
+    "$Id: main.c,v 1.5 2003/11/04 10:26:13 rogerms Exp $";
 
 
 #define DEBUG	0
@@ -60,6 +60,12 @@ static char     _main_id[] =
 
 typedef GtkWidget *Widget_t;
 
+typedef enum statistics_t {
+    IO_TRANSFER,		/* MB transferred per second */
+    BUSY_TIME			/* Percentage of time the device has been
+				   busy */
+} statistics_t;
+
 enum {
     /* Monitor bar data */
     R_DATA,
@@ -81,10 +87,12 @@ typedef struct param_t {
 #endif
     int             fTitleDisplayed;
     char            acTitle[16];
-    int             iMaxXferMBperSec;
-    int             fRW_DataCombined;
+    enum statistics_t
+                    eStatistics;
     enum monitor_bar_order_t
                     eMonitorBarOrder;
+    int             iMaxXferMBperSec;
+    int             fRW_DataCombined;
     uint32_t        iPeriod_ms;
     GdkColor        aoColor[NMONITORS];
 } param_t;
@@ -138,12 +146,11 @@ static int DisplayPerf (struct plugin_t *p_poPlugin)
     struct param_t *poConf = &(p_poPlugin->oConf.oParam);
     struct monitor_t *poMonitor = &(p_poPlugin->oMonitor);
     struct perfbar_t *poPerf = poMonitor->aoPerfBar;
-    uint64_t        iInterval_ns, rbytes, wbytes, iBusy_ns;
+    uint64_t        iInterval_ns, rbytes, wbytes, iRBusy_ns, iWBusy_ns;
     const double    K = 1.0 * 1000 * 1000 * 1000 / 1024 / 1024;
-    double          arPerf[NMONITORS], *pr;
-    char            acToolTips[64];
-    int             iBusyPerCent;
-    char            acBusy[16];
+    /* bytes/ns --> MB/s */
+    double          arPerf[NMONITORS], arBusy[NMONITORS], *prData, *pr;
+    char            acToolTips[128];
     int             status, i;
 
     if (!s_poToolTips)
@@ -163,7 +170,8 @@ static int DisplayPerf (struct plugin_t *p_poPlugin)
 	    oPerf.timestamp_ns - poMonitor->oPrevPerf.timestamp_ns;
 	rbytes = oPerf.rbytes - poMonitor->oPrevPerf.rbytes;
 	wbytes = oPerf.wbytes - poMonitor->oPrevPerf.wbytes;
-	iBusy_ns = oPerf.busytime_ns - poMonitor->oPrevPerf.busytime_ns;
+	iRBusy_ns = oPerf.rbusy_ns - poMonitor->oPrevPerf.rbusy_ns;
+	iWBusy_ns = oPerf.wbusy_ns - poMonitor->oPrevPerf.wbusy_ns;
     }
     else
 	iInterval_ns = 0;
@@ -175,48 +183,74 @@ static int DisplayPerf (struct plugin_t *p_poPlugin)
     arPerf[W_DATA] = K * wbytes / iInterval_ns;
     arPerf[RW_DATA] = K * (rbytes + wbytes) / iInterval_ns;
 
-    if (oPerf.qlen < 0) {
-	iBusyPerCent = 0;
-	strcpy (acBusy, "--");
-    }
+    if (oPerf.qlen < 0)
+	for (i = 0; i < NMONITORS; i++)
+	    arBusy[i] = 0;
     else {
-	iBusyPerCent = 100 * iBusy_ns / iInterval_ns;
-	if (iBusyPerCent > 105)	/* If greater difference, don't hide it */
-	    iBusyPerCent = 100;
-	sprintf (acBusy, "%d", iBusyPerCent);
+	arBusy[R_DATA] = (double) 100.0 *iRBusy_ns / iInterval_ns;
+	arBusy[W_DATA] = (double) 100.0 *iWBusy_ns / iInterval_ns;
+	arBusy[RW_DATA] =
+	    (double) 100.0 *(iRBusy_ns + iWBusy_ns) / iInterval_ns;
+	for (i = 0; i < NMONITORS; i++) {
+	    pr = arBusy + i;
+	    if (*pr > 100)
+		*pr = 100;
+	}
     }
+
     sprintf (acToolTips, "%s\n"
-	     "  Read :%3u MB/s\n"
-	     "  Write :%3u MB/s\n"
-	     "  Total :%3u MB/s\n"
-	     "  Busy(%c): %s",
+	     "----------------\n"
+	     "I/O    (MB/s)\n"
+	     "  Read :%3u\n"
+	     "  Write :%3u\n"
+	     "  Total :%3u\n"
+	     "Busy time (%c)\n"
+	     "  Read : %3u\n"
+	     "  Write : %3u\n"
+	     "  Total : %3u",
 	     poConf->acTitle,
 	     (unsigned int) (arPerf[R_DATA] + 0.5),
 	     (unsigned int) (arPerf[W_DATA] + 0.5),
-	     (unsigned int) (arPerf[RW_DATA] + 0.5), '%', acBusy);
+	     (unsigned int) (arPerf[RW_DATA] + 0.5),
+	     '%',
+	     (unsigned int) (arBusy[R_DATA] + 0.5),
+	     (unsigned int) (arBusy[W_DATA] + 0.5),
+	     (unsigned int) (arBusy[RW_DATA] + 0.5)
+	);
     gtk_tooltips_set_tip (s_poToolTips, GTK_WIDGET (poMonitor->wEventBox),
 			  acToolTips, 0);
 
+    switch (poConf->eStatistics) {
+	case BUSY_TIME:
+	    prData = arBusy;
+	    for (i = 0; i < NMONITORS; i++)
+		prData[i] /= 100;
+	    break;
+	case IO_TRANSFER:
+	default:
+	    prData = arPerf;
+	    for (i = 0; i < NMONITORS; i++)
+		prData[i] /= poConf->iMaxXferMBperSec;
+	    break;
+    }
     for (i = 0; i < NMONITORS; i++) {
-	pr = arPerf + i;
-	*pr /= poConf->iMaxXferMBperSec;
+	pr = prData + i;
 	if (*pr > 1)
 	    *pr = 1;
 	else if (*pr < 0)
 	    *pr = 0;
     }
-
     if (poConf->fRW_DataCombined)
 	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR
 				       (*(poPerf[RW_DATA].pwBar)),
-				       arPerf[RW_DATA]);
+				       prData[RW_DATA]);
     else {
 	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR
 				       (*(poPerf[R_DATA].pwBar)),
-				       arPerf[R_DATA]);
+				       prData[R_DATA]);
 	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR
 				       (*(poPerf[W_DATA].pwBar)),
-				       arPerf[W_DATA]);
+				       prData[W_DATA]);
     }
 
     return (0);
@@ -385,9 +419,10 @@ static plugin_t *NewPlugin ()
     gdk_color_parse ("#FF0000", poConf->aoColor + W_DATA);
     gdk_color_parse ("#00FF00", poConf->aoColor + RW_DATA);
 
-    poConf->iMaxXferMBperSec = 35;
+    poConf->iMaxXferMBperSec = 40;
     poConf->fRW_DataCombined = 1;
     poConf->iPeriod_ms = 500;
+    poConf->eStatistics = IO_TRANSFER;
     poConf->eMonitorBarOrder = RW_ORDER;
     poPlugin->iTimerId = 0;
     poPlugin->oMonitor.oPrevPerf.timestamp_ns = 0;
@@ -439,6 +474,7 @@ static void plugin_free (Control * ctrl)
 #define CONF_LABEL_TEXT		"Text"
 #define CONF_DEVICE		"Device"
 #define CONF_UPDATE_PERIOD	"UpdatePeriod"
+#define CONF_STATISTICS		"Statistics"
 #define CONF_XFER_RATE		"XferRate"
 #define CONF_COMBINE_RW_DATA	"CombineRWdata"
 #define CONF_MONITOR_BAR_ORDER	"MonitorBarOrder"
@@ -500,6 +536,11 @@ static void plugin_read_config (Control * p_poCtrl, xmlNodePtr p_poParent)
 
 	if ((pc = xmlGetProp (poNode, (CONF_UPDATE_PERIOD)))) {
 	    poConf->iPeriod_ms = atoi (pc);
+	    xmlFree (pc);
+	}
+
+	if ((pc = xmlGetProp (poNode, (CONF_STATISTICS)))) {
+	    poConf->eStatistics = atoi (pc);
 	    xmlFree (pc);
 	}
 
@@ -568,6 +609,9 @@ static void plugin_write_config (Control * p_poCtrl, xmlNodePtr p_poParent)
 
     sprintf (acBuffer, "%d", poConf->iPeriod_ms);
     xmlSetProp (poRoot, CONF_UPDATE_PERIOD, acBuffer);
+
+    sprintf (acBuffer, "%d", poConf->eStatistics);
+    xmlSetProp (poRoot, CONF_STATISTICS, acBuffer);
 
     sprintf (acBuffer, "%d", poConf->iMaxXferMBperSec);
     xmlSetProp (poRoot, CONF_XFER_RATE, acBuffer);
@@ -656,6 +700,23 @@ static void SetLabel (Widget_t p_wTF, void *p_pvPlugin)
 
 	/**************************************************************/
 
+static void ToggleStatistics (Widget_t p_w, void *p_pvPlugin)
+	/* GUI callback allowing to choose statistics to monitor */
+{
+    struct plugin_t *poPlugin = (plugin_t *) p_pvPlugin;
+    struct param_t *poConf = &(poPlugin->oConf.oParam);
+    struct gui_t   *poGUI = &(poPlugin->oConf.oGUI);
+
+    poConf->eStatistics = !(poConf->eStatistics);
+    TRACE ("ToggleStatistics(): %d\n", poConf->eStatistics);
+    if (poConf->eStatistics == IO_TRANSFER)
+	gtk_widget_show (GTK_WIDGET (poGUI->wHBox_MaxIO));
+    else
+	gtk_widget_hide (GTK_WIDGET (poGUI->wHBox_MaxIO));
+}				/* ToggleStatistics() */
+
+	/**************************************************************/
+
 static void ToggleRWintegration (Widget_t p_w, void *p_pvPlugin)
 	/* GUI callback allowing either to combine write + read data in a
 	   single monitor bar, or to keep them separate using 2 dedicated
@@ -667,6 +728,7 @@ static void ToggleRWintegration (Widget_t p_w, void *p_pvPlugin)
     Widget_t       *pw2ndBar = poPlugin->oMonitor.awProgressBar + 1;
 
     poConf->fRW_DataCombined = !(poConf->fRW_DataCombined);
+    TRACE ("ToggleRWintegration(): %d\n", poConf->fRW_DataCombined);
     if (poConf->fRW_DataCombined) {
 	gtk_widget_hide (GTK_WIDGET (poGUI->wTa_DualBars));
 	gtk_widget_show (GTK_WIDGET (poGUI->wTa_SingleBar));
@@ -816,8 +878,8 @@ static int CheckStatsAvailability ()
     switch (status) {
 	case NO_EXTENDED_STATS:
 	    xfce_err ("%s: No disk extended statistics found!\n"
-		      "Either kernel not recent enough\n"
-		      "or not compiled with CONFIG_BLK_STATS turned on.\n\n"
+		      "Either old kernel (< 2.4.20) or not\n"
+		      "compiled with CONFIG_BLK_STATS turned on.\n\n"
 		      "This monitor will not work!\n"
 		      "Please remove it.", PLUGIN_NAME);
 	    break;
@@ -861,6 +923,19 @@ static void plugin_create_options (Control * p_poCtrl,
 		      G_CALLBACK (ToggleTitle), poPlugin);
 
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON
+				  (poGUI->wRB_IO),
+				  (poConf->eStatistics == IO_TRANSFER));
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON
+				  (poGUI->wRB_BusyTime),
+				  (poConf->eStatistics == BUSY_TIME));
+    if (poConf->eStatistics == IO_TRANSFER)
+	gtk_widget_show (GTK_WIDGET (poGUI->wHBox_MaxIO));
+    else
+	gtk_widget_hide (GTK_WIDGET (poGUI->wHBox_MaxIO));
+    g_signal_connect (GTK_WIDGET (poGUI->wRB_IO), "toggled",
+		      G_CALLBACK (ToggleStatistics), poPlugin);
+
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON
 				  (poGUI->wTB_RWcombined),
 				  poConf->fRW_DataCombined);
     if (poConf->fRW_DataCombined) {
@@ -893,12 +968,12 @@ static void plugin_create_options (Control * p_poCtrl,
 		      G_CALLBACK (SetPeriod), poPlugin);
 
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON
-				  (poGUI->wTB_ReadWriteOrder),
+				  (poGUI->wRB_ReadWriteOrder),
 				  (poConf->eMonitorBarOrder == RW_ORDER));
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON
-				  (poGUI->wTB_WriteReadOrder),
+				  (poGUI->wRB_WriteReadOrder),
 				  (poConf->eMonitorBarOrder == WR_ORDER));
-    g_signal_connect (GTK_WIDGET (poGUI->wTB_ReadWriteOrder), "toggled",
+    g_signal_connect (GTK_WIDGET (poGUI->wRB_ReadWriteOrder), "toggled",
 		      G_CALLBACK (ToggleRWorder), poPlugin);
 
     apwColorPB[R_DATA] = &(poGUI->wPB_Rcolor);
@@ -1003,6 +1078,15 @@ XFCE_PLUGIN_CHECK_INIT
 	/**************************************************************/
 /*
 $Log: main.c,v $
+Revision 1.5  2003/11/04 10:26:13  rogerms
+DiskPerf 1.3
+
+Revision 1.12  2003/11/04 10:16:36  RogerSeguin
+Got rid of Microsoft ^M
+
+Revision 1.11  2003/11/04 09:43:36  RogerSeguin
+Added busy time monitoring for Linux
+
 Revision 1.4  2003/11/02 06:57:50  rogerms
 Release 1.2
 

@@ -1,4 +1,4 @@
-02/11/2003
+04/11/2003
 
 Disk performance XFce4 panel plugin (DiskPerf)
 ==============================================
@@ -6,7 +6,7 @@ Disk performance XFce4 panel plugin (DiskPerf)
 
 1 -	Description
 	-----------
-The DiskPerf plugin displays disk/partition performance based on the rsect/wsect data provided by Linux kernels 2.6 or recent 2.4's (at least 2.4.20 compiled with CONFIG_BLK_STATS turned on, or possibly older kernel patched with "Disk extended statistics" in /proc/partitions), or with NetBSD, based on the dk_rbytes and db_wbytes values provided by the hw.diskstats sysctl (see iostat for details).
+The DiskPerf plugin displays disk/partition performance based on data provided by Linux kernels 2.6 or recent 2.4's (at least 2.4.20 compiled with CONFIG_BLK_STATS turned on, or possibly older kernel patched with "Disk extended statistics" in /proc/partitions),or with NetBSD, based on the dk_rbytes and db_wbytes values provided by the hw.diskstats sysctl (see iostat for details).
 
 To know if your Linux kernel 2.4 provides such statistics:
         - less /proc/partitions
@@ -16,7 +16,7 @@ To know if your Linux kernel 2.4 provides such statistics:
 The code of this plugin has been written starting from the Xfce4 sample-plugin example (www.xfce.org), then looking at both systemload (Riccardo Persichetti - ricpersi@libero.it) and netload (Bernhard Walle - bernhard.walle@gmx.de) XFce4 goodies.
 The port onto NetBSD has been made by Benedikt Meurer - benedikt.meurer@unix-ag.uni-siegen.de
 
-DiskPerf has been intensively tested on Mandrake 9.1 (Linux kernel 2.4.21), Mandrake 9.2 (Linux kernel 2.4.22) and NetBSD 1.6W
+DiskPerf has been intensively tested on Mandrake 9.1 (Linux kernel 2.4.21), 9.2 (2.4.22) and NetBSD 1.6W
 
 
 2 -	Installation

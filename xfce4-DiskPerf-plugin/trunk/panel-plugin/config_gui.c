@@ -25,7 +25,7 @@
 
 
 static char     _config_gui_id[] =
-    "$Id: config_gui.c,v 1.1 2003/10/07 03:39:21 rogerms Exp $";
+    "$Id: config_gui.c,v 1.2 2003/11/04 10:26:13 rogerms Exp $";
 
 
 #include "config_gui.h"
@@ -58,8 +58,9 @@ int CreateConfigGUI (GtkWidget * OptionDialog, struct gui_t *p_poGUI)
 #if 0
     GtkWidget      *OptionDialog;
 #endif
-
     GtkWidget      *vbox1;
+    GtkWidget      *label10;
+    GtkWidget      *hseparator6;
     GtkWidget      *table1;
     GtkWidget      *label1;
     GtkWidget      *wTF_Device;
@@ -70,10 +71,17 @@ int CreateConfigGUI (GtkWidget * OptionDialog, struct gui_t *p_poGUI)
     GtkWidget      *label2;
     GtkWidget      *wTB_Title;
     GtkWidget      *wTF_Title;
+    GtkWidget      *hseparator7;
+    GtkWidget      *hbox2;
+    GtkWidget      *label9;
+    GtkWidget      *wRB_IO;
+    GSList         *wRB_IO_group = NULL;
+    GtkWidget      *wRB_BusyTime;
+    GtkWidget      *wHBox_MaxIO;
     GtkWidget      *label3;
     GtkWidget      *wTF_MaxXfer;
+    GtkWidget      *hseparator8;
     GtkWidget      *wTB_RWcombined;
-    GtkWidget      *hseparator2;
     GtkWidget      *wTa_SingleBar;
     GtkWidget      *label7;
     GtkWidget      *wPB_RWcolor;
@@ -82,9 +90,9 @@ int CreateConfigGUI (GtkWidget * OptionDialog, struct gui_t *p_poGUI)
     GtkWidget      *label6;
     GtkWidget      *label8;
     GtkWidget      *hbox1;
-    GtkWidget      *wTB_ReadWriteOrder;
-    GSList         *wTB_ReadWriteOrder_group = NULL;
-    GtkWidget      *wTB_WriteReadOrder;
+    GtkWidget      *wRB_ReadWriteOrder;
+    GSList         *wRB_ReadWriteOrder_group = NULL;
+    GtkWidget      *wRB_WriteReadOrder;
     GtkWidget      *wPB_Rcolor;
     GtkWidget      *wPB_Wcolor;
     GtkTooltips    *tooltips;
@@ -100,7 +108,15 @@ int CreateConfigGUI (GtkWidget * OptionDialog, struct gui_t *p_poGUI)
     gtk_widget_show (vbox1);
     gtk_container_add (GTK_CONTAINER (OptionDialog), vbox1);
 
-    table1 = gtk_table_new (4, 2, FALSE);
+    label10 = gtk_label_new (_("Disk Performance"));
+    gtk_widget_show (label10);
+    gtk_box_pack_start (GTK_BOX (vbox1), label10, FALSE, FALSE, 0);
+
+    hseparator6 = gtk_hseparator_new ();
+    gtk_widget_show (hseparator6);
+    gtk_box_pack_start (GTK_BOX (vbox1), hseparator6, TRUE, TRUE, 0);
+
+    table1 = gtk_table_new (3, 2, FALSE);
     gtk_widget_show (table1);
     gtk_box_pack_start (GTK_BOX (vbox1), table1, FALSE, TRUE, 0);
 
@@ -168,25 +184,62 @@ int CreateConfigGUI (GtkWidget * OptionDialog, struct gui_t *p_poGUI)
     gtk_entry_set_max_length (GTK_ENTRY (wTF_Title), 16);
     gtk_entry_set_text (GTK_ENTRY (wTF_Title), _("hda1"));
 
+    hseparator7 = gtk_hseparator_new ();
+    gtk_widget_show (hseparator7);
+    gtk_box_pack_start (GTK_BOX (vbox1), hseparator7, TRUE, TRUE, 0);
+
+    hbox2 = gtk_hbox_new (FALSE, 8);
+    gtk_widget_show (hbox2);
+    gtk_box_pack_start (GTK_BOX (vbox1), hbox2, TRUE, TRUE, 0);
+
+    label9 = gtk_label_new (_("Monitor    "));
+    gtk_widget_show (label9);
+    gtk_box_pack_start (GTK_BOX (hbox2), label9, FALSE, FALSE, 0);
+    gtk_label_set_justify (GTK_LABEL (label9), GTK_JUSTIFY_LEFT);
+
+    wRB_IO = gtk_radio_button_new_with_mnemonic (NULL, _("I/O transfer"));
+    gtk_widget_show (wRB_IO);
+    gtk_box_pack_start (GTK_BOX (hbox2), wRB_IO, FALSE, FALSE, 0);
+    gtk_tooltips_set_tip (tooltips, wRB_IO, _("MB transferred / second"),
+			  NULL);
+    gtk_radio_button_set_group (GTK_RADIO_BUTTON (wRB_IO), wRB_IO_group);
+    wRB_IO_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (wRB_IO));
+
+    wRB_BusyTime =
+	gtk_radio_button_new_with_mnemonic (NULL, _("Busy time"));
+    gtk_widget_show (wRB_BusyTime);
+    gtk_box_pack_start (GTK_BOX (hbox2), wRB_BusyTime, FALSE, FALSE, 0);
+    gtk_tooltips_set_tip (tooltips, wRB_BusyTime,
+			  _("Percentage of time the device is busy"),
+			  NULL);
+    gtk_radio_button_set_group (GTK_RADIO_BUTTON (wRB_BusyTime),
+				wRB_IO_group);
+    wRB_IO_group =
+	gtk_radio_button_get_group (GTK_RADIO_BUTTON (wRB_BusyTime));
+
+    wHBox_MaxIO = gtk_hbox_new (FALSE, 0);
+    gtk_widget_show (wHBox_MaxIO);
+    gtk_box_pack_start (GTK_BOX (vbox1), wHBox_MaxIO, TRUE, TRUE, 0);
+
     label3 = gtk_label_new (_("Max. I/O rate (MB/s) "));
     gtk_widget_show (label3);
-    gtk_table_attach (GTK_TABLE (table1), label3, 0, 1, 3, 4,
-		      (GtkAttachOptions) (GTK_FILL),
-		      (GtkAttachOptions) (0), 0, 0);
+    gtk_box_pack_start (GTK_BOX (wHBox_MaxIO), label3, FALSE, FALSE, 0);
     gtk_label_set_justify (GTK_LABEL (label3), GTK_JUSTIFY_LEFT);
     gtk_misc_set_alignment (GTK_MISC (label3), 0, 0.5);
 
     wTF_MaxXfer = gtk_entry_new ();
     gtk_widget_show (wTF_MaxXfer);
-    gtk_table_attach (GTK_TABLE (table1), wTF_MaxXfer, 1, 2, 3, 4,
-		      (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-		      (GtkAttachOptions) (0), 0, 0);
+    gtk_box_pack_start (GTK_BOX (wHBox_MaxIO), wTF_MaxXfer, TRUE, TRUE, 0);
     gtk_tooltips_set_tip (tooltips, wTF_MaxXfer,
 			  _
 			  ("Input the maximum I/O transfer rate of the device, then press <Enter>"),
 			  NULL);
     gtk_entry_set_max_length (GTK_ENTRY (wTF_MaxXfer), 3);
     gtk_entry_set_text (GTK_ENTRY (wTF_MaxXfer), _("35"));
+
+    hseparator8 = gtk_hseparator_new ();
+    gtk_widget_show (hseparator8);
+    gtk_box_pack_start (GTK_BOX (vbox1), hseparator8, TRUE, TRUE, 0);
 
     wTB_RWcombined =
 	gtk_check_button_new_with_mnemonic (_("Combine Read/Write data"));
@@ -196,10 +249,6 @@ int CreateConfigGUI (GtkWidget * OptionDialog, struct gui_t *p_poGUI)
 			  _
 			  ("Combine Read/Write data into one single monitor?"),
 			  NULL);
-
-    hseparator2 = gtk_hseparator_new ();
-    gtk_widget_show (hseparator2);
-    gtk_box_pack_start (GTK_BOX (vbox1), hseparator2, TRUE, TRUE, 0);
 
     wTa_SingleBar = gtk_table_new (1, 2, FALSE);
     gtk_widget_show (wTa_SingleBar);
@@ -233,7 +282,7 @@ int CreateConfigGUI (GtkWidget * OptionDialog, struct gui_t *p_poGUI)
     gtk_label_set_justify (GTK_LABEL (label5), GTK_JUSTIFY_LEFT);
     gtk_misc_set_alignment (GTK_MISC (label5), 0, 0.5);
 
-    label6 = gtk_label_new (_("Write  bar color "));
+    label6 = gtk_label_new (_("Write bar color "));
     gtk_widget_show (label6);
     gtk_table_attach (GTK_TABLE (wTa_DualBars), label6, 0, 1, 2, 3,
 		      (GtkAttachOptions) (GTK_FILL),
@@ -249,35 +298,35 @@ int CreateConfigGUI (GtkWidget * OptionDialog, struct gui_t *p_poGUI)
     gtk_label_set_justify (GTK_LABEL (label8), GTK_JUSTIFY_LEFT);
     gtk_misc_set_alignment (GTK_MISC (label8), 0, 0.5);
 
-    hbox1 = gtk_hbox_new (FALSE, 0);
+    hbox1 = gtk_hbox_new (FALSE, 8);
     gtk_widget_show (hbox1);
     gtk_table_attach (GTK_TABLE (wTa_DualBars), hbox1, 1, 2, 0, 1,
 		      (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 		      (GtkAttachOptions) (GTK_FILL), 0, 0);
 
-    wTB_ReadWriteOrder =
+    wRB_ReadWriteOrder =
 	gtk_radio_button_new_with_mnemonic (NULL, _("Read-Write"));
-    gtk_widget_show (wTB_ReadWriteOrder);
-    gtk_box_pack_start (GTK_BOX (hbox1), wTB_ReadWriteOrder, FALSE, FALSE,
+    gtk_widget_show (wRB_ReadWriteOrder);
+    gtk_box_pack_start (GTK_BOX (hbox1), wRB_ReadWriteOrder, FALSE, FALSE,
 			0);
-    gtk_tooltips_set_tip (tooltips, wTB_ReadWriteOrder,
+    gtk_tooltips_set_tip (tooltips, wRB_ReadWriteOrder,
 			  _("\"Read\" monitor first"), NULL);
-    gtk_radio_button_set_group (GTK_RADIO_BUTTON (wTB_ReadWriteOrder),
-				wTB_ReadWriteOrder_group);
-    wTB_ReadWriteOrder_group =
-	gtk_radio_button_get_group (GTK_RADIO_BUTTON (wTB_ReadWriteOrder));
+    gtk_radio_button_set_group (GTK_RADIO_BUTTON (wRB_ReadWriteOrder),
+				wRB_ReadWriteOrder_group);
+    wRB_ReadWriteOrder_group =
+	gtk_radio_button_get_group (GTK_RADIO_BUTTON (wRB_ReadWriteOrder));
 
-    wTB_WriteReadOrder =
+    wRB_WriteReadOrder =
 	gtk_radio_button_new_with_mnemonic (NULL, _("Write-Read"));
-    gtk_widget_show (wTB_WriteReadOrder);
-    gtk_box_pack_start (GTK_BOX (hbox1), wTB_WriteReadOrder, FALSE, FALSE,
+    gtk_widget_show (wRB_WriteReadOrder);
+    gtk_box_pack_start (GTK_BOX (hbox1), wRB_WriteReadOrder, FALSE, FALSE,
 			0);
-    gtk_tooltips_set_tip (tooltips, wTB_WriteReadOrder,
+    gtk_tooltips_set_tip (tooltips, wRB_WriteReadOrder,
 			  _("\"Write\" monitor first"), NULL);
-    gtk_radio_button_set_group (GTK_RADIO_BUTTON (wTB_WriteReadOrder),
-				wTB_ReadWriteOrder_group);
-    wTB_ReadWriteOrder_group =
-	gtk_radio_button_get_group (GTK_RADIO_BUTTON (wTB_WriteReadOrder));
+    gtk_radio_button_set_group (GTK_RADIO_BUTTON (wRB_WriteReadOrder),
+				wRB_ReadWriteOrder_group);
+    wRB_ReadWriteOrder_group =
+	gtk_radio_button_get_group (GTK_RADIO_BUTTON (wRB_WriteReadOrder));
 
     wPB_Rcolor = gtk_button_new_with_mnemonic ("");
     gtk_widget_show (wPB_Rcolor);
@@ -300,6 +349,8 @@ int CreateConfigGUI (GtkWidget * OptionDialog, struct gui_t *p_poGUI)
     GLADE_HOOKUP_OBJECT_NO_REF (OptionDialog, OptionDialog,
 				"OptionDialog");
     GLADE_HOOKUP_OBJECT (OptionDialog, vbox1, "vbox1");
+    GLADE_HOOKUP_OBJECT (OptionDialog, label10, "label10");
+    GLADE_HOOKUP_OBJECT (OptionDialog, hseparator6, "hseparator6");
     GLADE_HOOKUP_OBJECT (OptionDialog, table1, "table1");
     GLADE_HOOKUP_OBJECT (OptionDialog, label1, "label1");
     GLADE_HOOKUP_OBJECT (OptionDialog, wTF_Device, "wTF_Device");
@@ -309,10 +360,15 @@ int CreateConfigGUI (GtkWidget * OptionDialog, struct gui_t *p_poGUI)
     GLADE_HOOKUP_OBJECT (OptionDialog, label2, "label2");
     GLADE_HOOKUP_OBJECT (OptionDialog, wTB_Title, "wTB_Title");
     GLADE_HOOKUP_OBJECT (OptionDialog, wTF_Title, "wTF_Title");
+    GLADE_HOOKUP_OBJECT (OptionDialog, hbox2, "hbox2");
+    GLADE_HOOKUP_OBJECT (OptionDialog, label9, "label9");
+    GLADE_HOOKUP_OBJECT (OptionDialog, wRB_IO, "wRB_IO");
+    GLADE_HOOKUP_OBJECT (OptionDialog, wRB_BusyTime, "wRB_BusyTime");
+    GLADE_HOOKUP_OBJECT (OptionDialog, wTB_RWcombined, "wTB_RWcombined");
+    GLADE_HOOKUP_OBJECT (OptionDialog, wHBox_MaxIO, "wHBox_MaxIO");
     GLADE_HOOKUP_OBJECT (OptionDialog, label3, "label3");
     GLADE_HOOKUP_OBJECT (OptionDialog, wTF_MaxXfer, "wTF_MaxXfer");
-    GLADE_HOOKUP_OBJECT (OptionDialog, wTB_RWcombined, "wTB_RWcombined");
-    GLADE_HOOKUP_OBJECT (OptionDialog, hseparator2, "hseparator2");
+    GLADE_HOOKUP_OBJECT (OptionDialog, hseparator3, "hseparator3");
     GLADE_HOOKUP_OBJECT (OptionDialog, wTa_SingleBar, "wTa_SingleBar");
     GLADE_HOOKUP_OBJECT (OptionDialog, label7, "label7");
     GLADE_HOOKUP_OBJECT (OptionDialog, wPB_RWcolor, "wPB_RWcolor");
@@ -321,10 +377,10 @@ int CreateConfigGUI (GtkWidget * OptionDialog, struct gui_t *p_poGUI)
     GLADE_HOOKUP_OBJECT (OptionDialog, label6, "label6");
     GLADE_HOOKUP_OBJECT (OptionDialog, label8, "label8");
     GLADE_HOOKUP_OBJECT (OptionDialog, hbox1, "hbox1");
-    GLADE_HOOKUP_OBJECT (OptionDialog, wTB_ReadWriteOrder,
-			 "wTB_ReadWriteOrder");
-    GLADE_HOOKUP_OBJECT (OptionDialog, wTB_WriteReadOrder,
-			 "wTB_WriteReadOrder");
+    GLADE_HOOKUP_OBJECT (OptionDialog, wRB_ReadWriteOrder,
+			 "wRB_ReadWriteOrder");
+    GLADE_HOOKUP_OBJECT (OptionDialog, wRB_WriteReadOrder,
+			 "wRB_WriteReadOrder");
     GLADE_HOOKUP_OBJECT (OptionDialog, wPB_Rcolor, "wPB_Rcolor");
     GLADE_HOOKUP_OBJECT (OptionDialog, wPB_Wcolor, "wPB_Wcolor");
     GLADE_HOOKUP_OBJECT_NO_REF (OptionDialog, tooltips, "tooltips");
@@ -337,12 +393,15 @@ int CreateConfigGUI (GtkWidget * OptionDialog, struct gui_t *p_poGUI)
 	COPYVAL (p_poGUI, wSc_Period);
 	COPYVAL (p_poGUI, wTB_Title);
 	COPYVAL (p_poGUI, wTF_Title);
+	COPYVAL (p_poGUI, wRB_IO);
+	COPYVAL (p_poGUI, wRB_BusyTime);
+	COPYVAL (p_poGUI, wHBox_MaxIO);
 	COPYVAL (p_poGUI, wTF_MaxXfer);
 	COPYVAL (p_poGUI, wTB_RWcombined);
 	COPYVAL (p_poGUI, wTa_SingleBar);
 	COPYVAL (p_poGUI, wTa_DualBars);
-	COPYVAL (p_poGUI, wTB_ReadWriteOrder);
-	COPYVAL (p_poGUI, wTB_WriteReadOrder);
+	COPYVAL (p_poGUI, wRB_ReadWriteOrder);
+	COPYVAL (p_poGUI, wRB_WriteReadOrder);
 	COPYVAL (p_poGUI, wPB_RWcolor);
 	COPYVAL (p_poGUI, wPB_Rcolor);
 	COPYVAL (p_poGUI, wPB_Wcolor);
@@ -354,8 +413,14 @@ int CreateConfigGUI (GtkWidget * OptionDialog, struct gui_t *p_poGUI)
 
 /*
 $Log: config_gui.c,v $
-Revision 1.1  2003/10/07 03:39:21  rogerms
-Initial revision
+Revision 1.2  2003/11/04 10:26:13  rogerms
+DiskPerf 1.3
+
+Revision 1.5  2003/11/04 09:42:15  RogerSeguin
+Added busy time statistics
+
+Revision 1.1.1.1  2003/10/07 03:39:21  rogerms
+Initial release - v1.0
 
 Revision 1.4  2003/09/25 09:32:52  RogerSeguin
 Added color configuration

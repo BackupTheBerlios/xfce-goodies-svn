@@ -18,3 +18,9 @@
 	* Improved Linux 2.6 specific processing.
 	* Added Linux disk busy time into tooltips.
 	* Released 1.2.
+
+20031104:
+---------
+	* Added option for monitoring disk busy time statistics on Linux
+	  instead of I/O transfers
+	* Released 1.3.

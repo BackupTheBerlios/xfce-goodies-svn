@@ -25,7 +25,7 @@
  */
 
 static char     _devperf_id[] =
-    "$Id: devperf.c,v 1.4 2003/11/02 06:57:50 rogerms Exp $";
+    "$Id: devperf.c,v 1.5 2003/11/04 10:26:13 rogerms Exp $";
 
 
 #define DEBUG	0
@@ -76,7 +76,7 @@ static int DevGetPerfData1 (dev_t p_iDevice, struct devperf_t *p_poPerf)
 	iMinorNo = p_iDevice & 0xFF;
     struct timeval  oTimeStamp;
     FILE           *pF;
-    unsigned int    major, minor, rsect, wsect, use;
+    unsigned int    major, minor, rsect, wsect, ruse, wuse, use;
     int             running;
     char            acStats[128];
     int             c, n;
@@ -99,14 +99,14 @@ static int DevGetPerfData1 (dev_t p_iDevice, struct devperf_t *p_poPerf)
 	if (!(fgets (acStats, sizeof (acStats), pF)))
 	    goto Error;
 	n = sscanf (acStats,
-		    "%*u %*u %u %*u %*u %*u %u %*u %d %u %*u",
-		    &rsect, &wsect, &running, &use);
-	if (n != 4) {
+		    "%*u %*u %u %u %*u %*u %u %u %d %u %*u",
+		    &rsect, &ruse, &wsect, &wuse, &running, &use);
+	if (n != 5) {
 	    /* Not a full-statistics line */
 	    n = sscanf (acStats, "%*u %u %*u %u", &rsect, &wsect);
 	    if (n != 2)
 		goto Error;
-	    running = -1, use = 0;
+	    running = -1, ruse = wuse = 0;
 	}
 	fclose (pF);
 	gettimeofday (&oTimeStamp, 0);
@@ -116,7 +116,8 @@ static int DevGetPerfData1 (dev_t p_iDevice, struct devperf_t *p_poPerf)
 	p_poPerf->rbytes = SECTOR_SIZE * rsect;
 	p_poPerf->wbytes = SECTOR_SIZE * wsect;
 	p_poPerf->qlen = running;
-	p_poPerf->busytime_ns = (uint64_t) 1000 *1000 * use;
+	p_poPerf->rbusy_ns = (uint64_t) 1000 *1000 * ruse;
+	p_poPerf->wbusy_ns = (uint64_t) 1000 *1000 * wuse;
 	return (0);
     }
   Error:
@@ -132,7 +133,7 @@ static int DevGetPerfData2 (dev_t p_iDevice, struct devperf_t *p_poPerf)
 	iMinorNo = p_iDevice & 0xFF;
     struct timeval  oTimeStamp;
     FILE           *pF;
-    unsigned int    major, minor, rsect, wsect, use;
+    unsigned int    major, minor, rsect, wsect, ruse, wuse, use;
     int             running;
     int             c, n;
 
@@ -143,9 +144,9 @@ static int DevGetPerfData2 (dev_t p_iDevice, struct devperf_t *p_poPerf)
     }
     while ((c = fgetc (pF)) && (c != '\n'));	/* Skip the header line */
     while ((n = fscanf (pF,
-			"%u %u %*u %*s %*u %*u %u %*u %*u %*u %u %*u %d %u %*u",
-			&major, &minor, &rsect, &wsect, &running,
-			&use)) == 6)
+			"%u %u %*u %*s %*u %*u %u %u %*u %*u %u %u %d %u %*u",
+			&major, &minor, &rsect, &ruse, &wsect,
+			&wuse, &running, &use)) == 8)
 	if ((major == iMajorNo) && (minor == iMinorNo)) {
 	    fclose (pF);
 	    gettimeofday (&oTimeStamp, 0);
@@ -155,7 +156,8 @@ static int DevGetPerfData2 (dev_t p_iDevice, struct devperf_t *p_poPerf)
 	    p_poPerf->rbytes = SECTOR_SIZE * rsect;
 	    p_poPerf->wbytes = SECTOR_SIZE * wsect;
 	    p_poPerf->qlen = running;
-	    p_poPerf->busytime_ns = (uint64_t) 1000 *1000 * use;
+	    p_poPerf->rbusy_ns = (uint64_t) 1000 *1000 * ruse;
+	    p_poPerf->wbusy_ns = (uint64_t) 1000 *1000 * wuse;
 	    return (0);
 	}
     fclose (pF);
@@ -311,6 +313,12 @@ int DevGetPerfData (const void *p_pvDevice, struct devperf_t *perf)
 
 /*
 $Log: devperf.c,v $
+Revision 1.5  2003/11/04 10:26:13  rogerms
+DiskPerf 1.3
+
+Revision 1.9  2003/11/04 09:43:09  RogerSeguin
+Now retrieve both read and write busy times for Linux
+
 Revision 1.4  2003/11/02 06:57:50  rogerms
 Release 1.2
 
