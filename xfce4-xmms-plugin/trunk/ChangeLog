@@ -1,3 +1,7 @@
+2003-11-20 06:00EST  pat
+	* added xfce4-xmms-plugin.spec for the RPM builders out there
+	thanks to Rudolf Kastl <che666@uni.de> again.  Thanks!
+
 2003-11-20 04:56EST  pat
 	PATCH: Rudolf Kastl <che666@uni.de>
 	* panel-plugin/Makefile.am - get rid of hardcoded base dir
