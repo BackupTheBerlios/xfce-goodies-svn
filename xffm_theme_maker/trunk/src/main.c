@@ -16,12 +16,14 @@
 #include <gmodule.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
+#include <xfce4/xfce4-modules/mime_icons.h>
 
 #include "main_gui.h"
 #include "support.h"
 #include "callbacks.h"
 
 #warning "Please note that xffm_theme_maker requires xffm >= 4.1"
+#define SEARCH_DIRS {"/usr/X11R6/share/icons","/usr/share/icons","/usr/local/share/icons",PACKAGE_DATA_DIR "/xfce4/icons",NULL}
 
 GtkTreeView *treeview;
 GtkTreeStore *store;  
@@ -51,36 +53,15 @@ static GtkTargetEntry target_table[] = {
 };
 #define NUM_TARGETS (sizeof(target_table)/sizeof(GtkTargetEntry))
 
-#ifndef __MIME_H__
-#define __MIME_H__
 static GModule *xfmime_icon_cm=NULL;
 
-typedef struct _xfmime_icon_functions xfmime_icon_functions;
-struct _xfmime_icon_functions {
-   GtkIconSet *(*mime_icon_get_iconset)(const gchar *id, GtkWidget *main_window, const gchar *theme);
-   void (*mime_icon_add_iconset)(const gchar *tag, GtkIconSet *icon_set);
-   GHashTable *(*mime_icon_load_theme)(const gchar *theme);
-   GtkWidget *(*mime_icon_create_pixmap) (GtkWidget *widget,const gchar *filename);
-   GdkPixbuf *(*mime_icon_create_pixbuf) (const gchar *filename);
-   gchar *(*mime_icon_find_pixmap_file)(const gchar     *filename);
-};
-
-
-#endif
 static GtkStyle *style;
 
 xfmime_icon_functions *xfmime_icon_fun=NULL;
 
 char *theme;
+gchar *theme_dir;
     
-
-#define MIME_ICON_get_iconset (*(load_mime_icon_module()->mime_icon_get_iconset))
-#define MIME_ICON_add_iconset (*(load_mime_icon_module()->mime_icon_add_iconset))
-#define MIME_ICON_load_theme (*(load_mime_icon_module()->mime_icon_load_theme))
-#define MIME_ICON_create_pixmap (*(load_mime_icon_module()->mime_icon_create_pixmap))
-#define MIME_ICON_create_pixbuf (*(load_mime_icon_module()->mime_icon_create_pixbuf))
-#define MIME_ICON_find_pixmap_file (*(load_mime_icon_module()->mime_icon_find_pixmap_file))
-
 
 
 void unload_mime_icon_module(void){
@@ -199,8 +180,10 @@ static void writexml(void){
     xmlDocPtr doc;
     char *mimefile=NULL;
     
-    mimefile=g_strconcat("mime.xml",NULL);
+    //gchar *theme_dir=g_strconcat(PACKAGE_DATA_DIR, G_DIR_SEPARATOR_S,"xfce4", G_DIR_SEPARATOR_S,"icons",G_DIR_SEPARATOR_S,theme,NULL);
+
     
+    mimefile = MIME_ICON_get_local_xml_file(theme_dir);
     
     {
        doc = xmlNewDoc("1.0");
@@ -220,15 +203,15 @@ static void writexml(void){
     xmlSaveFormatFile(mimefile, doc, 1);
 
     xmlFreeDoc(doc);
-    g_free(mimefile);
     { 
  		GtkWidget *dialog = gtk_message_dialog_new ((GtkWindow *)xffm_theme_maker,
                                   GTK_DIALOG_DESTROY_WITH_PARENT,
                                   GTK_MESSAGE_INFO,
-                                  GTK_BUTTONS_CLOSE,"file written as mime.xml\n");
+                                  GTK_BUTTONS_CLOSE,mimefile);
  		gtk_dialog_run (GTK_DIALOG (dialog));
  		gtk_widget_destroy (dialog);
     }
+    g_free(mimefile);
 
     
 }
@@ -482,17 +465,23 @@ static gboolean find_type(GtkTreeModel * treemodel, GtkTreePath * treepath, GtkT
 	    
 
 
-static gboolean create_icon_tree(const gchar *in_theme){
-    gchar *mimefile;
+static gboolean create_icon_tree(const gchar *in_theme_dir){
+    gchar *mimefile=NULL;
     gchar *typesfile;
     xmlDocPtr doc;
     xmlChar *id, *value;
     xmlNodePtr node;
     static gboolean quit=FALSE;
     int i;
+    gchar *g;
 
-    MIME_ICON_load_theme(in_theme);
-    theme=(char *)in_theme;
+    if (!in_theme_dir) {
+	g_warning("!in_theme_dir");
+	return FALSE;
+    }
+    MIME_ICON_load_theme(in_theme_dir);
+    //MIME_ICON_load_theme(in_theme);
+    //theme=(char *)in_theme;
 
     if (store){
     	gtk_tree_model_foreach((GtkTreeModel *)store, unref_row, NULL);
@@ -500,30 +489,35 @@ static gboolean create_icon_tree(const gchar *in_theme){
     } else store=create_treestore();
 
  
-    if (!theme) theme="gnome";	    
+    //g= get_theme_path(theme); 
+    g=strdup(in_theme_dir);
+    if (g) {
+      mimefile= MIME_ICON_get_local_xml_file(g);
+     // printf("in_theme_dir=%s\nlocalmimefile is %s\n",in_theme_dir,mimefile);
+      if (access(mimefile,F_OK)!=0) {
+	    g_free(mimefile);	  
+	    mimefile=g_build_filename(g,"mime.xml",NULL);   
+	    if (!mimefile || access(mimefile,F_OK)!=0) {
+		g_warning("No valid mime.xml found for theme.\n");
+		g_free(mimefile);
+		mimefile=NULL;
+	    }
+      }
+      g_free(g);
+    }
+    //if (!theme) theme="gnome";	    
 
-    /*printf("DBG: creating icons for theme=%s\n",theme);*/
+    //printf("DBG: creating icons for theme=%s\n",mimefile);
    
-    mimefile=g_strconcat(PACKAGE_DATA_DIR,
-		    G_DIR_SEPARATOR_S,"xfce4",
-		    G_DIR_SEPARATOR_S,"icons",
-		    G_DIR_SEPARATOR_S,theme,
-		    G_DIR_SEPARATOR_S,"mime.xml",NULL);
 
-    printf("DBG: creating icons for theme=%s (%s)\n",theme,mimefile);
-    
-    if (access(mimefile,F_OK)!=0){
-	/* fall back to plain */
-	g_warning("%s theme not found.  Install package xffm-icons for richer icons.",
-			theme);
-	g_free(mimefile);
-    	mimefile=g_strconcat(PACKAGE_DATA_DIR,
-		    G_DIR_SEPARATOR_S,"xfce4",
-		    G_DIR_SEPARATOR_S,"icons",
-		    G_DIR_SEPARATOR_S,"Plain",
-		    G_DIR_SEPARATOR_S,"mime.xml",NULL);	    
-    } 
-    if (access(mimefile,F_OK)!=0) goto error_xml;    
+    if (!mimefile || access(mimefile,F_OK)!=0) {
+	gchar *g = MIME_ICON_get_theme_path("no_icons");
+	if (g) {
+	    mimefile=g_build_filename(g,"mime.xml",NULL);
+	    g_free(g);
+	}
+	if (!mimefile) goto error_xml;    
+    }
 
     /*********************** types defined in freedesktop.xml and xfce.xml ***/
     for (i=0;i<2;i++){
@@ -638,9 +632,9 @@ static gint change_theme(gpointer data){
 	g_source_remove(changer);
 	/*this makes a memory leak worthy of the Titanic: unload_mime_icon_module();*/
 	label = GTK_LABEL (gtk_bin_get_child(GTK_BIN(om)));
-	txt = g_strdup (gtk_label_get_text (label));
+	g_free(theme_dir);
+	theme_dir = txt = g_strdup (gtk_label_get_text (label));
   	create_icon_tree(txt);
-	g_free(txt);
 	gtk_main_quit();
 	gtk_widget_destroy(dialog);
     
@@ -682,7 +676,12 @@ static gboolean icon_changed(GtkCellRendererText *cell,
 	g_free (old_text);
 	if (!new_text) gtk_tree_store_set (store, &iter, column,"",-1);
 	else gtk_tree_store_set (store, &iter, column,new_text,-1);
-	icon = gtk_image_get_pixbuf((GtkImage *) MIME_ICON_create_pixmap(xffm_theme_maker,new_text ));
+	if (strncmp(new_text,"gtk-",strlen("gtk-"))==0){
+	   icon = gtk_widget_render_icon(xffm_theme_maker, new_text, GTK_ICON_SIZE_DIALOG, NULL);
+	} else {
+	  icon = gtk_image_get_pixbuf((GtkImage *) MIME_ICON_create_pixmap(xffm_theme_maker,new_text ));
+	}
+//	icon = MIME_ICON_create_pixbuf(new_text);
 	gtk_tree_store_set(store, &iter, PIXBUF_COLUMN, icon,-1);
       	/*if (!icon){ 
  		GtkWidget *dialog = gtk_message_dialog_new ((GtkWindow *)xffm_theme_maker,
@@ -716,40 +715,31 @@ main (int argc, char *argv[])
   /* themes */
   {
     GDir *gdir;
+    gchar **theme_dirs,**p;
     const char *file;
+    GtkMenu	*menu=GTK_MENU (gtk_menu_new ());
     GtkOptionMenu *optionmenu=(GtkOptionMenu *)lookup_widget(xffm_theme_maker,"optionmenu2");
-    gchar *theme_dir=g_strconcat(PACKAGE_DATA_DIR, G_DIR_SEPARATOR_S,"xfce4", G_DIR_SEPARATOR_S,"icons",G_DIR_SEPARATOR_S,theme,NULL);
+    //theme_dir=g_strconcat(PACKAGE_DATA_DIR, G_DIR_SEPARATOR_S,"xfce4", G_DIR_SEPARATOR_S,"icons",G_DIR_SEPARATOR_S,theme,NULL);
     
 
-    {
-	gdir = g_dir_open(theme_dir, 0, NULL);
-	GtkMenu	*menu=GTK_MENU (gtk_menu_new ());
-	
-	if(gdir) {
-	    while((file = g_dir_read_name(gdir))) {
-		char *path = g_build_filename(theme_dir, file, NULL);
-		GtkWidget		*it;
-		if(g_file_test(path, G_FILE_TEST_IS_DIR)) {
-		  it = gtk_menu_item_new_with_label ((gchar *)file);
-		  gtk_menu_shell_append (GTK_MENU_SHELL (menu), it);
-		  gtk_widget_show (it);
-			
-		}
-		g_free(path);
-	    }
-	    g_dir_close(gdir);
-	}
-	gtk_option_menu_set_menu (optionmenu, GTK_WIDGET (menu));
+    theme_dirs=MIME_ICON_find_themes(FALSE,TRUE);
+    for (p=theme_dirs;p && *p;p++){
+	GtkWidget *it;
+	it = gtk_menu_item_new_with_label (*p);
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu), it);
+	gtk_widget_show (it);
+	g_free(*p);
     }
-    g_free(theme_dir);
+    g_free(theme_dirs);
+    gtk_option_menu_set_menu (optionmenu, GTK_WIDGET (menu));
+  
     /* populate the model: */
     {
 	GtkLabel		*label;
 	gchar			*txt;
 	label = GTK_LABEL (gtk_bin_get_child(GTK_BIN(optionmenu)));
-	txt = g_strdup (gtk_label_get_text (label));
+	theme_dir = txt = g_strdup (gtk_label_get_text (label));
         create_icon_tree(txt);
-	g_free(txt);
     }
     g_signal_connect(G_OBJECT(optionmenu), "changed", G_CALLBACK(theme_changed), NULL);
   }
