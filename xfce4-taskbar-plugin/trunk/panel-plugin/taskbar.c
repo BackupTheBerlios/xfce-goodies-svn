@@ -150,7 +150,7 @@ plugin_determine_expand_width (gpointer data)
 
     int screen, mainFrame, current, monitor;
 
-    if (!GDK_IS_WINDOW(panel.toplevel->window))
+    if (!(GDK_IS_WINDOW(panel.toplevel->window)) && plugin->expand)
         return;
     
     monitor = gdk_screen_get_monitor_at_window (plugin->gscr, panel.toplevel->window);
@@ -183,7 +183,7 @@ plugin_recreate_gui (gpointer data)
     NetkWorkspace *ws;
     int width;
 
-    if (!GDK_IS_WINDOW(panel.toplevel->window))
+    if (!(GDK_IS_WINDOW(panel.toplevel->window)) && plugin->expand)
         return;
     
     if (plugin->expand == TRUE) {

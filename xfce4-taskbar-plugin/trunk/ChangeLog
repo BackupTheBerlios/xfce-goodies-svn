@@ -1,3 +1,7 @@
+2004-10-17 18:35 papermoon:
+	* panel-plugin/taskbar.c, configure.ac:
+	small bugfix: the plugin resize did not work without expand enabled
+
 2004-10-16 20:45 papermoon:
 	* panel-plugin/taskbar.c, configure.ac:
 	keep cvs in sync with released version
