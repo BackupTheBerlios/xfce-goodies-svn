@@ -77,6 +77,7 @@ typedef struct
     int		    size;
     int		    width;
     int             orientation;
+    gboolean	    showLabel;
 } gui;
 
 // }}}
@@ -87,7 +88,7 @@ static void plugin_panel_resize_callback (GtkWidget *widget, GtkAllocation *allo
 static void plugin_determine_expand_width (gpointer data);
 
 static void
-plugin_eval_TaskbarOptions(gui *plugin)
+plugin_eval_taskbar_options(gui *plugin)
 {
     if (plugin->group==AUTOGROUP) {
         netk_tasklist_set_grouping(NETK_TASKLIST(plugin->taskbar), NETK_TASKLIST_AUTO_GROUP);
@@ -98,6 +99,7 @@ plugin_eval_TaskbarOptions(gui *plugin)
     }
 
     netk_tasklist_set_include_all_workspaces(NETK_TASKLIST(plugin->taskbar), plugin->includeAll);
+    netk_tasklist_set_show_label(NETK_TASKLIST(plugin->taskbar), plugin->showLabel);
 }
 
 static gui *
@@ -112,16 +114,17 @@ gui_new ()
     plugin->group = 0;
     plugin->includeAll = FALSE;
     plugin->expand = FALSE;
+    plugin->showLabel = TRUE;
     plugin->screen=netk_screen_get_default();
     netk_screen_force_update (plugin->screen);
 
     plugin->frame = gtk_frame_new (NULL);
     plugin->taskbar = netk_tasklist_new(plugin->screen);
 
-    plugin_eval_TaskbarOptions(plugin);
-
     gtk_container_add (GTK_CONTAINER(plugin->frame), plugin->taskbar);
     gtk_container_add (GTK_CONTAINER(plugin->ebox), plugin->frame);
+
+    plugin_eval_taskbar_options (plugin);
 
     gtk_widget_show_all (plugin->ebox);
     
@@ -190,11 +193,6 @@ plugin_recreate_gui (gpointer data)
     } else {
         gtk_widget_set_size_request (plugin->frame, plugin->size, width);
     }
-    gtk_widget_destroy (plugin->taskbar);
-    plugin->taskbar = netk_tasklist_new(plugin->screen);
-
-    gtk_container_add (GTK_CONTAINER(plugin->frame), plugin->taskbar);
-    gtk_widget_show (plugin->taskbar);
 }
 
 static gboolean
@@ -279,11 +277,17 @@ plugin_read_config (Control *ctrl, xmlNodePtr node)
                 plugin->expand = atoi(value);
                 g_free(value);
             }
+	    
+	    if ((value = xmlGetProp(node, (const xmlChar *)"showLabel"))) {
+                plugin->showLabel = atoi(value);
+                g_free(value);
+            }
+ 
             break;
         }
     }
     plugin_recreate_gui (plugin);
-    plugin_eval_TaskbarOptions (plugin);
+    plugin_eval_taskbar_options (plugin);
 }
 
 static void
@@ -305,6 +309,9 @@ plugin_write_config (Control *ctrl, xmlNodePtr parent)
 
     g_snprintf(value, 10, "%d", plugin->expand);
     xmlSetProp(root, "expand", value);  
+
+    g_snprintf(value, 10, "%d", plugin->showLabel);
+    xmlSetProp(root, "showLabel", value);  
 }    
 
 static void
@@ -324,7 +331,7 @@ plugin_rb1_changed (GtkRadioButton *rb, gpointer data)
     if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(rb))) {
         plugin->group=NEVERGROUP;
     }
-    plugin_eval_TaskbarOptions(plugin);
+    plugin_eval_taskbar_options(plugin);
 }
 
 static void
@@ -334,7 +341,7 @@ plugin_rb2_changed (GtkRadioButton *rb, gpointer data)
     if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(rb))) {
         plugin->group=ALWAYSGROUP;
     }
-    plugin_eval_TaskbarOptions(plugin);
+    plugin_eval_taskbar_options(plugin);
 }
 
 static void
@@ -344,7 +351,7 @@ plugin_rb3_changed (GtkRadioButton *rb, gpointer data)
     if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(rb))) {
         plugin->group=AUTOGROUP;
     }
-    plugin_eval_TaskbarOptions(plugin);
+    plugin_eval_taskbar_options(plugin);
 }
 
 static void
@@ -358,7 +365,7 @@ plugin_cb1_changed (GtkToggleButton *cb, gui *plugin)
     gtk_widget_set_sensitive (plugin->spin, !expand);
     
     plugin_recreate_gui (plugin);
-    plugin_eval_TaskbarOptions(plugin);
+    plugin_eval_taskbar_options(plugin);
 }
 
 static void
@@ -370,14 +377,26 @@ plugin_cb2_changed (GtkToggleButton *cb, gui *plugin)
 
     plugin->includeAll = includeAll;
     
-    plugin_eval_TaskbarOptions(plugin);
+    plugin_eval_taskbar_options(plugin);
+}
+
+static void
+plugin_cb3_changed (GtkToggleButton *cb, gui *plugin)
+{
+    gboolean showLabel;
+
+    showLabel = gtk_toggle_button_get_active (cb);
+
+    plugin->showLabel = showLabel;
+    
+    plugin_eval_taskbar_options(plugin);
 }
 
 static void
 plugin_create_options (Control *ctrl, GtkContainer *con, GtkWidget *done)
 {
     gui *plugin = ctrl->data;
-    GtkWidget *hbox, *size, *rb1, *rb2, *rb3, *cb1, *cb2, *vbox, *frame, *rvbox;
+    GtkWidget *hbox, *size, *rb1, *rb2, *rb3, *cb1, *cb2, *cb3, *vbox, *frame, *rvbox;
     hbox = gtk_hbox_new (FALSE, 2);
     vbox = gtk_vbox_new (FALSE, 4);
     rvbox = gtk_vbox_new (FALSE, 2);
@@ -420,6 +439,10 @@ plugin_create_options (Control *ctrl, GtkContainer *con, GtkWidget *done)
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (cb2), plugin->includeAll);
     g_signal_connect (cb2, "toggled", G_CALLBACK (plugin_cb2_changed), plugin);
     
+    cb3 = gtk_check_button_new_with_label ("Show Label");
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (cb3), plugin->showLabel);
+    g_signal_connect (cb3, "toggled", G_CALLBACK (plugin_cb3_changed), plugin);
+ 
     gtk_box_pack_start (GTK_BOX(hbox), size, FALSE, FALSE, 1);
     
     gtk_box_pack_start (GTK_BOX(hbox), plugin->spin, FALSE, FALSE, 1);
@@ -429,6 +452,7 @@ plugin_create_options (Control *ctrl, GtkContainer *con, GtkWidget *done)
     gtk_container_add (GTK_CONTAINER(vbox), frame);
     gtk_container_add (GTK_CONTAINER(vbox), cb1);
     gtk_container_add (GTK_CONTAINER(vbox), cb2);
+    gtk_container_add (GTK_CONTAINER(vbox), cb3);
     gtk_container_add (GTK_CONTAINER(con), vbox);
     gtk_widget_show_all (vbox);
 }
