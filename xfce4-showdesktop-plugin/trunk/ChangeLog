@@ -1,3 +1,7 @@
+2004-01-09 19:44 papermoon
+	* Changelog, configure, configure.ac, po/pl.po po/pl.gmo: 
+	Added Polish translation by Andrzej Augustynowicz
+
 2003-11-24 19:31 papermoon
 	* Changelog, configure, configure.ac, po/ko.po po/ko.gmo: 
 	Added Korean translation by David Choi
