@@ -25,7 +25,7 @@
  */
 
 static char     _devperf_id[] =
-    "$Id: devperf.c,v 1.3 2003/10/18 23:02:58 rogerms Exp $";
+    "$Id: devperf.c,v 1.4 2003/11/02 06:57:50 rogerms Exp $";
 
 
 #define DEBUG	0
@@ -76,7 +76,9 @@ static int DevGetPerfData1 (dev_t p_iDevice, struct devperf_t *p_poPerf)
 	iMinorNo = p_iDevice & 0xFF;
     struct timeval  oTimeStamp;
     FILE           *pF;
-    unsigned int    major, minor, rsect, wsect;
+    unsigned int    major, minor, rsect, wsect, use;
+    int             running;
+    char            acStats[128];
     int             c, n;
 
     pF = fopen (STATISTICS_FILE_1, "r");
@@ -92,12 +94,20 @@ static int DevGetPerfData1 (dev_t p_iDevice, struct devperf_t *p_poPerf)
 	    while ((c = fgetc (pF)) && (c != '\n'));	/* Goto next line */
 	    continue;
 	}
-	n = fscanf (pF,
-		    (minor == 0 ?
-		     "%*s %*u %*u %u %*u %*u %*u %u %*u %*u %*u %*u"
-		     : "%*s %*u %u %*u %u"), &rsect, &wsect);
-	if (n != 2)
+	fscanf (pF, "%*s");	/* Skip device name */
+	/* Read rest of line into acStats */
+	if (!(fgets (acStats, sizeof (acStats), pF)))
 	    goto Error;
+	n = sscanf (acStats,
+		    "%*u %*u %u %*u %*u %*u %u %*u %d %u %*u",
+		    &rsect, &wsect, &running, &use);
+	if (n != 4) {
+	    /* Not a full-statistics line */
+	    n = sscanf (acStats, "%*u %u %*u %u", &rsect, &wsect);
+	    if (n != 2)
+		goto Error;
+	    running = -1, use = 0;
+	}
 	fclose (pF);
 	gettimeofday (&oTimeStamp, 0);
 	p_poPerf->timestamp_ns =
@@ -105,6 +115,8 @@ static int DevGetPerfData1 (dev_t p_iDevice, struct devperf_t *p_poPerf)
 	    1000 * oTimeStamp.tv_usec;
 	p_poPerf->rbytes = SECTOR_SIZE * rsect;
 	p_poPerf->wbytes = SECTOR_SIZE * wsect;
+	p_poPerf->qlen = running;
+	p_poPerf->busytime_ns = (uint64_t) 1000 *1000 * use;
 	return (0);
     }
   Error:
@@ -120,7 +132,8 @@ static int DevGetPerfData2 (dev_t p_iDevice, struct devperf_t *p_poPerf)
 	iMinorNo = p_iDevice & 0xFF;
     struct timeval  oTimeStamp;
     FILE           *pF;
-    unsigned int    major, minor, rsect, wsect;
+    unsigned int    major, minor, rsect, wsect, use;
+    int             running;
     int             c, n;
 
     pF = fopen (STATISTICS_FILE_2, "r");
@@ -130,8 +143,9 @@ static int DevGetPerfData2 (dev_t p_iDevice, struct devperf_t *p_poPerf)
     }
     while ((c = fgetc (pF)) && (c != '\n'));	/* Skip the header line */
     while ((n = fscanf (pF,
-			"%u %u %*u %*s %*u %*u %u %*u %*u %*u %u %*u %*u %*u %*u",
-			&major, &minor, &rsect, &wsect)) == 4)
+			"%u %u %*u %*s %*u %*u %u %*u %*u %*u %u %*u %d %u %*u",
+			&major, &minor, &rsect, &wsect, &running,
+			&use)) == 6)
 	if ((major == iMajorNo) && (minor == iMinorNo)) {
 	    fclose (pF);
 	    gettimeofday (&oTimeStamp, 0);
@@ -140,6 +154,8 @@ static int DevGetPerfData2 (dev_t p_iDevice, struct devperf_t *p_poPerf)
 		1000 * oTimeStamp.tv_usec;
 	    p_poPerf->rbytes = SECTOR_SIZE * rsect;
 	    p_poPerf->wbytes = SECTOR_SIZE * wsect;
+	    p_poPerf->qlen = running;
+	    p_poPerf->busytime_ns = (uint64_t) 1000 *1000 * use;
 	    return (0);
 	}
     fclose (pF);
@@ -295,6 +311,12 @@ int DevGetPerfData (const void *p_pvDevice, struct devperf_t *perf)
 
 /*
 $Log: devperf.c,v $
+Revision 1.4  2003/11/02 06:57:50  rogerms
+Release 1.2
+
+Revision 1.8  2003/11/02 06:17:30  RogerSeguin
+Safer processing for Linux 2.6 - Added busy time (and queue length) for Linux 2.4 and 2.6
+
 Revision 1.3  2003/10/18 23:02:58  rogerms
 DiskPerf release 1.1
 

@@ -5,3 +5,8 @@
 	* Release 1.1
 	* Linux kernel 2.6 support added
 	* NetBSD support added by Benedikt Meurer
+
+2003-11-02 Roger Seguin
+	* Release 1.2
+	* Linux kernel 2.6-related processing improved
+	* Linux Disk busy time added into tooltips

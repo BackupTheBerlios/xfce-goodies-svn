@@ -24,7 +24,7 @@
  */
 
 static char     _main_id[] =
-    "$Id: main.c,v 1.3 2003/10/18 23:02:58 rogerms Exp $";
+    "$Id: main.c,v 1.4 2003/11/02 06:57:50 rogerms Exp $";
 
 
 #define DEBUG	0
@@ -138,15 +138,19 @@ static int DisplayPerf (struct plugin_t *p_poPlugin)
     struct param_t *poConf = &(p_poPlugin->oConf.oParam);
     struct monitor_t *poMonitor = &(p_poPlugin->oMonitor);
     struct perfbar_t *poPerf = poMonitor->aoPerfBar;
-    uint64_t        iInterval_ns, rbytes, wbytes;
+    uint64_t        iInterval_ns, rbytes, wbytes, iBusy_ns;
     const double    K = 1.0 * 1000 * 1000 * 1000 / 1024 / 1024;
     double          arPerf[NMONITORS], *pr;
     char            acToolTips[64];
+    int             iBusyPerCent;
+    char            acBusy[16];
     int             status, i;
 
     if (!s_poToolTips)
 	s_poToolTips = gtk_tooltips_new ();
 
+    memset (&oPerf, 0, sizeof (oPerf));
+    oPerf.qlen = -1;
 #if defined (__NetBSD__)
     status = DevGetPerfData (poConf->acDevice, &oPerf);
 #else
@@ -159,6 +163,7 @@ static int DisplayPerf (struct plugin_t *p_poPlugin)
 	    oPerf.timestamp_ns - poMonitor->oPrevPerf.timestamp_ns;
 	rbytes = oPerf.rbytes - poMonitor->oPrevPerf.rbytes;
 	wbytes = oPerf.wbytes - poMonitor->oPrevPerf.wbytes;
+	iBusy_ns = oPerf.busytime_ns - poMonitor->oPrevPerf.busytime_ns;
     }
     else
 	iInterval_ns = 0;
@@ -170,14 +175,25 @@ static int DisplayPerf (struct plugin_t *p_poPlugin)
     arPerf[W_DATA] = K * wbytes / iInterval_ns;
     arPerf[RW_DATA] = K * (rbytes + wbytes) / iInterval_ns;
 
+    if (oPerf.qlen < 0) {
+	iBusyPerCent = 0;
+	strcpy (acBusy, "--");
+    }
+    else {
+	iBusyPerCent = 100 * iBusy_ns / iInterval_ns;
+	if (iBusyPerCent > 105)	/* If greater difference, don't hide it */
+	    iBusyPerCent = 100;
+	sprintf (acBusy, "%d", iBusyPerCent);
+    }
     sprintf (acToolTips, "%s\n"
-	     "  Read:%3u MB/s\n"
+	     "  Read :%3u MB/s\n"
 	     "  Write :%3u MB/s\n"
-	     "  Total :%3u MB/s",
+	     "  Total :%3u MB/s\n"
+	     "  Busy(%c): %s",
 	     poConf->acTitle,
 	     (unsigned int) (arPerf[R_DATA] + 0.5),
 	     (unsigned int) (arPerf[W_DATA] + 0.5),
-	     (unsigned int) (arPerf[RW_DATA] + 0.5));
+	     (unsigned int) (arPerf[RW_DATA] + 0.5), '%', acBusy);
     gtk_tooltips_set_tip (s_poToolTips, GTK_WIDGET (poMonitor->wEventBox),
 			  acToolTips, 0);
 
@@ -987,6 +1003,15 @@ XFCE_PLUGIN_CHECK_INIT
 	/**************************************************************/
 /*
 $Log: main.c,v $
+Revision 1.4  2003/11/02 06:57:50  rogerms
+Release 1.2
+
+Revision 1.10  2003/11/02 06:18:33  RogerSeguin
+Added busy time in tooltips for Linux 2.4 and 2.6
+
+Revision 1.9  2003/10/24 11:16:20  RogerSeguin
+Different scalable fonts with Mandrake 9.2 ==> diffent tooltips string spacing
+
 Revision 1.3  2003/10/18 23:02:58  rogerms
 DiskPerf release 1.1
 

@@ -12,3 +12,9 @@
 ---------
 	* Added support for Linux 2.6.
 	* Released 1.1.
+
+20031102:
+---------
+	* Improved Linux 2.6 specific processing.
+	* Added Linux disk busy time into tooltips.
+	* Released 1.2.

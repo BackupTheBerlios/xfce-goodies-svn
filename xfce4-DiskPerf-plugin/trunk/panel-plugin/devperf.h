@@ -25,7 +25,7 @@
 #ifndef _devperf_h
 #define _devperf_h
 static char     _devperf_h_id[] =
-    "$Id: devperf.h,v 1.3 2003/10/18 23:02:58 rogerms Exp $";
+    "$Id: devperf.h,v 1.4 2003/11/02 06:57:50 rogerms Exp $";
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -46,6 +46,8 @@ typedef struct devperf_t {
     uint64_t        timestamp_ns;
     uint64_t        rbytes;	/* Number of bytes read from the device */
     uint64_t        wbytes;	/* Number of bytes written to the device */
+    uint64_t        busytime_ns;	/* Device busy time */
+    int32_t         qlen;	/* Current queue length */
 } devperf_t;
 
 
@@ -72,6 +74,12 @@ extern          "C" {
 #endif
 /*
 $Log: devperf.h,v $
+Revision 1.4  2003/11/02 06:57:50  rogerms
+Release 1.2
+
+Revision 1.6  2003/11/02 06:17:03  RogerSeguin
+Added busy time (and queue length)
+
 Revision 1.3  2003/10/18 23:02:58  rogerms
 DiskPerf release 1.1
 
