@@ -64,6 +64,7 @@ struct _xfmime_icon_functions {
    GHashTable *(*mime_icon_load_theme)(const gchar *theme);
    GtkWidget *(*mime_icon_create_pixmap) (GtkWidget *widget,const gchar *filename);
    GdkPixbuf *(*mime_icon_create_pixbuf) (GtkWidget *widget,const gchar *filename);
+   gchar *(*mime_icon_find_pixmap_file)(const gchar     *filename);
 };
 
 
@@ -80,6 +81,7 @@ char *theme;
 #define MIME_ICON_load_theme (*(load_mime_icon_module()->mime_icon_load_theme))
 #define MIME_ICON_create_pixmap (*(load_mime_icon_module()->mime_icon_create_pixmap))
 #define MIME_ICON_create_pixbuf (*(load_mime_icon_module()->mime_icon_create_pixbuf))
+#define MIME_ICON_find_pixmap_file (*(load_mime_icon_module()->mime_icon_find_pixmap_file))
 
 
 
@@ -128,6 +130,7 @@ xfmime_icon_functions *load_mime_icon_module(void){
     if (!g_module_symbol (xfmime_icon_cm, "mime_icon_get_iconset",(gpointer *) &(xfmime_icon_fun->mime_icon_get_iconset)) ||    
 	!g_module_symbol (xfmime_icon_cm, "mime_icon_add_iconset",(gpointer *) &(xfmime_icon_fun->mime_icon_add_iconset)) ||    
 	!g_module_symbol (xfmime_icon_cm, "mime_icon_load_theme",(gpointer *) &(xfmime_icon_fun->mime_icon_load_theme)) ||    
+	!g_module_symbol (xfmime_icon_cm, "mime_icon_find_pixmap_file",(gpointer *) &(xfmime_icon_fun->mime_icon_find_pixmap_file)) ||    
 	!g_module_symbol (xfmime_icon_cm, "mime_icon_create_pixmap",(gpointer *) &(xfmime_icon_fun->mime_icon_create_pixmap)) ||    
 	!g_module_symbol (xfmime_icon_cm, "mime_icon_create_pixbuf",(gpointer *) &(xfmime_icon_fun->mime_icon_create_pixbuf))    
        ) {
@@ -140,6 +143,40 @@ xfmime_icon_functions *load_mime_icon_module(void){
     g_free(library);
     g_free(module);
     return xfmime_icon_fun;
+}
+
+static char *dnd_data = NULL;
+
+void
+on_treeview1_drag_data_get             (GtkWidget       *widget,
+                                        GdkDragContext  *drag_context,
+                                        GtkSelectionData *selection_data,
+                                        guint            info,
+                                        guint            time,
+                                        gpointer         user_data)
+{
+    /*printf("drag get\n");*/
+    GtkTreeView *treeview = (GtkTreeView *)widget;
+    GtkTreeIter iter;
+    GtkTreeSelection *selection = gtk_tree_view_get_selection(treeview);
+    gchar *n;
+    
+    if (dnd_data) g_free(dnd_data);
+    gtk_tree_selection_get_selected (selection,(GtkTreeModel **)(&store),&iter);
+                     /* GtkTreeModel **model,GtkTreeIter *iter);*/
+    gtk_tree_model_get((GtkTreeModel *)store, &iter, ICON_COLUMN, &n, -1);
+    if (n) {
+      gchar *i=MIME_ICON_find_pixmap_file(n);
+      if (i){
+        dnd_data = g_strdup(i);
+        gtk_selection_data_set(selection_data, selection_data->target, 
+		    8, (const guchar *)dnd_data,strlen(dnd_data)+ 1); 
+	g_free(i);
+      }
+    }
+    
+    return;
+
 }
 
 xmlNodePtr rootM;
@@ -723,13 +760,11 @@ main (int argc, char *argv[])
   treeview =(GtkTreeView *)lookup_widget((GtkWidget *)xffm_theme_maker,"treeview1");
   gtk_tree_view_set_model (treeview,(GtkTreeModel *)store);
    
-  //g_signal_connect(G_OBJECT(treeview), "drag_data_received", G_CALLBACK(on_drag_data), NULL);
 
   gtk_drag_dest_set((GtkWidget *) treeview, GTK_DEST_DEFAULT_DROP | GTK_DEST_DEFAULT_HIGHLIGHT, target_table, NUM_TARGETS, GDK_ACTION_MOVE | GDK_ACTION_COPY | GDK_ACTION_LINK);
 
-  //  gtk_drag_source_set((GtkWidget *) treeview, GDK_BUTTON1_MASK | GDK_BUTTON2_MASK, target_table, NUM_TARGETS, GDK_ACTION_MOVE | GDK_ACTION_COPY | GDK_ACTION_LINK);
+  gtk_drag_source_set((GtkWidget *) treeview, GDK_BUTTON1_MASK | GDK_BUTTON2_MASK, target_table, NUM_TARGETS, GDK_ACTION_MOVE | GDK_ACTION_COPY | GDK_ACTION_LINK);
 
-  //gtk_drag_dest_set((GtkWidget *) treeview, GTK_DEST_DEFAULT_DROP | GTK_DEST_DEFAULT_HIGHLIGHT, target_table, NUM_TARGETS, GDK_ACTION_MOVE | GDK_ACTION_COPY | GDK_ACTION_LINK);
 
 
     /* create the pixbuf column */

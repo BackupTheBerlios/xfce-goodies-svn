@@ -41,17 +41,6 @@ on_drag_data                           (GtkWidget       *widget,
 }*/
 
 
-void
-on_treeview1_drag_data_get             (GtkWidget       *widget,
-                                        GdkDragContext  *drag_context,
-                                        GtkSelectionData *data,
-                                        guint            info,
-                                        guint            time,
-                                        gpointer         user_data)
-{
-printf("drag get\n");
-}
-
 
 gboolean
 on_treeview1_drag_drop                 (GtkWidget       *widget,
