@@ -1,3 +1,13 @@
+2003-07-18 00:38  benny
+
+	* README, configure, configure.ac, backdrops/Makefile.am,
+	backdrops/Makefile.in, backdrops/xfce-transparent.png: Added
+	Francois transparent backdrop.
+
+2003-07-17 21:37  benny
+
+	* ChangeLog: Updated ChangeLog
+
 2003-07-17 21:28  benny
 
 	* Makefile.in, NEWS: Added NEWS file.
