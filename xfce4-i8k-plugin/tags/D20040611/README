@@ -1,0 +1,7 @@
+i8k XFce4 panel plugin.
+
+Allows you to control a Dell laptop's fans with the 
+dell laptop driver, i8k. The userspace utils can be
+found at http://people.debian.org/~dz/i8k/
+
+-Antonio SJ Musumeci <bile@landofbile.com>
