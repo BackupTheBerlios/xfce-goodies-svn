@@ -189,7 +189,7 @@ btn_clicked(GtkButton *button, gpointer icon_id)
 			}
 		}
 		launcher_update_icon(launcher);
-		pixbuf = _create_pixbuf((gint)icon_id, icon_name, _quicklauncher->icon_size); 
+		pixbuf = _create_pixbuf((gint)icon_id, icon_name, 16); 
 		gtk_list_store_set(GTK_LIST_STORE(treemodel), &iter, 0, pixbuf, -1);				
 		UNREF(pixbuf);
 	}

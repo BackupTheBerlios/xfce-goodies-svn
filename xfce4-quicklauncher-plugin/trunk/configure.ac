@@ -8,7 +8,7 @@ AC_INIT([configure])
 
 AM_CONFIG_HEADER([config.h])
 
-AM_INIT_AUTOMAKE([xfce4-Quicklauncher-plugin], [0.5.0])
+AM_INIT_AUTOMAKE([xfce4-Quicklauncher-plugin], [0.6.0])
 
 AM_MAINTAINER_MODE
 

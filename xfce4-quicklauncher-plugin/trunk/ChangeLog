@@ -1,3 +1,4 @@
++FIX: Icon size in the configuration dialog doesn't take care of the size of the icons in the  bar anymore
 +Add: number of lines is now configurable
 +FIX: Size of the icons are now better handled
 +FIX: some possible memory leaks

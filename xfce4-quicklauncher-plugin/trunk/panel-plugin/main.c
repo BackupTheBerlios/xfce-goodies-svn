@@ -174,7 +174,7 @@ launcher_free (t_launcher *launcher)
     g_free (launcher);
 }
 
-static void 
+void 
 quicklauncher_connect_callbacks_to_launcher(t_launcher *launcher)
 {
 	GList *iter;
@@ -187,7 +187,7 @@ quicklauncher_connect_callbacks_to_launcher(t_launcher *launcher)
 	}
 }
 
-static  void
+void
 quicklauncher_reconnect_callbacks()
 {
 	GList *iter;
@@ -265,7 +265,7 @@ quicklauncher_organize()
 	}
 }
 
-static  t_quicklauncher *
+t_quicklauncher *
 quicklauncher_new (GtkWidget *base)
 {
 	t_launcher *new_launcher;//temporaire
@@ -289,7 +289,7 @@ quicklauncher_new (GtkWidget *base)
 	return _quicklauncher;
 }
 
-static void
+void
 quicklauncher_free()
 {
 	int i;
@@ -358,14 +358,14 @@ quicklauncher_load_config(xmlNodePtr node)
 }
 
 
-static void
+void
 quicklauncher_write_config(Control * control, xmlNodePtr node)
 {
 	char value[3];
 	GList *iter;
 	xmlNodePtr launcher_node;
 	
-	g_assert(_quicklauncher == control->data);
+//	g_assert(_quicklauncher == control->data);
 	sprintf(value,"%d", _quicklauncher->nb_lines);
 	xmlSetProp(node, (const xmlChar *)"lines", value);
 	if(_quicklauncher->launchers) 
@@ -378,7 +378,7 @@ quicklauncher_write_config(Control * control, xmlNodePtr node)
 	}
 }
 
-static void
+void
 quicklauncher_configure(GtkContainer *container, GtkWidget *done)
 {
 	create_qck_launcher_dlg();
@@ -389,7 +389,7 @@ quicklauncher_configure(GtkContainer *container, GtkWidget *done)
 	g_signal_connect_swapped(done, "destroy", G_CALLBACK (free_qck_launcher_dlg), NULL);
 }
 
-static void
+void
 quicklauncher_set_size(gint size)
 {
 	GList *liste;
@@ -417,7 +417,7 @@ quicklauncher_set_nblines(gint nb_lines)
 	}
 }
 
-static gboolean
+gboolean
 create_plugin (Control * control)
 {
     control->data = quicklauncher_new(control->base);
@@ -425,21 +425,21 @@ create_plugin (Control * control)
     return TRUE;
 }
 
-static void
+void
 free_plugin(Control * control)
 {
 	quicklauncher_free();
 }
 
 
-static void
+void
 plugin_attach_callback (Control * control, const char *signal,
 										GCallback callback, gpointer data)
 {
 	GList *iter;
 	//also taken from systemsbuttons.c
 	SignalCallback *cb;
-	g_assert(_quicklauncher  == control->data);
+	//g_assert(_quicklauncher  == control->data);
 	cb = g_new0 (SignalCallback, 1);
 	cb->signal = signal;
 	cb->callback = callback;
@@ -454,28 +454,28 @@ plugin_attach_callback (Control * control, const char *signal,
 }
 
 
-static void
+void
 plugin_load_config(Control * control, xmlNodePtr node)
 {
-	g_assert(_quicklauncher  == control->data);
+	//g_assert(_quicklauncher  == control->data);
 	gtk_container_remove (GTK_CONTAINER (control->base), _quicklauncher->table);
 	quicklauncher_load_config(node);
 	gtk_container_add (GTK_CONTAINER (control->base), _quicklauncher->table);
 }
 
-static void
+void
 plugin_create_options (Control * control, GtkContainer * container,
 								      GtkWidget * done)
 {
-	g_assert(_quicklauncher  == control->data);
+	//g_assert(_quicklauncher  == control->data);
 	quicklauncher_configure(container, done);
 }
 
 
-static void
+void
 plugin_set_size (Control * control, int size)
 {
-	g_assert(_quicklauncher  == control->data);
+	//g_assert(_quicklauncher  == control->data);
 	quicklauncher_set_size(size);
 	/*
 	quicklauncher_empty_widgets();
@@ -485,7 +485,7 @@ plugin_set_size (Control * control, int size)
 }
 
 
-static void
+void
 plugin_set_orientation(Control * control, int orientation)
 {
 	_quicklauncher->orientation = orientation;
@@ -494,7 +494,7 @@ plugin_set_orientation(Control * control, int orientation)
 }
 
 
-static void
+void
 plugin_set_theme (Control * control, const char *theme)
 {
 	quicklauncher_empty_widgets();
@@ -518,7 +518,7 @@ xfce_control_class_init (ControlClass * cc)
 	cc->set_orientation = plugin_set_orientation;
     cc->set_theme = plugin_set_theme;
 	
-	control_class_set_unique (cc, FALSE); //no reason
+	control_class_set_unique (cc, TRUE);
 }
 
 /* Macro that checks panel API version */
