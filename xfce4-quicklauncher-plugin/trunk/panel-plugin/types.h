@@ -2,7 +2,7 @@
  *            types.h
  *
  *  Thu Jul 15 06:01:04 2004
- *  Last Update: 17/03/2005
+ *  Last Update: 03/04/2005
  *  Copyright  2004 - 2005  bountykiller
  *  Email: masse_nicolas@yahoo.fr
  ****************************************************************************/
@@ -30,11 +30,7 @@
 #include <panel/plugins.h>
 
 
-//#ifdef NEED_NAMES 
- 	#define SetGtkName(wdg,name)	(gtk_widget_set_name ((GTK_WIDGET(wdg)), (name)))
-//#else
-//	#define SetGtkName(wdg,name)	
-//#endif
+
 
 #define XFCE_ICON_CATEGORY_STOCK 		(XFCE_N_BUILTIN_ICON_CATEGORIES + 1) //not used yet
 #define XFCE_ICON_CATEGORY_EXTERN		(XFCE_N_BUILTIN_ICON_CATEGORIES + 2)
@@ -80,10 +76,14 @@ t_qck_launcher_opt_dlg;
 typedef struct
 {  
 	GtkWidget *widget;
+	GtkWidget *image;
+	GdkPixbuf  *def_img;
+	GdkPixbuf  *zoomed_img;
+	GdkPixbuf  *clicked_img;
 	gchar *command;
 	gchar *icon_name;
 	gint icon_id;
-	gulong command_id;  
+	gulong command_ids[4];  
 }
 t_launcher;
 

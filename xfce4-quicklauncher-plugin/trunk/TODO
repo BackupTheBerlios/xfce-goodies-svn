@@ -1,8 +1,10 @@
 For Version 1.0:
 ***************
 -allow manually config of nblines ==> done
--readd autosetting of nblines??
+-readd autosetting of nblines?
 -translations (at least in french)
+-use eventboxes and gdk_pixbuf instead of buttons ==> done
+-make icons growing when the mouse is on ==>done
 -any idea?
 
 For Vesrion 2.0
@@ -11,6 +13,10 @@ For Vesrion 2.0
 
 other possible feature
 *********************
--make icons growing when the mouse is on 
 -drag 'n drop support
--use all possible themed icons
+-use more themed icons
+-allow multiple instances
+
+BUGS
+*******
++size problem when loading panel

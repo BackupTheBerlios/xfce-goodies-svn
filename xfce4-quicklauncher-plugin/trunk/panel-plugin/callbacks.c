@@ -48,33 +48,27 @@ t_qck_launcher_opt_dlg* create_qck_launcher_dlg()
   _dlg = (t_qck_launcher_opt_dlg *) g_new0(t_qck_launcher_opt_dlg, 1);
 
   _dlg->vbox = gtk_vbox_new(FALSE, 0);
-  SetGtkName(_dlg->vbox, "vbox");
   gtk_widget_show (_dlg->vbox);
 
   _dlg->linebox = gtk_hbox_new (FALSE, 0);
-  SetGtkName(_dlg->linebox, "linebox");
   gtk_widget_show (_dlg->linebox);
   gtk_box_pack_start (GTK_BOX (_dlg->vbox), _dlg->linebox, FALSE, FALSE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (_dlg->linebox), 5);
 
   _dlg->label = gtk_label_new_with_mnemonic("Lines: ");
-  SetGtkName(_dlg->label, "label");
   gtk_widget_show (_dlg->label);
   gtk_box_pack_start (GTK_BOX (_dlg->linebox), _dlg->label, FALSE, FALSE, 0);
 
   _dlg->spin1 = gtk_spin_button_new_with_range(1, 5, 1);
-  SetGtkName(_dlg->spin1, "spin1");
   gtk_widget_show (_dlg->spin1);
   gtk_box_pack_start (GTK_BOX (_dlg->linebox), _dlg->spin1, FALSE, FALSE, 0);
   
   _dlg->configbox = gtk_hbox_new (FALSE, 0);
-  SetGtkName(_dlg->configbox, "configbox");
   gtk_widget_show (_dlg->configbox);
   gtk_box_pack_start (GTK_BOX (_dlg->vbox), _dlg->configbox, TRUE, TRUE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (_dlg->configbox), 5);
   
   _dlg->scrolledwindow1 = gtk_scrolled_window_new (NULL, NULL);
-  SetGtkName(_dlg->scrolledwindow1, "scrolledwindow1");
   gtk_widget_show (_dlg->scrolledwindow1);
   gtk_box_pack_start (GTK_BOX (_dlg->configbox), _dlg->scrolledwindow1, TRUE, TRUE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (_dlg->scrolledwindow1), 5);
@@ -82,38 +76,32 @@ t_qck_launcher_opt_dlg* create_qck_launcher_dlg()
   gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (_dlg->scrolledwindow1), GTK_SHADOW_ETCHED_OUT);
 
   _dlg->treeview1 = gtk_tree_view_new ();
-  SetGtkName(_dlg->treeview1, "treeview1");
   gtk_widget_show (_dlg->treeview1);
   gtk_container_add (GTK_CONTAINER (_dlg->scrolledwindow1), _dlg->treeview1);
   gtk_container_set_border_width (GTK_CONTAINER (_dlg->treeview1), 3);
   gtk_tree_view_set_reorderable (GTK_TREE_VIEW (_dlg->treeview1), TRUE);
 
   _dlg->vbuttonbox1 = gtk_vbutton_box_new ();
-  SetGtkName(_dlg->vbuttonbox1, "vbuttonbox1");
   gtk_widget_show (_dlg->vbuttonbox1);
   gtk_box_pack_start (GTK_BOX (_dlg->configbox), _dlg->vbuttonbox1, FALSE, TRUE, 5);
   gtk_button_box_set_layout (GTK_BUTTON_BOX (_dlg->vbuttonbox1), GTK_BUTTONBOX_SPREAD);
 
   _dlg->btn_new = gtk_button_new_from_stock ("gtk-new");
-  SetGtkName(_dlg->btn_new, "btn_new");
   gtk_widget_show (_dlg->btn_new);
   gtk_container_add (GTK_CONTAINER (_dlg->vbuttonbox1), _dlg->btn_new);
   GTK_WIDGET_SET_FLAGS (_dlg->btn_new, GTK_CAN_DEFAULT);
 
   _dlg->btn_remove = gtk_button_new_from_stock ("gtk-delete");
-  SetGtkName(_dlg->btn_remove, "btn_remove");
   gtk_widget_show (_dlg->btn_remove);
   gtk_container_add (GTK_CONTAINER (_dlg->vbuttonbox1), _dlg->btn_remove);
   GTK_WIDGET_SET_FLAGS (_dlg->btn_remove, GTK_CAN_DEFAULT);
  
   _dlg->btn_up = gtk_button_new_from_stock ("gtk-go-up");
-  SetGtkName(_dlg->btn_up, "btn_up");
   gtk_widget_show (_dlg->btn_up);
   gtk_container_add (GTK_CONTAINER (_dlg->vbuttonbox1), _dlg->btn_up);
   GTK_WIDGET_SET_FLAGS (_dlg->btn_up, GTK_CAN_DEFAULT);
 
   _dlg->btn_down = gtk_button_new_from_stock ("gtk-go-down");
-  SetGtkName(_dlg->btn_down, "btn_down");
   gtk_widget_show (_dlg->btn_down);
   gtk_container_add (GTK_CONTAINER (_dlg->vbuttonbox1), _dlg->btn_down);
   GTK_WIDGET_SET_FLAGS (_dlg->btn_down, GTK_CAN_DEFAULT);
