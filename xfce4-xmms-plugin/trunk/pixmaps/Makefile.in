@@ -304,12 +304,6 @@ uninstall-am: uninstall-info-am uninstall-xmmsiconDATA
 	mostlyclean-libtool pdf pdf-am ps ps-am uninstall uninstall-am \
 	uninstall-info-am uninstall-xmmsiconDATA
 
-
-all:	convert_to_png
-	echo
-
-convert_to_png:	
-	./convert.sh ${SRC}
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

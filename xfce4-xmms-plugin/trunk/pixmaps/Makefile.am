@@ -1,14 +1,5 @@
 SRC = prev play pause stop next
 
-all:	convert_to_png
-	echo
-
-
-convert_to_png:	
-	./convert.sh ${SRC}
-
-
-
 xmmsicondir=$(datadir)/xfce4/xmms-plugin
 xmmsicon_DATA=                                                          \
         xmms-plugin-prev.png                                            \
