@@ -226,9 +226,46 @@ plugin_recreate_tooltips ()
 }
 
 static void
+plugin_style_changed (void)
+{
+    GdkPixbuf *tmp, *pb;
+
+    gtk_widget_destroy (plugin_gui->show_image);
+    gtk_widget_destroy (plugin_gui->hide_image);
+
+    if (plugin_gui->orientation == HORIZONTAL) {
+        tmp = gtk_widget_render_icon (plugin_gui->ebox, GTK_STOCK_GO_UP, GTK_ICON_SIZE_MENU, NULL);
+	pb = gdk_pixbuf_scale_simple (tmp, 12, 12, GDK_INTERP_BILINEAR);
+	plugin_gui->show_image = gtk_image_new_from_pixbuf (pb);
+	g_object_unref (tmp);
+	
+        tmp = gtk_widget_render_icon (plugin_gui->ebox, GTK_STOCK_GO_DOWN, GTK_ICON_SIZE_MENU, NULL);
+	pb = gdk_pixbuf_scale_simple (tmp, 12, 12, GDK_INTERP_BILINEAR);
+	plugin_gui->hide_image = gtk_image_new_from_pixbuf (pb);
+	g_object_unref (tmp);
+    } else {
+        tmp = gtk_widget_render_icon (plugin_gui->ebox, GTK_STOCK_GO_FORWARD, GTK_ICON_SIZE_MENU, NULL);
+	pb = gdk_pixbuf_scale_simple (tmp, 12, 12, GDK_INTERP_BILINEAR);
+	plugin_gui->show_image = gtk_image_new_from_pixbuf (pb);
+	g_object_unref (tmp);
+
+        tmp = gtk_widget_render_icon (plugin_gui->ebox, GTK_STOCK_GO_BACK, GTK_ICON_SIZE_MENU, NULL);
+	pb = gdk_pixbuf_scale_simple (tmp, 12, 12, GDK_INTERP_BILINEAR);
+	plugin_gui->hide_image = gtk_image_new_from_pixbuf (pb);
+	g_object_unref (tmp);
+    } 
+    gtk_container_add (GTK_CONTAINER(plugin_gui->show_all), plugin_gui->show_image);
+    gtk_container_add (GTK_CONTAINER(plugin_gui->hide_all), plugin_gui->hide_image);
+
+    gtk_widget_show (plugin_gui->show_image);
+    gtk_widget_show (plugin_gui->hide_image);
+}
+        
+static void
 plugin_recreate_gui (void)
 {
     SignalCallback *sc;
+    GdkPixbuf *tmp, *pb;
     
     gtk_widget_destroy (plugin_gui->box);
 
@@ -243,10 +280,18 @@ plugin_recreate_gui (void)
 	    plugin_gui->box = gtk_hbox_new (0, 0);
 	    gtk_widget_set_size_request (plugin_gui->ebox, 30, -1);
 	}
-	plugin_gui->show_image = gtk_image_new_from_stock ("gtk-go-up", GTK_ICON_SIZE_MENU);
+	tmp = gtk_widget_render_icon (plugin_gui->ebox, GTK_STOCK_GO_UP, GTK_ICON_SIZE_MENU, NULL);
+	pb = gdk_pixbuf_scale_simple (tmp, 12, 12, GDK_INTERP_BILINEAR);
+	plugin_gui->show_image = gtk_image_new_from_pixbuf (pb);
+	g_object_unref (tmp);
 	gtk_widget_set_size_request (plugin_gui->show_all, 5, 5);
-	plugin_gui->hide_image = gtk_image_new_from_stock ("gtk-go-down", GTK_ICON_SIZE_MENU);
+	
+        tmp = gtk_widget_render_icon (plugin_gui->ebox, GTK_STOCK_GO_DOWN, GTK_ICON_SIZE_MENU, NULL);
+	pb = gdk_pixbuf_scale_simple (tmp, 12, 12, GDK_INTERP_BILINEAR);
+	plugin_gui->hide_image = gtk_image_new_from_pixbuf (pb);
+	g_object_unref (tmp);
 	gtk_widget_set_size_request (plugin_gui->hide_all, 5, 5);
+	
         gtk_container_add (GTK_CONTAINER(plugin_gui->box), plugin_gui->show_all);
         gtk_container_add (GTK_CONTAINER(plugin_gui->box), plugin_gui->hide_all);
     } else {
@@ -257,25 +302,34 @@ plugin_recreate_gui (void)
 	    plugin_gui->box = gtk_vbox_new (0, 0);
 	    gtk_widget_set_size_request (plugin_gui->ebox, -1, 30);
 	}
-	plugin_gui->show_image = gtk_image_new_from_stock ("gtk-go-forward", GTK_ICON_SIZE_MENU);
+	
+        tmp = gtk_widget_render_icon (plugin_gui->ebox, GTK_STOCK_GO_FORWARD, GTK_ICON_SIZE_MENU, NULL);
+	pb = gdk_pixbuf_scale_simple (tmp, 12, 12, GDK_INTERP_BILINEAR);
+	plugin_gui->show_image = gtk_image_new_from_pixbuf (pb);
+	g_object_unref (tmp);
 	gtk_widget_set_size_request (plugin_gui->show_all, 5, 5);
-	plugin_gui->hide_image = gtk_image_new_from_stock ("gtk-go-back", GTK_ICON_SIZE_MENU);
+
+        tmp = gtk_widget_render_icon (plugin_gui->ebox, GTK_STOCK_GO_BACK, GTK_ICON_SIZE_MENU, NULL);
+	pb = gdk_pixbuf_scale_simple (tmp, 12, 12, GDK_INTERP_BILINEAR);
+	plugin_gui->hide_image = gtk_image_new_from_pixbuf (pb);
+	g_object_unref (tmp);
 	gtk_widget_set_size_request (plugin_gui->hide_all, 5, 5);
+	
         gtk_container_add (GTK_CONTAINER(plugin_gui->box), plugin_gui->hide_all);
         gtk_container_add (GTK_CONTAINER(plugin_gui->box), plugin_gui->show_all);
     }		
     
-    gtk_widget_show (plugin_gui->box);
-    gtk_widget_show (plugin_gui->hide_image);
-    gtk_widget_show (plugin_gui->hide_all);
-    gtk_widget_show (plugin_gui->show_image);
-    gtk_widget_show (plugin_gui->show_all);
-
     gtk_container_add (GTK_CONTAINER(plugin_gui->show_all), plugin_gui->show_image);
     gtk_button_set_relief (GTK_BUTTON (plugin_gui->show_all), GTK_RELIEF_NONE);
     gtk_container_add (GTK_CONTAINER(plugin_gui->hide_all), plugin_gui->hide_image);
     gtk_button_set_relief (GTK_BUTTON (plugin_gui->hide_all), GTK_RELIEF_NONE);
     gtk_container_add (GTK_CONTAINER(plugin_gui->ebox), plugin_gui->box);
+
+    gtk_widget_show (plugin_gui->box);
+    gtk_widget_show (plugin_gui->hide_all);
+    gtk_widget_show (plugin_gui->show_all);
+    gtk_widget_show (plugin_gui->hide_image);
+    gtk_widget_show (plugin_gui->show_image);
 
     if (plugin_gui->swapCommands) {
         g_signal_connect (plugin_gui->show_all, "clicked", G_CALLBACK(hide_all_clicked), plugin_gui);
@@ -284,6 +338,8 @@ plugin_recreate_gui (void)
         g_signal_connect (plugin_gui->show_all, "clicked", G_CALLBACK(show_all_clicked), plugin_gui);
         g_signal_connect (plugin_gui->hide_all, "clicked", G_CALLBACK(hide_all_clicked), plugin_gui);
     }
+
+    g_signal_connect (plugin_gui->ebox, "style_set", G_CALLBACK(plugin_style_changed), NULL);
 
     plugin_recreate_tooltips ();
 
@@ -458,7 +514,7 @@ plugin_create_options (Control *ctrl, GtkContainer *con, GtkWidget *done)
     g_signal_connect (cb2, "toggled", G_CALLBACK (plugin_cb2_changed), NULL);
     gtk_widget_show (cb2);
     
-    cb3 = gtk_check_button_new_with_label ("use less space");
+    cb3 = gtk_check_button_new_with_label ("reduce size");
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (cb3), plugin_gui->lessSpace);
     g_signal_connect (cb3, "toggled", G_CALLBACK (plugin_cb3_changed), NULL);
     gtk_widget_show (cb3);
