@@ -15,7 +15,7 @@ msgstr ""
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit"
+"Content-Transfer-Encoding: 8bit\n"
 
 #: panel-plugin/showdesktop.c:619
 msgid "Enable this option, if your panel is located on top or on the right."
@@ -68,4 +68,3 @@ msgstr "Optionen"
 #: panel-plugin/showdesktop.c:671
 msgid "Show Desktop"
 msgstr "Desktop anzeigen"
-

@@ -14,12 +14,14 @@ msgstr ""
 "Language-Team: Debian l10n Spanish Team <debian-l10n-spanish@lists.debian."
 "org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: panel-plugin/showdesktop.c:619
 msgid "Enable this option, if your panel is located on top or on the right."
 msgstr ""
+"Habilitar esta opción si su panel está ubicado en la parte superior o en la "
+"derecha."
 
 #: panel-plugin/showdesktop.c:620
 msgid ""
@@ -28,34 +30,39 @@ msgid ""
 "connected to the plugin internal showdesktop feature. You can reverse it "
 "with this option."
 msgstr ""
+"Usualmente, el primer botón del ratón está conectado a la opción de "
+"showdesktop para el gestor de ventanas, si éste lo soporta, y el botón del "
+"medio está conectado a la opción interna del añadido showdesktop. Puede "
+"intercambiarlos con esta opción."
 
 #: panel-plugin/showdesktop.c:621
 msgid "If this option is enabled, the plugin consumes less space on the panel."
 msgstr ""
+"Si se habilita esta opción, el añadiido consume menos espacio en elpanel."
 
 #: panel-plugin/showdesktop.c:622
 msgid "display one button only"
-msgstr ""
+msgstr "mostrar solo un botón"
 
 #: panel-plugin/showdesktop.c:629
 msgid "swap commands"
-msgstr "intercambiar Ã³rdenes"
+msgstr "intercambiar órdenes"
 
 #: panel-plugin/showdesktop.c:634
 msgid "alternate button mode"
-msgstr ""
+msgstr "alternar modos de botón"
 
 #: panel-plugin/showdesktop.c:639
 msgid "reduce size"
-msgstr "reducir tamaÃ±o"
+msgstr "reducir tamaño"
 
 #: panel-plugin/showdesktop.c:644
 msgid "one toggle button"
-msgstr ""
+msgstr "un botón de intercambio"
 
 #: panel-plugin/showdesktop.c:650
 msgid "Options"
-msgstr ""
+msgstr "Opciones"
 
 #: panel-plugin/showdesktop.c:671
 msgid "Show Desktop"
@@ -65,15 +72,15 @@ msgstr "Mostrar escritorio"
 #~ "Button 1: show all windows\n"
 #~ "Button 2: show previous window group"
 #~ msgstr ""
-#~ "BotÃ³n 1: mostrar todas las ventanas\n"
-#~ "BotÃ³n 2: mostrar el grupo de ventanas anterior"
+#~ "Botón 1: mostrar todas las ventanas\n"
+#~ "Botón 2: mostrar el grupo de ventanas anterior"
 
 #~ msgid ""
 #~ "Button 1: hide all windows\n"
 #~ "Button 2: hide previous window group"
 #~ msgstr ""
-#~ "BotÃ³n 1: ocultar todas las ventanas\n"
-#~ "BotÃ³n 2: ocultar el grupo de ventanas anterior"
+#~ "Botón 1: ocultar todas las ventanas\n"
+#~ "Botón 2: ocultar el grupo de ventanas anterior"
 
 #~ msgid "show tooltips"
 #~ msgstr "mostrar texto contextual"
