@@ -460,7 +460,7 @@ static gboolean find_type(GtkTreeModel * treemodel, GtkTreePath * treepath, GtkT
 	    return FALSE;
     }
     group = g_strdup(name);
-    group = strtok(group,"/");
+    *(strchr(group,'/')) = 0;   /* group = strtok(group,"/");*/
     gtk_tree_model_get(treemodel, iter, GROUP_COLUMN, &g, -1);
     gtk_tree_model_get(treemodel, iter, NAME_COLUMN, &n, -1);
     if (g && strcmp(g,group)==0){
@@ -558,7 +558,7 @@ static gboolean create_icon_tree(const gchar *in_theme){
 			gtk_tree_model_foreach((GtkTreeModel *)store, find_type,id);
 			if (!group_found){
 				gchar *n,*g=strdup(id);
-				g=strtok(g,"/");
+				*(strchr(g,'/')) = 0; /*g=strtok(g,"/");*/
 				n=g_strconcat(g,"/default",NULL);
 		  		gtk_tree_store_insert (store, &iter, NULL,0);
 		  		gtk_tree_store_set((GtkTreeStore *) store, &iter, GROUP_COLUMN, g,-1);
