@@ -55,7 +55,6 @@
 #define ICONSIZEMEDIUM 15
 #define ICONSIZELARGE 20
 
-
 // }}}
 
 // struct {{{
@@ -106,7 +105,6 @@ wm_has_support(Atom supportedAtom, Display *dsp)
 	    for (n = 0; n < n_atoms; n++) {
 	        if(((long *)atoms)[n] == supportedAtom) {
                     isSupported = TRUE;
-		    g_message ("True");
 	            break;
 	        }
             }
@@ -161,7 +159,7 @@ do_window_actions (gboolean hide_all, gpointer data)
 	                netk_window_minimize (window);
 		    }
 	        } else {
-		    if (netk_window_is_minimized) {
+		    if (netk_window_is_minimized (window)) {
 	                netk_window_unminimize (window);
 			active_window=window;
 	            }
@@ -516,61 +514,28 @@ plugin_set_size (Control *ctrl, int size)
 static void
 plugin_read_config (Control *ctrl, xmlNodePtr parent)
 {   
-    xmlChar *swap;
-    xmlChar *oneb;
-    xmlChar *space;
-    xmlChar *alternate;
+    xmlChar *value;
     gui *plugin = ctrl->data;
     
-    oneb = xmlGetProp (parent, (const xmlChar *) "oneButton");
-    
-    if (oneb) {
-        if (!strcmp (oneb, "0")) {
-            plugin->oneButton = TRUE;
-        }
-    } else {
-            plugin->oneButton = FALSE;
+    if (value = xmlGetProp (parent, (const xmlChar *) "oneButton")){
+        plugin->oneButton = atoi(value);
+        g_free (value);
     }
  
-    // to be backward compatible 
-    if (xmlHasProp (parent, (const xmlChar *) "swapPixmaps") != NULL) {
-        swap = xmlGetProp (parent, (const xmlChar *) "swapPixmaps");
-    } else {
-        swap = xmlGetProp (parent, (const xmlChar *) "swapCommands");
+    if (value = xmlGetProp (parent, (const xmlChar *) "swapCommands")) {
+        plugin->swapCommands = atoi(value);
+        g_free (value);
     }
 
-    if (swap) {
-        if (!strcmp (swap, "0")) {
-            plugin->swapCommands = TRUE;
-        }
-    } else {
-            plugin->swapCommands = FALSE;
-    }
-
-    space = xmlGetProp (parent, (const xmlChar *) "lessSpace");
-    
-    if (space) {
-        if (!strcmp (space, "0")) {
-            plugin->lessSpace = TRUE;
-        }
-    } else {
-            plugin->lessSpace = FALSE;
+    if (value = xmlGetProp (parent, (const xmlChar *) "lessSpace")) {
+        plugin->lessSpace = atoi(value);
+        g_free (value);
     }
     
-    alternate = xmlGetProp (parent, (const xmlChar *) "alternate");
-    
-    if (alternate) {
-        if (!strcmp (alternate, "0")) {
-            plugin->alternate = TRUE;
-        }
-    } else {
-            plugin->alternate = FALSE;
+    if (value = xmlGetProp (parent, (const xmlChar *) "alternate")) {
+        plugin->alternate = atoi (value);
+        g_free (value);
     }
-
-    g_free (swap);
-    g_free (alternate);
-    g_free (space);
-    g_free (oneb);
     plugin_recreate_gui (plugin);
 }
 
@@ -578,39 +543,19 @@ static void
 plugin_write_config (Control *ctrl, xmlNodePtr parent)
 {   
     gui *plugin = ctrl->data;
-    char swap[2];
-    char alternate[2];
-    char size[2];
-    char oneb[2];
+    char value[2];
     
-    if (plugin->swapCommands) {
-        g_snprintf (swap, 2, "%i", 0);
-    } else {
-        g_snprintf (swap, 2, "%i", 1);
-    }
-    
-    if (plugin->alternate) {
-        g_snprintf (alternate, 2, "%i", 0);
-    } else {
-        g_snprintf (alternate, 2, "%i", 1);
-    }
-    
-    if (plugin->lessSpace) {
-        g_snprintf (size, 2, "%i", 0);
-    } else {
-        g_snprintf (size, 2, "%i", 1);
-    }
+    g_snprintf (value, 2, "%d", plugin->swapCommands);
+    xmlSetProp (parent, (const xmlChar *) "swapCommands", value);
 
-    if (plugin->oneButton) {
-        g_snprintf (oneb, 2, "%i", 0);
-    } else {
-        g_snprintf (oneb, 2, "%i", 1);
-    }
-    
-    xmlSetProp (parent, (const xmlChar *) "swapCommands", swap);
-    xmlSetProp (parent, (const xmlChar *) "alternate", alternate);
-    xmlSetProp (parent, (const xmlChar *) "lessSpace", size);
-    xmlSetProp (parent, (const xmlChar *) "oneButton", oneb);
+    g_snprintf (value, 2, "%d", plugin->alternate);
+    xmlSetProp (parent, (const xmlChar *) "alternate", value);
+
+    g_snprintf (value, 2, "%d", plugin->lessSpace);
+    xmlSetProp (parent, (const xmlChar *) "lessSpace", value);
+
+    g_snprintf (value, 2, "%d", plugin->oneButton);
+    xmlSetProp (parent, (const xmlChar *) "oneButton", value);
 }
 
 static void
@@ -668,40 +613,41 @@ plugin_create_options (Control *ctrl, GtkContainer *con, GtkWidget *done)
 {
     gui *plugin = ctrl->data;
     GtkWidget *vbox, *optionbox, *cb1, *cb2, *cb3, *cb4,*frame;
+    xfce_textdomain(GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR, "UTF-8");
     
     gchar *tips[] = {
-        N_("Enable this options, if your panel is located on top or on the right."),
+        N_("Enable this option, if your panel is located on top or on the right."),
         N_("Normally, the first mouse button is connected to the windowmanager showdesktop feature, if the WM supports it, and the middle mouse button is connected to the plugin internal showdesktop feature. You can reverse it with this option."),
-        N_("If this options is enabled, the plugin consumes less space on the panel."),
-        N_("one button only"),
+        N_("If this option is enabled, the plugin consumes less space on the panel."),
+        N_("display one button only"),
     };
 
     optiontooltips = gtk_tooltips_new ();
 
     vbox = gtk_vbox_new (False, 5);
     
-    cb1 = gtk_check_button_new_with_label N_("swap commands");
-    gtk_tooltips_set_tip (optiontooltips, cb1, tips[0], NULL);
+    cb1 = gtk_check_button_new_with_label (_("swap commands"));
+    gtk_tooltips_set_tip (optiontooltips, cb1, _(tips[0]), NULL);
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (cb1), plugin->swapCommands);
     g_signal_connect (cb1, "toggled", G_CALLBACK (plugin_cb1_changed), plugin);
     
-    cb2 = gtk_check_button_new_with_label N_("alternate button mode");
-    gtk_tooltips_set_tip (optiontooltips, cb2, tips[1], NULL);
+    cb2 = gtk_check_button_new_with_label (_("alternate button mode"));
+    gtk_tooltips_set_tip (optiontooltips, cb2, _(tips[1]), NULL);
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (cb2), plugin->alternate);
     g_signal_connect (cb2, "toggled", G_CALLBACK (plugin_cb2_changed), plugin);
     
-    cb3 = gtk_check_button_new_with_label N_("reduce size");
-    gtk_tooltips_set_tip (optiontooltips, cb3, tips[2], NULL);
+    cb3 = gtk_check_button_new_with_label (_("reduce size"));
+    gtk_tooltips_set_tip (optiontooltips, cb3, _(tips[2]), NULL);
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (cb3), plugin->lessSpace);
     g_signal_connect (cb3, "toggled", G_CALLBACK (plugin_cb3_changed), plugin);
 
-    cb4 = gtk_check_button_new_with_label ("one toggle button");
-    gtk_tooltips_set_tip (optiontooltips, cb4, tips[3], NULL);
+    cb4 = gtk_check_button_new_with_label (_("one toggle button"));
+    gtk_tooltips_set_tip (optiontooltips, cb4, _(tips[3]), NULL);
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (cb4), plugin->oneButton);
     g_signal_connect (cb4, "toggled", G_CALLBACK (plugin_cb4_changed), plugin);
 
     optionbox = gtk_vbox_new (False, 1);
-    frame = gtk_frame_new N_("Options");
+    frame = gtk_frame_new (_("Options"));
  
     gtk_container_add (con, vbox);
     gtk_container_add (GTK_CONTAINER(optionbox), cb1);
@@ -722,7 +668,7 @@ xfce_control_class_init(ControlClass *cc)
 
     /* these are required */
     cc->name		= "showdesktop";
-    cc->caption		= N_("Show Desktop");
+    cc->caption		= _("Show Desktop");
 
     cc->create_control	= (CreateControlFunc)create_plugin_control;
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xfce4-showdesktop-plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-07-24 13:59+0200\n"
+"POT-Creation-Date: 2004-10-10 17:20+0200\n"
 "PO-Revision-Date: 2003-12-15 23:27+0000\n"
 "Last-Translator:  Andrzej Augustynowicz <andree@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -15,11 +15,11 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-2\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: panel-plugin/showdesktop.c:673
-msgid "Enable this options, if your panel is located on top or on the right."
+#: panel-plugin/showdesktop.c:619
+msgid "Enable this option, if your panel is located on top or on the right."
 msgstr ""
 
-#: panel-plugin/showdesktop.c:674
+#: panel-plugin/showdesktop.c:620
 msgid ""
 "Normally, the first mouse button is connected to the windowmanager "
 "showdesktop feature, if the WM supports it, and the middle mouse button is "
@@ -27,32 +27,35 @@ msgid ""
 "with this option."
 msgstr ""
 
-#: panel-plugin/showdesktop.c:675
-msgid ""
-"If this options is enabled, the plugin consumes less space on the panel."
+#: panel-plugin/showdesktop.c:621
+msgid "If this option is enabled, the plugin consumes less space on the panel."
 msgstr ""
 
-#: panel-plugin/showdesktop.c:676
-msgid "one button only"
+#: panel-plugin/showdesktop.c:622
+msgid "display one button only"
 msgstr ""
 
-#: panel-plugin/showdesktop.c:683
+#: panel-plugin/showdesktop.c:629
 msgid "swap commands"
 msgstr "zamieñ polecenia"
 
-#: panel-plugin/showdesktop.c:688
+#: panel-plugin/showdesktop.c:634
 msgid "alternate button mode"
 msgstr ""
 
-#: panel-plugin/showdesktop.c:693
+#: panel-plugin/showdesktop.c:639
 msgid "reduce size"
 msgstr "zredukuj rozmiar"
 
-#: panel-plugin/showdesktop.c:704
+#: panel-plugin/showdesktop.c:644
+msgid "one toggle button"
+msgstr ""
+
+#: panel-plugin/showdesktop.c:650
 msgid "Options"
 msgstr ""
 
-#: panel-plugin/showdesktop.c:725
+#: panel-plugin/showdesktop.c:671
 msgid "Show Desktop"
 msgstr "Poka¿ Pulpit"
 

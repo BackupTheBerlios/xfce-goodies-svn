@@ -9,7 +9,7 @@ AC_INIT([configure])
 
 AM_CONFIG_HEADER([config.h])
 
-AM_INIT_AUTOMAKE([xfce4-showdesktop-plugin], [0.3.0])
+AM_INIT_AUTOMAKE([xfce4-showdesktop-plugin], [0.4.0])
 
 AM_MAINTAINER_MODE
 
