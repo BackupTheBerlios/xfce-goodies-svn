@@ -9,7 +9,7 @@ AC_INIT([panel-plugin/xmms_plugin.c])
 
 AM_CONFIG_HEADER([config.h])
 
-AM_INIT_AUTOMAKE([xfce4-xmms-plugin], [0.0.9])
+AM_INIT_AUTOMAKE([xfce4-xmms-plugin], [0.1.1])
 
 AM_MAINTAINER_MODE
 
