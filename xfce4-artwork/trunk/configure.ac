@@ -9,7 +9,7 @@ AC_INIT([configure])
 
 AM_CONFIG_HEADER([config.h])
 
-AM_INIT_AUTOMAKE([xfce4-artwork], [0.0.3])
+AM_INIT_AUTOMAKE([xfce4-artwork], [0.0.4])
 
 AM_MAINTAINER_MODE
 

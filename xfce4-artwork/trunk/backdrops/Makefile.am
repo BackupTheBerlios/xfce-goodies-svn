@@ -5,7 +5,8 @@ backdropsdir = $(datadir)/xfce4/backdrops
 backdrops_DATA =							\
 	xfce-evil.jpg							\
 	xfce-gradiented.png						\
-	xfce-transparent.png
+	xfce-transparent.png						\
+	xfce-rio.png
 
 EXTRA_DIST = $(backdrops_DATA)
 
