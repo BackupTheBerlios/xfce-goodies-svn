@@ -1,0 +1,9 @@
+2003-07-31 22:48 papermoon
+
+        * panel-plugin/showdesktop.c: Some minor changes and a new option
+	to swap the button pixmaps for panels located on the top or right
+	on the screen.
+
+2003-07-30 16:12 papermoon
+
+        * initial release
