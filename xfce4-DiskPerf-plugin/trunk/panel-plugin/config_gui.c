@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003 RogerSeguin <roger_seguin@msn.com>
+ * Copyright (c) 2003, 2004 Roger Seguin <roger_seguin@msn.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -23,13 +23,11 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 static char     _config_gui_id[] =
-    "$Id: config_gui.c,v 1.2 2003/11/04 10:26:13 rogerms Exp $";
+    "$Id: config_gui.c,v 1.3 2004/08/25 10:08:40 rogerms Exp $";
 
 
 #include "config_gui.h"
-
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -45,13 +43,26 @@ static char     _config_gui_id[] =
 
 #define COPYVAL(var, field)	((var)->field = field)
 
-	/* GUI initially created using glade-2 */
+
+	/**** GUI initially created using glade-2 ****/
+
+	/* Use the gtk_button_new_with_mnemonic() function for text-based
+	   push buttons */
+	/* Use "#define gtk_button_new_with_mnemonic(x) gtk_button_new()"
+	   for color-filled buttons */
+
+#define gtk_button_new_with_mnemonic(x) gtk_button_new()
+
+#define GLADE_HOOKUP_OBJECT(component,widget,name) \
+  g_object_set_data_full (G_OBJECT (component), name, \
+    gtk_widget_ref (widget), (GDestroyNotify) gtk_widget_unref)
+
+#define GLADE_HOOKUP_OBJECT_NO_REF(component,widget,name) \
+  g_object_set_data (G_OBJECT (component), name, widget)
+
 #if 0
 GtkWidget      *create_OptionDialog (void)
 #else
-
-#define gtk_button_new_with_mnemonic(x)	gtk_button_new ()
-
 int CreateConfigGUI (GtkWidget * OptionDialog, struct gui_t *p_poGUI)
 #endif
 {
@@ -59,8 +70,12 @@ int CreateConfigGUI (GtkWidget * OptionDialog, struct gui_t *p_poGUI)
     GtkWidget      *OptionDialog;
 #endif
     GtkWidget      *vbox1;
+    GtkWidget      *wPB_About;
+    GtkWidget      *alignment2;
+    GtkWidget      *hbox3;
+    GtkWidget      *image1;
     GtkWidget      *label10;
-    GtkWidget      *hseparator6;
+    GtkWidget      *hseparator9;
     GtkWidget      *table1;
     GtkWidget      *label1;
     GtkWidget      *wTF_Device;
@@ -108,13 +123,33 @@ int CreateConfigGUI (GtkWidget * OptionDialog, struct gui_t *p_poGUI)
     gtk_widget_show (vbox1);
     gtk_container_add (GTK_CONTAINER (OptionDialog), vbox1);
 
-    label10 = gtk_label_new (_("Disk Performance"));
-    gtk_widget_show (label10);
-    gtk_box_pack_start (GTK_BOX (vbox1), label10, FALSE, FALSE, 0);
+    wPB_About = gtk_button_new ();
+    gtk_widget_show (wPB_About);
+    gtk_box_pack_start (GTK_BOX (vbox1), wPB_About, FALSE, FALSE, 0);
+    GTK_WIDGET_UNSET_FLAGS (wPB_About, GTK_CAN_FOCUS);
+    gtk_tooltips_set_tip (tooltips, wPB_About, _("About..."), NULL);
+    gtk_button_set_relief (GTK_BUTTON (wPB_About), GTK_RELIEF_NONE);
 
-    hseparator6 = gtk_hseparator_new ();
-    gtk_widget_show (hseparator6);
-    gtk_box_pack_start (GTK_BOX (vbox1), hseparator6, TRUE, TRUE, 0);
+    alignment2 = gtk_alignment_new (0.5, 0.5, 0, 0);
+    gtk_widget_show (alignment2);
+    gtk_container_add (GTK_CONTAINER (wPB_About), alignment2);
+
+    hbox3 = gtk_hbox_new (FALSE, 2);
+    gtk_widget_show (hbox3);
+    gtk_container_add (GTK_CONTAINER (alignment2), hbox3);
+
+    image1 = gtk_image_new_from_stock ("gtk-cdrom", GTK_ICON_SIZE_BUTTON);
+    gtk_widget_show (image1);
+    gtk_box_pack_start (GTK_BOX (hbox3), image1, FALSE, FALSE, 0);
+
+    label10 = gtk_label_new_with_mnemonic (_("Disk Performance"));
+    gtk_widget_show (label10);
+    gtk_box_pack_start (GTK_BOX (hbox3), label10, FALSE, FALSE, 0);
+    gtk_label_set_justify (GTK_LABEL (label10), GTK_JUSTIFY_LEFT);
+
+    hseparator9 = gtk_hseparator_new ();
+    gtk_widget_show (hseparator9);
+    gtk_box_pack_start (GTK_BOX (vbox1), hseparator9, TRUE, TRUE, 0);
 
     table1 = gtk_table_new (3, 2, FALSE);
     gtk_widget_show (table1);
@@ -344,51 +379,8 @@ int CreateConfigGUI (GtkWidget * OptionDialog, struct gui_t *p_poGUI)
     gtk_tooltips_set_tip (tooltips, wPB_Wcolor, _("Press to change color"),
 			  NULL);
 
-#if 0
-    /* Store pointers to all widgets, for use by lookup_widget(). */
-    GLADE_HOOKUP_OBJECT_NO_REF (OptionDialog, OptionDialog,
-				"OptionDialog");
-    GLADE_HOOKUP_OBJECT (OptionDialog, vbox1, "vbox1");
-    GLADE_HOOKUP_OBJECT (OptionDialog, label10, "label10");
-    GLADE_HOOKUP_OBJECT (OptionDialog, hseparator6, "hseparator6");
-    GLADE_HOOKUP_OBJECT (OptionDialog, table1, "table1");
-    GLADE_HOOKUP_OBJECT (OptionDialog, label1, "label1");
-    GLADE_HOOKUP_OBJECT (OptionDialog, wTF_Device, "wTF_Device");
-    GLADE_HOOKUP_OBJECT (OptionDialog, eventbox1, "eventbox1");
-    GLADE_HOOKUP_OBJECT (OptionDialog, alignment1, "alignment1");
-    GLADE_HOOKUP_OBJECT (OptionDialog, wSc_Period, "wSc_Period");
-    GLADE_HOOKUP_OBJECT (OptionDialog, label2, "label2");
-    GLADE_HOOKUP_OBJECT (OptionDialog, wTB_Title, "wTB_Title");
-    GLADE_HOOKUP_OBJECT (OptionDialog, wTF_Title, "wTF_Title");
-    GLADE_HOOKUP_OBJECT (OptionDialog, hbox2, "hbox2");
-    GLADE_HOOKUP_OBJECT (OptionDialog, label9, "label9");
-    GLADE_HOOKUP_OBJECT (OptionDialog, wRB_IO, "wRB_IO");
-    GLADE_HOOKUP_OBJECT (OptionDialog, wRB_BusyTime, "wRB_BusyTime");
-    GLADE_HOOKUP_OBJECT (OptionDialog, wTB_RWcombined, "wTB_RWcombined");
-    GLADE_HOOKUP_OBJECT (OptionDialog, wHBox_MaxIO, "wHBox_MaxIO");
-    GLADE_HOOKUP_OBJECT (OptionDialog, label3, "label3");
-    GLADE_HOOKUP_OBJECT (OptionDialog, wTF_MaxXfer, "wTF_MaxXfer");
-    GLADE_HOOKUP_OBJECT (OptionDialog, hseparator3, "hseparator3");
-    GLADE_HOOKUP_OBJECT (OptionDialog, wTa_SingleBar, "wTa_SingleBar");
-    GLADE_HOOKUP_OBJECT (OptionDialog, label7, "label7");
-    GLADE_HOOKUP_OBJECT (OptionDialog, wPB_RWcolor, "wPB_RWcolor");
-    GLADE_HOOKUP_OBJECT (OptionDialog, wTa_DualBars, "wTa_DualBars");
-    GLADE_HOOKUP_OBJECT (OptionDialog, label5, "label5");
-    GLADE_HOOKUP_OBJECT (OptionDialog, label6, "label6");
-    GLADE_HOOKUP_OBJECT (OptionDialog, label8, "label8");
-    GLADE_HOOKUP_OBJECT (OptionDialog, hbox1, "hbox1");
-    GLADE_HOOKUP_OBJECT (OptionDialog, wRB_ReadWriteOrder,
-			 "wRB_ReadWriteOrder");
-    GLADE_HOOKUP_OBJECT (OptionDialog, wRB_WriteReadOrder,
-			 "wRB_WriteReadOrder");
-    GLADE_HOOKUP_OBJECT (OptionDialog, wPB_Rcolor, "wPB_Rcolor");
-    GLADE_HOOKUP_OBJECT (OptionDialog, wPB_Wcolor, "wPB_Wcolor");
-    GLADE_HOOKUP_OBJECT_NO_REF (OptionDialog, tooltips, "tooltips");
-
-    return OptionDialog;
-
-#else
     if (p_poGUI) {
+	COPYVAL (p_poGUI, wPB_About);
 	COPYVAL (p_poGUI, wTF_Device);
 	COPYVAL (p_poGUI, wSc_Period);
 	COPYVAL (p_poGUI, wTB_Title);
@@ -407,12 +399,17 @@ int CreateConfigGUI (GtkWidget * OptionDialog, struct gui_t *p_poGUI)
 	COPYVAL (p_poGUI, wPB_Wcolor);
     }
     return (0);
-#endif
 }				/* CreateConfigGUI() */
 
 
 /*
 $Log: config_gui.c,v $
+Revision 1.3  2004/08/25 10:08:40  rogerms
+DiskPerf 1.5
+
+Revision 1.6  2004/08/25 08:50:18  RogerSeguin
+Added About... dialog box
+
 Revision 1.2  2003/11/04 10:26:13  rogerms
 DiskPerf 1.3
 

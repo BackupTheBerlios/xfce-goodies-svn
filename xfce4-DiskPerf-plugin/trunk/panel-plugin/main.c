@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003 RogerSeguin <roger_seguin@msn.com>
+ * Copyright (c) 2003, 2004 Roger Seguin <roger_seguin@msn.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -24,7 +24,7 @@
  */
 
 static char     _main_id[] =
-    "$Id: main.c,v 1.6 2003/11/11 12:40:34 rogerms Exp $";
+    "$Id: main.c,v 1.7 2004/08/25 10:08:40 rogerms Exp $";
 
 
 #define DEBUG	0
@@ -282,7 +282,9 @@ static gboolean SetTimer (void *p_pvPlugin)
 	g_source_remove (poPlugin->iTimerId);
 	poPlugin->iTimerId = 0;
     }
+    XFCE_PANEL_LOCK ();
     DisplayPerf (poPlugin);
+    XFCE_PANEL_UNLOCK ();
     poPlugin->iTimerId = g_timeout_add (poConf->iPeriod_ms,
 					(GtkFunction) SetTimer, poPlugin);
     return (1);
@@ -921,6 +923,20 @@ static int CheckStatsAvailability ()
 
 	/**************************************************************/
 
+static void About (Widget_t w, void *unused)
+	/* Called back when the About button in clicked */
+{
+    xfce_info ("%s %s - Disk Performance Monitor\n"
+	       "Display instantaneous disk I/O transfer rates and busy times "
+	       "on Linux and NetBSD systems\n\n"
+	       "(c) 2003, 2004 Roger Seguin <roger_seguin@msn.com>\n"
+	       "NetBSD statistics collection: (c) 2003 Benedikt Meurer\n"
+	       "\t<benedikt.meurer@unix-ag.uni-siegen.de>",
+	       PACKAGE, VERSION);
+}				/* About() */
+
+	/**************************************************************/
+
 static void plugin_create_options (Control * p_poCtrl,
 				   GtkContainer * p_pxContainer,
 				   Widget_t p_wDone)
@@ -1027,6 +1043,11 @@ static void plugin_create_options (Control * p_poCtrl,
 
     g_signal_connect (GTK_WIDGET (p_wDone), "clicked",
 		      G_CALLBACK (UpdateConf), poPlugin);
+		      
+    g_signal_connect (GTK_WIDGET (poGUI->wPB_About), "clicked",
+		      G_CALLBACK (About), 0);
+		      
+		      
 
 }				/* plugin_create_options() */
 
@@ -1112,6 +1133,12 @@ XFCE_PLUGIN_CHECK_INIT
 	/**************************************************************/
 /*
 $Log: main.c,v $
+Revision 1.7  2004/08/25 10:08:40  rogerms
+DiskPerf 1.5
+
+Revision 1.14  2004/08/25 08:51:02  RogerSeguin
+MT support and About... dialog box added
+
 Revision 1.6  2003/11/11 12:40:34  rogerms
 Release 1.4
 

@@ -2,14 +2,14 @@ dnl configure.ac
 dnl
 dnl xfce4-diskperf-plugin - Disk performance plugin for xfce4-panel
 dnl
-dnl 2003 RogerSeguin <roger_seguin@msn.com>
+dnl 2003, 2004 Roger Seguin <roger_seguin@msn.com>
 dnl
 
 AC_INIT([panel-plugin/main.c])
 
 AM_CONFIG_HEADER([config.h])
 
-AM_INIT_AUTOMAKE([xfce4-diskperf-plugin], [0.1.0])
+AM_INIT_AUTOMAKE([xfce4-diskperf-plugin], [1.5])
 
 AM_MAINTAINER_MODE
 
@@ -27,7 +27,7 @@ dnl Check for standard header files
 AC_HEADER_STDC
 
 dnl configure the panel plugin
-XFCE_PANEL_PLUGIN([XFCE4_PANEL], [0.10.1])
+XFCE_PANEL_PLUGIN([XFCE4_PANEL], [4.0.0])
 
 dnl Check for debugging support
 BM_DEBUG_SUPPORT

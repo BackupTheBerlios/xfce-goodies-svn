@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003 RogerSeguin <roger_seguin@msn.com>
+ * Copyright (c) 2003, 2004 Roger Seguin <roger_seguin@msn.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -24,7 +24,8 @@
  */
 #ifndef _config_gui_h
 #define _config_gui_h
-static char     _config_gui_h_id[] = "$Id: config_gui.h,v 1.2 2003/11/04 10:26:13 rogerms Exp $";
+static char     _config_gui_h_id[] =
+    "$Id: config_gui.h,v 1.3 2004/08/25 10:08:40 rogerms Exp $";
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -40,6 +41,7 @@ static char     _config_gui_h_id[] = "$Id: config_gui.h,v 1.2 2003/11/04 10:26:1
 
 typedef struct gui_t {
     /* Configuration GUI widgets */
+    GtkWidget      *wPB_About;
     GtkWidget      *wTF_Device;
     GtkWidget      *wTB_Title;
     GtkWidget      *wTF_Title;
@@ -73,6 +75,12 @@ extern          "C" {
 #endif
 /*
 $Log: config_gui.h,v $
+Revision 1.3  2004/08/25 10:08:40  rogerms
+DiskPerf 1.5
+
+Revision 1.5  2004/08/25 08:50:08  RogerSeguin
+Added About... dialog box
+
 Revision 1.2  2003/11/04 10:26:13  rogerms
 DiskPerf 1.3
 
