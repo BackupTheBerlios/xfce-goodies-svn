@@ -59,7 +59,7 @@ AC_SUBST([PLAYER_CFLAGS])
 AC_SUBST([PLAYER_LIBS])
 
 dnl Check for i18n support
-BM_I18N([xfce4-xmms-plugin], [de ko])
+BM_I18N([xfce4-xmms-plugin], [de ko lt])
 
 dnl Check for debugging support
 BM_DEBUG_SUPPORT
