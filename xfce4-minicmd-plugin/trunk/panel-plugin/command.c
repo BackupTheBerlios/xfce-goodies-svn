@@ -170,6 +170,13 @@ GList *get_history(void)
 
     line[DEFAULT_LENGTH - 1] = '\0';
 
+    /* Add a single blank line at the begining */
+    current = g_new0(XFCommand, 1);
+    current->command = g_strdup("");
+    current->in_terminal = FALSE;
+    cbtemp = g_list_append(cbtemp, current);
+    
+
     /* no more than MAXHISTORY history items */
     for (i = 0; i < MAXHISTORY && fgets(line, DEFAULT_LENGTH - 1, fp); i++) {
         if ((line[0] == '\0') || (line[0] == '\n'))
@@ -232,8 +239,32 @@ void put_history(const char *newest, gboolean in_terminal, GList * cb)
 
 static void free_hitem(XFCommand * hitem)
 {
+    DBG("Freeing command line");
     g_free(hitem->command);
+
+    DBG("Freeing Data Structure");
     g_free(hitem);
+}
+
+static void free_history(GList *history)
+{
+    GList *tmp;
+    XFCommand *hitem;
+
+    DBG("");
+
+    tmp = History; 
+    while(tmp) {
+        hitem = (XFCommand *)tmp->data;
+        DBG("Freeing Item: %s", hitem->command);
+        free_hitem(hitem);
+        DBG("Freed Item");
+        tmp->data = NULL;
+        tmp = g_list_next(tmp);
+    }
+    DBG("Freeing List");
+    g_list_free(history);
+    return;
 }
 
 static void scroll_history(gboolean forward, gint count) 
@@ -292,6 +323,7 @@ static gboolean entry_keypress_cb(GtkWidget *entry, GdkEventKey *event, gpointer
 
             if (do_run(cmd, terminal)) {
                 put_history(cmd, terminal, History);      /* save this cmdline to history       */
+                free_history(History);                    /* Delete current history             */
                 History  = get_history();                 /* reload modified history            */
                 Curr     = NULL;                          /* reset current history item pointer */
                 terminal = FALSE;                         /* Reset run in term flag             */
