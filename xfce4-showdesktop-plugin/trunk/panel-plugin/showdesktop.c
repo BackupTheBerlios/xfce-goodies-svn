@@ -78,8 +78,12 @@ typedef struct
     gboolean    swapCommands;
     gboolean    showTooltips;
     gboolean    lessSpace;
+    gboolean    unhide;
+    GList       *windows;
     SignalCallback *cb;
 } gui;
+
+static GtkTooltips *tooltips = NULL;
 
 // }}}
 
@@ -91,8 +95,9 @@ typedef struct
 	 */
 
 int
-do_window_actions (int type)
+do_window_actions (int type, gpointer data)
 {
+    gui *p = data;
     NetkScreen *screen;
     NetkWorkspace *workspace;
     NetkWindow *window;
@@ -101,26 +106,45 @@ do_window_actions (int type)
     
     screen = netk_screen_get (0);
     workspace = netk_screen_get_active_workspace (screen);
-    w = netk_screen_get_windows_stacked (screen);
-   
+    if (type == 2 || type == 3) {
+        w = p->windows;
+    } else {
+        w = netk_screen_get_windows_stacked (screen);
+    }
+
+    p->windows = NULL;
+
     while (w != NULL) {
         window = w->data;
+	if (!NETK_IS_WINDOW(window)) {
+ 	    w = w->next;
+	    continue;
+	}
         if (!netk_window_is_sticky (window)) {
             if (workspace == netk_window_get_workspace (window)) {
 		active_window = window;
-                if (type == 0) {
-	            netk_window_minimize (window);
+                if (type == 0 || type == 2) {
+		    if (!netk_window_is_minimized (window)) {
+	                netk_window_minimize (window);
+		        p->windows = g_list_append (p->windows, window);
+		    }
 	        } else {
 		    if (netk_window_is_minimized (window)) {
 	                netk_window_unminimize (window);
+		        p->windows = g_list_append (p->windows, window);
 	            }
 	        }
 	    }
 	 }
  	 w = w->next;   
     }
-    if (active_window != NULL && type == 1) {
+    if (active_window != NULL && (type == 1 || type == 3)) {
         netk_window_activate (active_window);
+    }
+    if (type == 0) {
+        p->unhide = FALSE;
+    } else if (type == 1){
+        p->unhide = TRUE;
     }
 }
 
@@ -135,50 +159,58 @@ track_callback (const char *signal, GCallback callback, gpointer data, gui *plug
 }
 
 static void
-show_all_clicked (GtkWidget *button, gpointer data)
+show_all_clicked (GtkWidget *button, GdkEventButton *ev, gpointer data)
 {
-    do_window_actions(1);
+    if (ev->button == 1) {
+        do_window_actions(1, data);
+    } else if (ev->button == 2) {
+        do_window_actions(3, data);
+    } else if (ev->button == 3) {
+	g_signal_emit_by_name (button, "clicked");
+    }
 }
-
 
 static void
-hide_all_clicked (GtkWidget *button, gpointer data)
+hide_all_clicked (GtkWidget *button, GdkEventButton *ev, gpointer data)
 {
-    do_window_actions(0);
+    if (ev->button == 1) {
+        do_window_actions(0, data);
+    } else if (ev->button == 2) {
+        do_window_actions(2, data);
+    } else if (ev->button == 3) {
+	g_signal_emit_by_name (button, "clicked");
+    }
 }
 
-gui *plugin_gui;
-static GtkTooltips *tooltips = NULL;
-
 static gui *
-gui_new (void)
+gui_new ()
 {
-    plugin_gui = g_new(gui, 1);
-    plugin_gui->swapCommands = FALSE;
-    plugin_gui->showTooltips = TRUE;
-    plugin_gui->lessSpace = FALSE;
-    plugin_gui->IconSize = 8;
-    plugin_gui->ebox = gtk_event_box_new();
-    gtk_widget_show (plugin_gui->ebox);
+    gui *plugin;
+    plugin = g_new(gui, 1);
+    plugin->swapCommands = FALSE;
+    plugin->showTooltips = TRUE;
+    plugin->lessSpace = FALSE;
+    plugin->IconSize = 8;
+    plugin->ebox = gtk_event_box_new();
+    plugin->windows = NULL;
+    gtk_widget_show (plugin->ebox);
  
-    plugin_gui->box = gtk_hbox_new(FALSE, 0);
+    plugin->box = gtk_hbox_new(FALSE, 0);
 
-    gtk_widget_show (plugin_gui->box);
+    gtk_widget_show (plugin->box);
         
-    plugin_gui->show_all = xfce_iconbutton_new ();
-    plugin_gui->hide_all = xfce_iconbutton_new ();
+    plugin->show_all = xfce_iconbutton_new ();
+    plugin->hide_all = xfce_iconbutton_new ();
 
-    gtk_container_add (GTK_CONTAINER(plugin_gui->ebox), plugin_gui->box);
+    gtk_container_add (GTK_CONTAINER(plugin->ebox), plugin->box);
 	
-    return(plugin_gui);
+    return(plugin);
 }
 
 static gboolean
 create_plugin_control (Control *ctrl)
 {
-    gui *plugin;
-
-    plugin = gui_new();
+    gui *plugin = gui_new();
 
     gtk_container_add (GTK_CONTAINER(ctrl->base), plugin->ebox);
 
@@ -193,21 +225,17 @@ create_plugin_control (Control *ctrl)
 static void
 plugin_free (Control *ctrl)
 {
-    gui *plugin;
-
     g_return_if_fail (ctrl != NULL);
     g_return_if_fail (ctrl->data != NULL);
 
-    plugin = (gui *)ctrl->data;
-
+    gui *plugin = ctrl->data;
     g_free(plugin);
 }
 
 static void
 plugin_attach_callback (Control *ctrl, const gchar *signal, GCallback cb, gpointer data)
 {
-    gui *plugin;
-    plugin = (gui *)ctrl->data;
+    gui *plugin = ctrl->data;
     g_signal_connect (plugin->ebox, signal, cb, data);
     g_signal_connect (plugin->show_all, signal, cb, data);
     g_signal_connect (plugin->hide_all, signal, cb, data);
@@ -215,141 +243,146 @@ plugin_attach_callback (Control *ctrl, const gchar *signal, GCallback cb, gpoint
 }
 
 static void
-plugin_recreate_tooltips ()
+plugin_recreate_tooltips (gui *plugin)
 {
-    if (plugin_gui->showTooltips) {
+    if (plugin->showTooltips) {
         tooltips = gtk_tooltips_new ();
-	if (plugin_gui->swapCommands) {
-	    gtk_tooltips_set_tip (tooltips, plugin_gui->hide_all, "Show all windows", NULL);
-            gtk_tooltips_set_tip (tooltips, plugin_gui->show_all, "Show desktop", NULL);
+	if (plugin->swapCommands) {
+	    gtk_tooltips_set_tip (tooltips, plugin->hide_all,
+	      (_("Button 1: show all windows\nButton 2: show previous window group")), NULL);
+            gtk_tooltips_set_tip (tooltips, plugin->show_all,
+	      (_("Button 1: hide all windows\nButton 2: hide previous window group")), NULL);
         } else {
-            gtk_tooltips_set_tip (tooltips, plugin_gui->show_all, "Show all windows", NULL);
-            gtk_tooltips_set_tip (tooltips, plugin_gui->hide_all, "Show desktop", NULL);
+            gtk_tooltips_set_tip (tooltips, plugin->show_all,
+	      (_("Button 1: show all windows\nButton 2: show previous window group")), NULL);
+            gtk_tooltips_set_tip (tooltips, plugin->hide_all,
+	      (_("Button 1: hide all windows\nButton 2: hide previous window group")), NULL);
         }
     }
 }
 
 static void
-plugin_style_changed (void)
+plugin_style_changed (GtkWidget *widget, GtkStyle *style, gui *plugin)
 {
     GdkPixbuf *tmp, *pb0, *pb1;
 
-    if (plugin_gui->orientation == HORIZONTAL) {
-        tmp = gtk_widget_render_icon (plugin_gui->ebox, GTK_STOCK_GO_UP, GTK_ICON_SIZE_MENU, NULL);
-	pb0 = gdk_pixbuf_scale_simple (tmp, plugin_gui->IconSize, plugin_gui->IconSize, GDK_INTERP_BILINEAR);
+    if (plugin->orientation == HORIZONTAL) {
+        tmp = gtk_widget_render_icon (plugin->ebox, GTK_STOCK_GO_UP, GTK_ICON_SIZE_MENU, NULL);
+	pb0 = gdk_pixbuf_scale_simple (tmp, plugin->IconSize, plugin->IconSize, GDK_INTERP_BILINEAR);
 	g_object_unref (tmp);
 	
-        tmp = gtk_widget_render_icon (plugin_gui->ebox, GTK_STOCK_GO_DOWN, GTK_ICON_SIZE_MENU, NULL);
-	pb1 = gdk_pixbuf_scale_simple (tmp, plugin_gui->IconSize, plugin_gui->IconSize, GDK_INTERP_BILINEAR);
+        tmp = gtk_widget_render_icon (plugin->ebox, GTK_STOCK_GO_DOWN, GTK_ICON_SIZE_MENU, NULL);
+	pb1 = gdk_pixbuf_scale_simple (tmp, plugin->IconSize, plugin->IconSize, GDK_INTERP_BILINEAR);
 	g_object_unref (tmp);
     } else {
-        tmp = gtk_widget_render_icon (plugin_gui->ebox, GTK_STOCK_GO_FORWARD, GTK_ICON_SIZE_MENU, NULL);
-	pb0 = gdk_pixbuf_scale_simple (tmp, plugin_gui->IconSize, plugin_gui->IconSize, GDK_INTERP_BILINEAR);
+        tmp = gtk_widget_render_icon (plugin->ebox, GTK_STOCK_GO_FORWARD, GTK_ICON_SIZE_MENU, NULL);
+	pb0 = gdk_pixbuf_scale_simple (tmp, plugin->IconSize, plugin->IconSize, GDK_INTERP_BILINEAR);
 	g_object_unref (tmp);
 
-        tmp = gtk_widget_render_icon (plugin_gui->ebox, GTK_STOCK_GO_BACK, GTK_ICON_SIZE_MENU, NULL);
-	pb1 = gdk_pixbuf_scale_simple (tmp, plugin_gui->IconSize, plugin_gui->IconSize, GDK_INTERP_BILINEAR);
+        tmp = gtk_widget_render_icon (plugin->ebox, GTK_STOCK_GO_BACK, GTK_ICON_SIZE_MENU, NULL);
+	pb1 = gdk_pixbuf_scale_simple (tmp, plugin->IconSize, plugin->IconSize, GDK_INTERP_BILINEAR);
 	g_object_unref (tmp);
     } 
-    xfce_iconbutton_set_pixbuf (XFCE_ICONBUTTON(plugin_gui->show_all), pb0);
-    xfce_iconbutton_set_pixbuf (XFCE_ICONBUTTON(plugin_gui->hide_all), pb1);
+    xfce_iconbutton_set_pixbuf (XFCE_ICONBUTTON(plugin->show_all), pb0);
+    xfce_iconbutton_set_pixbuf (XFCE_ICONBUTTON(plugin->hide_all), pb1);
 } 
    
 static void
-plugin_recreate_gui (void)
+plugin_recreate_gui (gui *plugin)
 {
     SignalCallback *sc;
     GdkPixbuf *tmp, *pb0, *pb1;
     
-    gtk_widget_destroy (plugin_gui->box);
+    gtk_widget_destroy (plugin->box);
 
-    plugin_gui->show_all = xfce_iconbutton_new ();
-    plugin_gui->hide_all = xfce_iconbutton_new ();
+    plugin->show_all = xfce_iconbutton_new ();
+    plugin->hide_all = xfce_iconbutton_new ();
 
-    if (plugin_gui->orientation == HORIZONTAL) {
-    	tmp = gtk_widget_render_icon (plugin_gui->ebox, GTK_STOCK_GO_UP, GTK_ICON_SIZE_MENU, NULL);
-	pb0 = gdk_pixbuf_scale_simple (tmp, plugin_gui->IconSize, plugin_gui->IconSize, GDK_INTERP_BILINEAR);
+    if (plugin->orientation == HORIZONTAL) {
+    	tmp = gtk_widget_render_icon (plugin->ebox, GTK_STOCK_GO_UP, GTK_ICON_SIZE_MENU, NULL);
+	pb0 = gdk_pixbuf_scale_simple (tmp, plugin->IconSize, plugin->IconSize, GDK_INTERP_BILINEAR);
 	g_object_unref (tmp);
 	
-        tmp = gtk_widget_render_icon (plugin_gui->ebox, GTK_STOCK_GO_DOWN, GTK_ICON_SIZE_MENU, NULL);
-	pb1 = gdk_pixbuf_scale_simple (tmp, plugin_gui->IconSize, plugin_gui->IconSize, GDK_INTERP_BILINEAR);
+        tmp = gtk_widget_render_icon (plugin->ebox, GTK_STOCK_GO_DOWN, GTK_ICON_SIZE_MENU, NULL);
+	pb1 = gdk_pixbuf_scale_simple (tmp, plugin->IconSize, plugin->IconSize, GDK_INTERP_BILINEAR);
 	g_object_unref (tmp);
 
-        if (plugin_gui->lessSpace) {
-	    plugin_gui->box = gtk_vbox_new (FALSE, 0);
-	    gtk_widget_set_size_request (plugin_gui->show_all, plugin_gui->IconSize * 2, plugin_gui->IconSize);
-	    gtk_widget_set_size_request (plugin_gui->hide_all, plugin_gui->IconSize * 2, plugin_gui->IconSize);
+        if (plugin->lessSpace) {
+	    plugin->box = gtk_vbox_new (FALSE, 0);
+	    gtk_widget_set_size_request (plugin->show_all, plugin->IconSize * 2, plugin->IconSize);
+	    gtk_widget_set_size_request (plugin->hide_all, plugin->IconSize * 2, plugin->IconSize);
 	} else {
-	   plugin_gui->box = gtk_hbox_new (FALSE, 0);
-	   gtk_widget_set_size_request (plugin_gui->show_all, plugin_gui->IconSize * 2, -1);
-	   gtk_widget_set_size_request (plugin_gui->hide_all, plugin_gui->IconSize * 2, -1);
+	   plugin->box = gtk_hbox_new (FALSE, 0);
+	   gtk_widget_set_size_request (plugin->show_all, plugin->IconSize * 2, -1);
+	   gtk_widget_set_size_request (plugin->hide_all, plugin->IconSize * 2, -1);
 	}
          
-        gtk_container_add (GTK_CONTAINER(plugin_gui->box), plugin_gui->show_all);
-        gtk_container_add (GTK_CONTAINER(plugin_gui->box), plugin_gui->hide_all);
+        gtk_container_add (GTK_CONTAINER(plugin->box), plugin->show_all);
+        gtk_container_add (GTK_CONTAINER(plugin->box), plugin->hide_all);
 
     } else {
-        tmp = gtk_widget_render_icon (plugin_gui->ebox, GTK_STOCK_GO_FORWARD, GTK_ICON_SIZE_MENU, NULL);
-	pb0 = gdk_pixbuf_scale_simple (tmp, plugin_gui->IconSize, plugin_gui->IconSize, GDK_INTERP_BILINEAR);
+        tmp = gtk_widget_render_icon (plugin->ebox, GTK_STOCK_GO_FORWARD, GTK_ICON_SIZE_MENU, NULL);
+	pb0 = gdk_pixbuf_scale_simple (tmp, plugin->IconSize, plugin->IconSize, GDK_INTERP_BILINEAR);
 	g_object_unref (tmp);
 
-        tmp = gtk_widget_render_icon (plugin_gui->ebox, GTK_STOCK_GO_BACK, GTK_ICON_SIZE_MENU, NULL);
-	pb1 = gdk_pixbuf_scale_simple (tmp, plugin_gui->IconSize, plugin_gui->IconSize, GDK_INTERP_BILINEAR);
+        tmp = gtk_widget_render_icon (plugin->ebox, GTK_STOCK_GO_BACK, GTK_ICON_SIZE_MENU, NULL);
+	pb1 = gdk_pixbuf_scale_simple (tmp, plugin->IconSize, plugin->IconSize, GDK_INTERP_BILINEAR);
 	g_object_unref (tmp);
 	
-        if (plugin_gui->lessSpace) {
-	    plugin_gui->box = gtk_hbox_new (FALSE, 0);
-	    gtk_widget_set_size_request (plugin_gui->show_all, plugin_gui->IconSize, plugin_gui->IconSize * 2);
-	    gtk_widget_set_size_request (plugin_gui->hide_all, plugin_gui->IconSize, plugin_gui->IconSize * 2);
+        if (plugin->lessSpace) {
+	    plugin->box = gtk_hbox_new (FALSE, 0);
+	    gtk_widget_set_size_request (plugin->show_all, plugin->IconSize, plugin->IconSize * 2);
+	    gtk_widget_set_size_request (plugin->hide_all, plugin->IconSize, plugin->IconSize * 2);
 	} else {
-	    plugin_gui->box = gtk_vbox_new (FALSE, 0);
-	    gtk_widget_set_size_request (plugin_gui->show_all, -1, plugin_gui->IconSize * 2);
-	    gtk_widget_set_size_request (plugin_gui->hide_all, -1, plugin_gui->IconSize * 2);
+	    plugin->box = gtk_vbox_new (FALSE, 0);
+	    gtk_widget_set_size_request (plugin->show_all, -1, plugin->IconSize * 2);
+	    gtk_widget_set_size_request (plugin->hide_all, -1, plugin->IconSize * 2);
 	}
 
-        gtk_container_add (GTK_CONTAINER(plugin_gui->box), plugin_gui->hide_all);
-        gtk_container_add (GTK_CONTAINER(plugin_gui->box), plugin_gui->show_all);
+        gtk_container_add (GTK_CONTAINER(plugin->box), plugin->hide_all);
+        gtk_container_add (GTK_CONTAINER(plugin->box), plugin->show_all);
     }		
     
-    xfce_iconbutton_set_pixbuf (XFCE_ICONBUTTON(plugin_gui->show_all), pb0);
-    xfce_iconbutton_set_pixbuf (XFCE_ICONBUTTON(plugin_gui->hide_all), pb1);
+    xfce_iconbutton_set_pixbuf (XFCE_ICONBUTTON(plugin->show_all), pb0);
+    xfce_iconbutton_set_pixbuf (XFCE_ICONBUTTON(plugin->hide_all), pb1);
     
-    gtk_button_set_relief (GTK_BUTTON (plugin_gui->show_all), GTK_RELIEF_NONE);
-    gtk_button_set_relief (GTK_BUTTON (plugin_gui->hide_all), GTK_RELIEF_NONE);
-    gtk_container_add (GTK_CONTAINER(plugin_gui->ebox), plugin_gui->box);
+    gtk_button_set_relief (GTK_BUTTON (plugin->show_all), GTK_RELIEF_NONE);
+    gtk_button_set_relief (GTK_BUTTON (plugin->hide_all), GTK_RELIEF_NONE);
+    gtk_container_add (GTK_CONTAINER(plugin->ebox), plugin->box);
     
-    gtk_widget_show_all (plugin_gui->box);
+    gtk_widget_show_all (plugin->box);
 
-    if (plugin_gui->swapCommands) {
-        g_signal_connect (plugin_gui->show_all, "clicked", G_CALLBACK(hide_all_clicked), plugin_gui);
-        g_signal_connect (plugin_gui->hide_all, "clicked", G_CALLBACK(show_all_clicked), plugin_gui);
+    if (plugin->swapCommands) {
+        g_signal_connect (plugin->show_all, "button_press_event", G_CALLBACK(hide_all_clicked), plugin);
+        g_signal_connect (plugin->hide_all, "button_press_event", G_CALLBACK(show_all_clicked), plugin);
     } else {
-        g_signal_connect (plugin_gui->show_all, "clicked", G_CALLBACK(show_all_clicked), plugin_gui);
-        g_signal_connect (plugin_gui->hide_all, "clicked", G_CALLBACK(hide_all_clicked), plugin_gui);
+        g_signal_connect (plugin->show_all, "button_press_event", G_CALLBACK(show_all_clicked), plugin);
+        g_signal_connect (plugin->hide_all, "button_press_event", G_CALLBACK(hide_all_clicked), plugin);
     }
 
-    g_signal_connect (plugin_gui->ebox, "style_set", G_CALLBACK(plugin_style_changed), NULL);
+    g_signal_connect (plugin->ebox, "style_set", G_CALLBACK(plugin_style_changed), plugin);
 
-    plugin_recreate_tooltips ();
+    plugin_recreate_tooltips (plugin);
 
-    sc = plugin_gui->cb;
-    g_signal_connect (plugin_gui->show_all, sc->signal, sc->callback, sc->data);
-    g_signal_connect (plugin_gui->hide_all, sc->signal, sc->callback, sc->data);
+    sc = plugin->cb;
+    g_signal_connect (plugin->show_all, sc->signal, sc->callback, sc->data);
+    g_signal_connect (plugin->hide_all, sc->signal, sc->callback, sc->data);
 }
 
 static void
 plugin_set_size (Control *ctrl, int size)
 {
+    gui *plugin = ctrl->data;
     if (size == TINY) {
-        plugin_gui->IconSize = ICONSIZETINY;
+        plugin->IconSize = ICONSIZETINY;
     } else if (size == SMALL) {
-        plugin_gui->IconSize = ICONSIZESMALL;
+        plugin->IconSize = ICONSIZESMALL;
     } else if (size == MEDIUM) {
-        plugin_gui->IconSize = ICONSIZEMEDIUM;
+        plugin->IconSize = ICONSIZEMEDIUM;
     } else {
-        plugin_gui->IconSize = ICONSIZELARGE;
+        plugin->IconSize = ICONSIZELARGE;
     }	
-    plugin_recreate_gui ();
+    plugin_recreate_gui (plugin);
 }
 
 static void
@@ -358,15 +391,16 @@ plugin_read_config (Control *ctrl, xmlNodePtr parent)
     xmlChar *swap;
     xmlChar *tool;
     xmlChar *space;
+    gui *plugin = ctrl->data;
 
     tool = xmlGetProp (parent, (const xmlChar *) "showTooltips");
 
     if (tool) {
         if (!strcmp (tool, "1")) {
-            plugin_gui->showTooltips = FALSE;
+            plugin->showTooltips = FALSE;
 	}
     } else {
-            plugin_gui->showTooltips = TRUE;
+            plugin->showTooltips = TRUE;
     }
      
     // to be backward compatible 
@@ -378,48 +412,49 @@ plugin_read_config (Control *ctrl, xmlNodePtr parent)
 
     if (swap) {
         if (!strcmp (swap, "0")) {
-            plugin_gui->swapCommands = TRUE;
+            plugin->swapCommands = TRUE;
         }
     } else {
-            plugin_gui->swapCommands = FALSE;
+            plugin->swapCommands = FALSE;
     }
 
     space = xmlGetProp (parent, (const xmlChar *) "lessSpace");
     
     if (space) {
         if (!strcmp (space, "0")) {
-            plugin_gui->lessSpace = TRUE;
+            plugin->lessSpace = TRUE;
         }
     } else {
-            plugin_gui->lessSpace = FALSE;
+            plugin->lessSpace = FALSE;
     }
 
     g_free (swap);
     g_free (tool);
     g_free (space);
-    plugin_recreate_gui ();
+    plugin_recreate_gui (plugin);
 }
 
 static void
 plugin_write_config (Control *ctrl, xmlNodePtr parent)
 {   
+    gui *plugin = ctrl->data;
     char swap[2];
     char tool[2];
     char size[2];
     
-    if (plugin_gui->swapCommands) {
+    if (plugin->swapCommands) {
         g_snprintf (swap, 2, "%i", 0);
     } else {
         g_snprintf (swap, 2, "%i", 1);
     }
     
-    if (plugin_gui->showTooltips) {
+    if (plugin->showTooltips) {
         g_snprintf (tool, 2, "%i", 0);
     } else {
         g_snprintf (tool, 2, "%i", 1);
     }
     
-    if (plugin_gui->lessSpace) {
+    if (plugin->lessSpace) {
         g_snprintf (size, 2, "%i", 0);
     } else {
         g_snprintf (size, 2, "%i", 1);
@@ -433,94 +468,96 @@ plugin_write_config (Control *ctrl, xmlNodePtr parent)
 static void
 plugin_set_orientation (Control *ctrl, int orientation)
 {
-    if (plugin_gui->swapCommands) {
+    gui *plugin = ctrl->data;
+    if (plugin->swapCommands) {
         if (orientation == HORIZONTAL) {
-	    plugin_gui->orientation = HORIZONTAL;
-	    plugin_gui->swapCommands = TRUE;
+	    plugin->orientation = HORIZONTAL;
+	    plugin->swapCommands = TRUE;
 	} else if (orientation == VERTICAL) {
-	    plugin_gui->orientation = VERTICAL;
-	    plugin_gui->swapCommands = TRUE;
+	    plugin->orientation = VERTICAL;
+	    plugin->swapCommands = TRUE;
 	}
     } else {
         if (orientation == HORIZONTAL) {
-	    plugin_gui->orientation = HORIZONTAL;
-	    plugin_gui->swapCommands = FALSE;
+	    plugin->orientation = HORIZONTAL;
+	    plugin->swapCommands = FALSE;
 	} else if (orientation == VERTICAL) {
-	    plugin_gui->orientation = VERTICAL;
-	    plugin_gui->swapCommands = FALSE;
+	    plugin->orientation = VERTICAL;
+	    plugin->swapCommands = FALSE;
 	}
     }
-    plugin_recreate_gui ();
+    plugin_recreate_gui (plugin);
 }
 
 static void
-plugin_cb1_changed (GtkToggleButton *cb)
+plugin_cb1_changed (GtkToggleButton *cb, gui *plugin)
 {
     gboolean swapCommands;
 
     swapCommands = gtk_toggle_button_get_active (cb);
 
     if (swapCommands) {
-        plugin_gui->swapCommands = TRUE;
+        plugin->swapCommands = TRUE;
     } else {
-	plugin_gui->swapCommands = FALSE;
+	plugin->swapCommands = FALSE;
     }
-    plugin_recreate_gui ();
+    plugin_recreate_gui (plugin);
 }
 
 static void
-plugin_cb2_changed (GtkToggleButton *cb)
+plugin_cb2_changed (GtkToggleButton *cb, gui *plugin)
 {
     gboolean showTooltips;
 
     showTooltips = gtk_toggle_button_get_active (cb);
-    plugin_gui->showTooltips = showTooltips;
+    plugin->showTooltips = showTooltips;
 
     if (showTooltips) {
         gtk_tooltips_enable (tooltips);
-	plugin_recreate_tooltips ();
+	plugin_recreate_tooltips (plugin);
     } else {
         gtk_tooltips_disable (tooltips);
     }
 }
 
 static void
-plugin_cb3_changed (GtkToggleButton *cb)
+plugin_cb3_changed (GtkToggleButton *cb, gui *plugin)
 {
     gboolean lessSpace;
 
     lessSpace = gtk_toggle_button_get_active (cb);
 
     if (lessSpace) {
-	plugin_gui->lessSpace = TRUE;
+	plugin->lessSpace = TRUE;
     } else {
-        plugin_gui->lessSpace = FALSE;
+        plugin->lessSpace = FALSE;
     }
-    plugin_recreate_gui ();
+    plugin_recreate_gui (plugin);
 }
 
 
 static void
 plugin_create_options (Control *ctrl, GtkContainer *con, GtkWidget *done)
 {
+    gui *plugin = ctrl->data;
     GtkWidget *vbox, *label, *cb1, *cb2, *cb3;
 
     vbox = gtk_vbox_new (1, 1);
     gtk_widget_show (vbox);
 
-    cb1 = gtk_check_button_new_with_label ("swap commands");
-    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (cb1), plugin_gui->swapCommands);
-    g_signal_connect (cb1, "toggled", G_CALLBACK (plugin_cb1_changed), NULL);
+    cb1 = gtk_check_button_new_with_label _("swap commands");
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (cb1), plugin->swapCommands);
+    g_signal_connect (cb1, "toggled", G_CALLBACK (plugin_cb1_changed), plugin);
     gtk_widget_show (cb1);
     
-    cb2 = gtk_check_button_new_with_label ("show tooltips");
-    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (cb2), plugin_gui->showTooltips);
-    g_signal_connect (cb2, "toggled", G_CALLBACK (plugin_cb2_changed), NULL);
+    cb2 = gtk_check_button_new_with_label _("show tooltips");
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (cb2), plugin->showTooltips);
+    g_signal_connect (cb2, "toggled", G_CALLBACK (plugin_cb2_changed), plugin);
     gtk_widget_show (cb2);
     
-    cb3 = gtk_check_button_new_with_label ("reduce size");
-    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (cb3), plugin_gui->lessSpace);
-    g_signal_connect (cb3, "toggled", G_CALLBACK (plugin_cb3_changed), NULL);
+    cb3 = gtk_check_button_new_with_label _("reduce size");
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (cb3), plugin->lessSpace);
+    g_signal_connect (cb3, "toggled", G_CALLBACK (plugin_cb3_changed), plugin);
     gtk_widget_show (cb3);
 
     gtk_container_add (con, vbox);
@@ -535,6 +572,7 @@ plugin_create_options (Control *ctrl, GtkContainer *con, GtkWidget *done)
 G_MODULE_EXPORT void
 xfce_control_class_init(ControlClass *cc)
 {
+    xfce_textdomain(GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR, "UTF-8");
     /* these are required */
     cc->name		= "showdesktop";
     cc->caption		= _("Show Desktop");
