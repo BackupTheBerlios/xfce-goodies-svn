@@ -41,6 +41,9 @@
 #include <panel/xfce.h>
 #include <libxfcegui4/netk-screen.h>
 
+#define HORIZONTAL 1 
+#define VERTICAL 0 
+
 // }}}
 
 // 2 structs {{{
@@ -202,7 +205,7 @@ plugin_set_size (Control *ctrl, int size)
 {
     
     // size: 0 tiny ... 3 large
-    if (plugin_gui->orientation == 0) { // vertical
+    if (plugin_gui->orientation == VERTICAL) {
         if (size == 0) {
 	
 	} else if (size == 1) {
@@ -251,7 +254,7 @@ plugin_recreate_gui (int orientation, gboolean swapPixmaps)
     plugin_gui->hide_all = gtk_button_new ();
     
     if (swapPixmaps) {
-        if (orientation == 1) { // horizontal
+        if (orientation == HORIZONTAL) {
             plugin_gui->box = gtk_vbox_new(0, 0);
          
             plugin_gui->show_image = gtk_image_new_from_stock ("gtk-go-back", 1);
@@ -260,7 +263,7 @@ plugin_recreate_gui (int orientation, gboolean swapPixmaps)
             plugin_gui->hide_image = gtk_image_new_from_stock ("gtk-go-forward", 1);
             gtk_widget_set_size_request (plugin_gui->hide_all, 30, 20);
 	
-        } else if (orientation == 0) { // vertical
+        } else if (orientation == VERTICAL) {
             plugin_gui->box = gtk_hbox_new(0, 0);
          
             plugin_gui->show_image = gtk_image_new_from_stock ("gtk-go-down", 1);
@@ -270,7 +273,7 @@ plugin_recreate_gui (int orientation, gboolean swapPixmaps)
             gtk_widget_set_size_request (plugin_gui->hide_all, 15, 10);
 	}
     } else {
-        if (orientation == 1) { // horizontal
+        if (orientation == HORIZONTAL) {
             plugin_gui->box = gtk_vbox_new(0, 0);
          
             plugin_gui->show_image = gtk_image_new_from_stock ("gtk-go-forward", 1);
@@ -279,7 +282,7 @@ plugin_recreate_gui (int orientation, gboolean swapPixmaps)
             plugin_gui->hide_image = gtk_image_new_from_stock ("gtk-go-back", 1);
             gtk_widget_set_size_request (plugin_gui->hide_all, 30, 20);
 	
-        } else if (orientation == 0) { // vertical
+        } else if (orientation == VERTICAL) {
             plugin_gui->box = gtk_hbox_new(0, 0);
          
             plugin_gui->show_image = gtk_image_new_from_stock ("gtk-go-up", 1);
@@ -351,17 +354,16 @@ plugin_write_config (Control *ctrl, xmlNodePtr parent)
     char tool[2];
     
     if (plugin_gui->swapPixmaps) {
-        sprintf (swap, "%i", 0);
+        g_snprintf (swap, 2, "%i", 0);
     } else {
-        sprintf (swap, "%i", 1);
+        g_snprintf (swap, 2, "%i", 1);
     }
     
     if (plugin_gui->showTooltips) {
-        sprintf (tool, "%i", 0);
+        g_snprintf (tool, 2, "%i", 0);
     } else {
-        sprintf (tool, "%i", 1);
+        g_snprintf (tool, 2, "%i", 1);
     }
-    
     xmlSetProp (parent, (const xmlChar *) "swapPixmaps", swap);
     xmlSetProp (parent, (const xmlChar *) "showTooltips", tool);
 }
@@ -370,16 +372,16 @@ static void
 plugin_set_orientation (Control *ctrl, int orientation)
 {
     if (plugin_gui->swapPixmaps) {
-        if (orientation == 1) { // horizontal
-            plugin_recreate_gui (1, TRUE);
-	} else if (orientation == 0) {
-	    plugin_recreate_gui (0, TRUE);
+        if (orientation == HORIZONTAL) {
+            plugin_recreate_gui (HORIZONTAL, TRUE);
+	} else if (orientation == VERTICAL) {
+	    plugin_recreate_gui (VERTICAL, TRUE);
 	}
     } else {
-        if (orientation == 1) { // horizontal
-            plugin_recreate_gui (1, FALSE);
-	} else if (orientation == 0) {
-	    plugin_recreate_gui (0, FALSE);
+        if (orientation == HORIZONTAL) {
+            plugin_recreate_gui (HORIZONTAL, FALSE);
+	} else if (orientation == VERTICAL) {
+	    plugin_recreate_gui (VERTICAL, FALSE);
 	}
     }
 }
@@ -394,16 +396,16 @@ plugin_cb1_changed (GtkToggleButton *cb)
     swapPixmaps = gtk_toggle_button_get_active (cb);
 
     if (swapPixmaps) {
-        if (orientation == 1) { // horizontal
-	    plugin_recreate_gui (1, TRUE);
-        } else if (orientation == 0) { // vertical
-	    plugin_recreate_gui (0, TRUE);
+        if (orientation == HORIZONTAL) {
+	    plugin_recreate_gui (HORIZONTAL, TRUE);
+        } else if (orientation == VERTICAL) {
+	    plugin_recreate_gui (VERTICAL, TRUE);
 	}
     } else {
-        if (orientation == 1) { // horizontal
-	    plugin_recreate_gui (1, FALSE);
-        } else if (orientation == 0) { // vertical
-	    plugin_recreate_gui (0, FALSE);
+        if (orientation == HORIZONTAL) {
+	    plugin_recreate_gui (HORIZONTAL, FALSE);
+        } else if (orientation == VERTICAL) {
+	    plugin_recreate_gui (VERTICAL, FALSE);
 	}
     }
 }
@@ -454,7 +456,7 @@ G_MODULE_EXPORT void
 xfce_control_class_init(ControlClass *cc)
 {
     /* these are required */
-    cc->name		= "plugin";
+    cc->name		= "showdesktop";
     cc->caption		= _("Show Desktop");
 
     cc->create_control	= (CreateControlFunc)create_plugin_control;
