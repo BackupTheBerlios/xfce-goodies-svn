@@ -51,11 +51,45 @@ _create_pixbuf(gint id, const gchar* name, gint size)
 	return pixbuf;
 }
 
-void
-launcher_clicked(GtkWidget *widget, gchar *command) 
+gboolean
+launcher_clicked (GtkWidget *event_box, GdkEventButton *event, gchar *command)
 {
-	xfce_exec(command, FALSE, FALSE, NULL);
+	static GdkPixbuf *old;
+	static GdkPixbuf *new;
+	
+	g_return_val_if_fail( (event->button == 1) ,FALSE);
+	
+	if (event->type == GDK_BUTTON_PRESS) 
+	{ 
+		g_return_val_if_fail(event->x > 0 && event->x < _quicklauncher->icon_size && event->y > 0 && 
+									 event->y < _quicklauncher->icon_size, FALSE);
+		g_assert(!old);
+		old = g_object_ref(gtk_image_get_pixbuf(GTK_IMAGE(gtk_bin_get_child (GTK_BIN(event_box)))));
+		new = gdk_pixbuf_copy (old);
+		gdk_pixbuf_saturate_and_pixelate(old, new, 5, TRUE);
+		gtk_image_set_from_pixbuf (GTK_IMAGE(gtk_bin_get_child (GTK_BIN(event_box))), new);
+	}
+	else if (event->type == GDK_BUTTON_RELEASE)
+	{
+		g_assert(old);
+		if (event->x > 0 && event->x < _quicklauncher->icon_size && event->y > 0 && 
+			event->y < _quicklauncher->icon_size)
+			xfce_exec(command, FALSE, FALSE, NULL);
+		gtk_image_set_from_pixbuf (GTK_IMAGE(gtk_bin_get_child (GTK_BIN(event_box))), old);
+		UNREF(old);
+		UNREF(new);
+		old = NULL;
+		new = NULL;
+	}
+	return TRUE;
 }
+
+gboolean    
+launcher_passthrought(GtkWidget *widget, GdkEventCrossing *event, gpointer user_data)
+{
+	return TRUE;
+}
+
 
 void 
 launcher_update_icon(t_launcher *launcher) 
@@ -63,10 +97,11 @@ launcher_update_icon(t_launcher *launcher)
 	GdkPixbuf *pixbuf = _create_pixbuf(launcher->icon_id, launcher->icon_name, _quicklauncher->icon_size);
 	if (pixbuf)
 	{
-		xfce_iconbutton_set_pixbuf (XFCE_ICONBUTTON (launcher->widget), pixbuf);
+//		xfce_iconbutton_set_pixbuf (XFCE_ICONBUTTON (launcher->widget), pixbuf);
+		gtk_image_set_from_pixbuf(GTK_IMAGE(launcher->image), pixbuf);
 		g_object_unref (pixbuf);
 	}
-	gtk_widget_set_size_request(launcher->widget, _quicklauncher->icon_size, _quicklauncher->icon_size);
+	gtk_widget_set_size_request(launcher->image, _quicklauncher->icon_size, _quicklauncher->icon_size);
 }
 
 void 
@@ -79,15 +114,42 @@ launcher_update_icons(gpointer data, gpointer user_data)
 void 
 launcher_update_command(t_launcher *launcher) 
 {
-	if(launcher->command_id)
-		 g_signal_handler_disconnect(launcher->widget, launcher->command_id);
+	if(launcher->command_ids[0])
+	{
+		g_signal_handler_disconnect(launcher->widget, launcher->command_ids[0]);
+		g_signal_handler_disconnect(launcher->widget, launcher->command_ids[1]);
+		g_signal_handler_disconnect(launcher->widget, launcher->command_ids[2]);
+		g_signal_handler_disconnect(launcher->widget, launcher->command_ids[3]);
+	}
 	if (launcher->command)
-		launcher->command_id = g_signal_connect(launcher->widget, "clicked",
-																			    G_CALLBACK(launcher_clicked), launcher->command);
+	{
+		launcher->command_ids[0] = g_signal_connect(	launcher->widget, "button_press_event", 
+																						G_CALLBACK(launcher_clicked), NULL);
+		launcher->command_ids[1] = g_signal_connect(	launcher->widget, "button-release-event", 
+																						G_CALLBACK(launcher_clicked), launcher->command);
+		launcher->command_ids[2] = g_signal_connect(	launcher->widget, "enter-notify-event", 
+																						G_CALLBACK(launcher_passthrought), NULL);
+		launcher->command_ids[3] = g_signal_connect(	launcher->widget, "leave-notify-event", 
+																						G_CALLBACK(launcher_passthrought), launcher->command);
+	}
 	else
-		launcher->command_id = 0;
+		launcher->command_ids[0] = 0;
 }
 
+void create_launcher(t_launcher	*launcher)
+{	
+	launcher->widget = g_object_ref(gtk_event_box_new());
+	launcher->image = g_object_ref(gtk_image_new());
+	gtk_container_set_border_width(GTK_CONTAINER (launcher->widget), 2*_quicklauncher->panel_size);
+	gtk_container_add (GTK_CONTAINER (launcher->widget), launcher->image);
+	gtk_event_box_set_above_child(GTK_EVENT_BOX(launcher->widget), FALSE);
+	
+	launcher_update_icon(launcher) ;
+	//launcher->command_ids[0] = 0;
+	launcher_update_command(launcher) ;
+	gtk_widget_show (launcher->image);
+	gtk_widget_show (launcher->widget);
+}
 
  t_launcher *
 launcher_new (const gchar *command, gint icon_id, const gchar *icon_name)
@@ -107,15 +169,11 @@ launcher_new (const gchar *command, gint icon_id, const gchar *icon_name)
 		launcher->icon_name =strcpy(launcher->icon_name, icon_name);
 	}
 	else launcher->icon_name = NULL; 	
-	launcher->widget = g_object_ref(xfce_iconbutton_new());
+	//launcher->widget = g_object_ref(xfce_iconbutton_new());
+	//gtk_button_set_relief (GTK_BUTTON (launcher->widget), GTK_RELIEF_NONE);
 	
-	gtk_button_set_relief (GTK_BUTTON (launcher->widget), GTK_RELIEF_NONE);
-	launcher_update_icon(launcher) ;
-	launcher->command_id = 0;
-	launcher_update_command(launcher) ;
-	gtk_widget_show (launcher->widget);
-	
-    return launcher;
+	create_launcher(launcher);
+	return launcher;
 }
 
 
@@ -134,14 +192,10 @@ launcher_new_from_xml(xmlNodePtr node)
 		g_free((xmlChar *) tmp); 
 	}else 
 		launcher->icon_id = EXTERN_ICON;
-	launcher->widget = g_object_ref(xfce_iconbutton_new ());
+	//launcher->widget = g_object_ref(xfce_iconbutton_new ());
+	//gtk_button_set_relief (GTK_BUTTON (launcher->widget), GTK_RELIEF_NONE);
 	
-	gtk_button_set_relief (GTK_BUTTON (launcher->widget), GTK_RELIEF_NONE);
-	launcher_update_icon(launcher) ;
-	launcher->command_id = 0;
-	launcher_update_command(launcher) ;
-	gtk_widget_show (launcher->widget);
-	
+	create_launcher(launcher);
 	return launcher;
 }
 
@@ -167,6 +221,7 @@ launcher_free (t_launcher *launcher)
 {
 	if(!launcher) return;
 	g_object_unref(launcher->widget);
+	g_object_unref(launcher->image);
 	//gtk_widget_destroy(launcher->widget); //useless: handled by gtk
 	g_free(launcher->icon_name);
 	g_free(launcher->command);
@@ -395,9 +450,9 @@ quicklauncher_set_size(gint size)
 	GList *liste;
 	_quicklauncher->panel_size = size;
 	if (size >= LARGE)
-		_quicklauncher->icon_size = (gint) (icon_size[size] / _quicklauncher->nb_lines) *1.25;
+		_quicklauncher->icon_size = (gint) (icon_size[size] / _quicklauncher->nb_lines);
 	else
-		_quicklauncher->icon_size = (gint) (icon_size[size] / _quicklauncher->nb_lines) *1.5;
+		_quicklauncher->icon_size = (gint) (icon_size[size] / _quicklauncher->nb_lines) *1.3;
 	for(liste = _quicklauncher->launchers;
 		  liste ; liste = g_list_next(liste) )
 	{
