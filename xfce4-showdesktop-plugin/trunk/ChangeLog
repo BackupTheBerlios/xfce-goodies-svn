@@ -1,3 +1,7 @@
+2004-07-24 14:00 papermoon:
+	* panel-plugin/showdesktop.c:
+	Added windowmanager showdesktop feature
+
 2004-06-26 10:30 papermoon
 	* panel-plugin/showdesktop.c:
 	Added option to show only 1 button

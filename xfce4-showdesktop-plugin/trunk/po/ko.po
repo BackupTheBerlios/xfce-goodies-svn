@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xfce4-fsguard-plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-06-26 10:17+0200\n"
+"POT-Creation-Date: 2004-07-24 13:59+0200\n"
 "PO-Revision-Date: 2003-11-25 01:26+0900\n"
 "Last-Translator: ByungHyun Choi<byunghyunchoi@hotmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,63 +16,64 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: panel-plugin/showdesktop.c:282
-msgid "Press this button to show/hide windows"
-msgstr ""
-
-#: panel-plugin/showdesktop.c:286 panel-plugin/showdesktop.c:291
-msgid ""
-"Button 1: show all windows\n"
-"Button 2: show previous window group"
-msgstr ""
-"버튼 1: 모든 창 보이기\n"
-"버튼 2: 이전 창 모임 보이기"
-
-#: panel-plugin/showdesktop.c:288 panel-plugin/showdesktop.c:293
-#, fuzzy
-msgid ""
-"Button 1: hide all windows\n"
-"Button 2: hide previous window group"
-msgstr ""
-"버튼 1: 모든 창 보이기\n"
-"버튼 2: 이전 창 모임 보이기"
-
-#: panel-plugin/showdesktop.c:597
+#: panel-plugin/showdesktop.c:673
 msgid "Enable this options, if your panel is located on top or on the right."
 msgstr ""
 
-#: panel-plugin/showdesktop.c:598
-msgid "Enable this option, if you want tooltips on all command buttons."
+#: panel-plugin/showdesktop.c:674
+msgid ""
+"Normally, the first mouse button is connected to the windowmanager "
+"showdesktop feature, if the WM supports it, and the middle mouse button is "
+"connected to the plugin internal showdesktop feature. You can reverse it "
+"with this option."
 msgstr ""
 
-#: panel-plugin/showdesktop.c:599
+#: panel-plugin/showdesktop.c:675
 msgid ""
 "If this options is enabled, the plugin consumes less space on the panel."
 msgstr ""
 
-#: panel-plugin/showdesktop.c:600
+#: panel-plugin/showdesktop.c:676
 msgid "one button only"
 msgstr ""
 
-#: panel-plugin/showdesktop.c:605
+#: panel-plugin/showdesktop.c:683
 msgid "swap commands"
 msgstr "명령을  바꿉니다."
 
-#: panel-plugin/showdesktop.c:610
-msgid "show tooltips"
-msgstr "풍선 도움말을 보여줍니다."
+#: panel-plugin/showdesktop.c:688
+msgid "alternate button mode"
+msgstr ""
 
-#: panel-plugin/showdesktop.c:615
+#: panel-plugin/showdesktop.c:693
 msgid "reduce size"
 msgstr "크기를 줄입니다."
 
-#: panel-plugin/showdesktop.c:626
+#: panel-plugin/showdesktop.c:704
 msgid "Options"
 msgstr ""
 
-#: panel-plugin/showdesktop.c:647
+#: panel-plugin/showdesktop.c:725
 msgid "Show Desktop"
 msgstr "데스크탑 보이기"
+
+#~ msgid ""
+#~ "Button 1: show all windows\n"
+#~ "Button 2: show previous window group"
+#~ msgstr ""
+#~ "버튼 1: 모든 창 보이기\n"
+#~ "버튼 2: 이전 창 모임 보이기"
+
+#, fuzzy
+#~ msgid ""
+#~ "Button 1: hide all windows\n"
+#~ "Button 2: hide previous window group"
+#~ msgstr ""
+#~ "버튼 1: 모든 창 보이기\n"
+#~ "버튼 2: 이전 창 모임 보이기"
+
+#~ msgid "show tooltips"
+#~ msgstr "풍선 도움말을 보여줍니다."
 
 #, fuzzy
 #~ msgid ""

@@ -1,89 +1,62 @@
-# translation of xfce4-showdesktop-plugin.
-# Copyright (C) 2003 Free Software Foundation, Inc.
-# Andre Lerche <a.lerche@gmx.net>, 2003.
+# translation of PACKAGE.
+# Copyright (C) 2004 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Andre Lerche <a.lerche@gmx.net>, 2004.
+# , fuzzy
 # 
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: xfce4-showdesktop-plugin\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-06-26 10:17+0200\n"
-"PO-Revision-Date: 2004-06-26 10:22+0200\n"
+"POT-Creation-Date: 2004-07-24 13:59+0200\n"
+"PO-Revision-Date: 2004-07-24 14:06+0200\n"
 "Last-Translator: Andre Lerche <a.lerche@gmx.net>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit"
 
-#: panel-plugin/showdesktop.c:282
-msgid "Press this button to show/hide windows"
-msgstr "Alle Fenster anzeigen bzw. minimieren"
-
-#: panel-plugin/showdesktop.c:286 panel-plugin/showdesktop.c:291
-msgid ""
-"Button 1: show all windows\n"
-"Button 2: show previous window group"
-msgstr ""
-"linke Mousetaste: alle Fenster anzeigen\n"
-"mittlere Mousetaste: vorherige Fenstergruppe anzeigen"
-
-#: panel-plugin/showdesktop.c:288 panel-plugin/showdesktop.c:293
-msgid ""
-"Button 1: hide all windows\n"
-"Button 2: hide previous window group"
-msgstr ""
-"linke Mousetaste: alle Fenster minimieren\n"
-" mittlere Mousetaste: vorherige Fenstergruppe minimieren"
-
-#: panel-plugin/showdesktop.c:597
+#: panel-plugin/showdesktop.c:673
 msgid "Enable this options, if your panel is located on top or on the right."
-msgstr "Diese Option sollte aktiviert werden, wenn sich das Panel am oberen oder rechten Rand befindet."
+msgstr "Aktivieren Sie diese Option, wenn das Panel sich am oberen oder rechten Rand befindet."
 
-#: panel-plugin/showdesktop.c:598
-msgid "Enable this option, if you want tooltips on all command buttons."
-msgstr "Sollen Tooltips auf den Buttons angezeigt werden?"
+#: panel-plugin/showdesktop.c:674
+msgid ""
+"Normally, the first mouse button is connected to the windowmanager "
+"showdesktop feature, if the WM supports it, and the middle mouse button is "
+"connected to the plugin internal showdesktop feature. You can reverse it "
+"with this option."
+msgstr "Normalerweise ist die erste Mousetaste dem Showdesktop Feature des Windowmanagers zugeordnet,"
+"sofern es vom WM supported wird. Hingegen ist die mittlere Mousetaste dem plugininternen Showdesktop"
+"Feature zugeordnet. Über diese Option können Sie die Zuordnung ändern."
 
-#: panel-plugin/showdesktop.c:599
+#: panel-plugin/showdesktop.c:675
 msgid ""
 "If this options is enabled, the plugin consumes less space on the panel."
-msgstr "Wenn diese Option aktiviert ist, verbraucht das Plugin weniger Platz."
+msgstr "Wenn diese Option aktiviert wurde, verbraucht das Plugin weniger Platz auf dem Panel."
 
-#: panel-plugin/showdesktop.c:600
+#: panel-plugin/showdesktop.c:676
 msgid "one button only"
-msgstr "Nur ein Button anzeigen."
+msgstr "nur 1 Button"
 
-#: panel-plugin/showdesktop.c:605
+#: panel-plugin/showdesktop.c:683
 msgid "swap commands"
 msgstr "Befehle vertauschen"
 
-#: panel-plugin/showdesktop.c:610
-msgid "show tooltips"
-msgstr "Tooltips anzeigen"
+#: panel-plugin/showdesktop.c:688
+msgid "alternate button mode"
+msgstr "alternativer Buttonmodus"
 
-#: panel-plugin/showdesktop.c:615
+#: panel-plugin/showdesktop.c:693
 msgid "reduce size"
 msgstr "verkleinern"
 
-#: panel-plugin/showdesktop.c:626
+#: panel-plugin/showdesktop.c:704
 msgid "Options"
 msgstr "Optionen"
 
-#: panel-plugin/showdesktop.c:647
+#: panel-plugin/showdesktop.c:725
 msgid "Show Desktop"
 msgstr "Desktop anzeigen"
 
-#, fuzzy
-#~ msgid ""
-#~ "Button 1: save window state 1\n"
-#~ "Button 2: restore window state 1"
-#~ msgstr ""
-#~ "linke Mousetaste: alle Fenster anzeigen\n"
-#~ " mittlere Mousetaste: vorherige Fenstergruppe anzeigen"
-
-#, fuzzy
-#~ msgid ""
-#~ "Button 1: save window state 2\n"
-#~ "Button 2: restore window state 2"
-#~ msgstr ""
-#~ "linke Mousetaste: alle Fenster anzeigen\n"
-#~ " mittlere Mousetaste: vorherige Fenstergruppe anzeigen"
