@@ -61,7 +61,7 @@ struct _xfmime_icon_functions {
    void (*mime_icon_add_iconset)(const gchar *tag, GtkIconSet *icon_set);
    GHashTable *(*mime_icon_load_theme)(const gchar *theme);
    GtkWidget *(*mime_icon_create_pixmap) (GtkWidget *widget,const gchar *filename);
-   GdkPixbuf *(*mime_icon_create_pixbuf) (GtkWidget *widget,const gchar *filename);
+   GdkPixbuf *(*mime_icon_create_pixbuf) (const gchar *filename);
    gchar *(*mime_icon_find_pixmap_file)(const gchar     *filename);
 };
 
