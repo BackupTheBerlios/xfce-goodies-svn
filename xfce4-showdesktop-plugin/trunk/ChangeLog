@@ -1,3 +1,7 @@
+2003-11-24 19:31 papermoon
+	* Changelog, configure, configure.ac, po/ko.po po/ko.gmo: 
+	Added Korean translation by David Choi
+
 2003-08-03 19:51  benny
 
 	* ChangeLog, ChangeLog.pre_xfce-goodies, Makefile.am, Makefile.in,
