@@ -1,0 +1,5 @@
+2003-05-04 20:05  papermoon
+ 
+         * panel-plugin/taskbar.c:
+	 Added option "expand to fill screen"
+	 Many thanks to Brady Eidson

@@ -3,6 +3,7 @@
 /*
  * Copyright (c) 2003 Andre Lerche <a.lerche@gmx.net>
  * Copyright (c) 2003 Benedikt Meurer <benedikt.meurer@unix-ag.uni-siegen.de>
+ * Copyright (c) 2004 Brady Eidson <nospam.xfce@bradeeoh.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,7 +36,7 @@
 #endif
 
 #include <gtk/gtk.h>
-
+#include <stdio.h>
 #include <libxfce4util/i18n.h>
 #include <panel/plugins.h>
 #include <panel/xfce.h>
@@ -63,9 +64,13 @@ typedef struct
     GtkWidget	    *ebox;
     GtkWidget	    *frame;
     GtkWidget	    *taskbar;
+    GtkWidget       *spin; // The spin from properties dialog
     NetkScreen      *screen;
     gboolean	    alwaysGroup;
     gboolean	    includeAll;
+    gboolean        expand;
+    gulong          callbackID;
+    int             expandWidth;
     int		    size;
     int		    width;
     int             orientation;
@@ -74,6 +79,9 @@ typedef struct
 // }}}
 
 // all functions {{{
+static void plugin_recreate_gui (gpointer data);
+static void plugin_panel_resize_callback (GtkWidget *widget, GtkAllocation *allocation, gpointer data);
+static void plugin_determine_expand_width (gpointer data);
 
 static void
 plugin_eval_TaskbarOptions(gui *plugin)
@@ -106,7 +114,50 @@ gui_new ()
 
     gtk_widget_show_all (plugin->ebox);
     
+    plugin->callbackID = g_signal_connect(G_OBJECT(panel.toplevel), "size-allocate", G_CALLBACK(plugin_panel_resize_callback), (gpointer)plugin );
+    
     return(plugin);
+}
+
+static void
+plugin_panel_resize_callback (GtkWidget *widget, GtkAllocation *allocation, gpointer data)
+{
+    gui *plugin = data;
+    int currentExpandWidth = plugin->expandWidth;
+  
+    if (plugin->expand == TRUE ){
+        plugin_determine_expand_width (data);
+        if (currentExpandWidth != plugin->expandWidth){
+            plugin_recreate_gui (plugin);
+        }
+    }
+}
+
+static void
+plugin_determine_expand_width (gpointer data)
+{
+    gui *plugin = data;
+
+    int screen, mainFrame, handle, current;
+
+  
+    if (plugin->orientation == HORIZONTAL){
+        screen = netk_screen_get_width (plugin->screen);
+        mainFrame = panel.toplevel->allocation.width;
+        handle = panel.handles[0]->allocation.width;
+        current = plugin->ebox->allocation.width;
+    } else {
+        screen = netk_screen_get_height (plugin->screen);
+        mainFrame = panel.toplevel->allocation.height;
+        handle = panel.handles[0]->allocation.height;
+        current = plugin->ebox->allocation.height;
+    }
+
+    plugin->expandWidth = screen - (mainFrame - current);
+    
+    if (plugin->expandWidth <= 0 ) {
+        plugin->expandWidth = 1;
+    }
 }
 
 static void
@@ -117,11 +168,19 @@ plugin_recreate_gui (gpointer data)
     NetkWindow *win;
     NetkScreen *s;
     NetkWorkspace *ws;
+    int width;
+    
+    if (plugin->expand == TRUE) {
+        plugin_determine_expand_width (plugin);
+        width = plugin->expandWidth;
+    } else {
+        width = plugin->width;
+    }
 
     if (plugin->orientation==HORIZONTAL) {
-    	gtk_widget_set_size_request (plugin->frame, plugin->width, plugin->size);
+        gtk_widget_set_size_request (plugin->frame, width, plugin->size);
     } else {
-    	gtk_widget_set_size_request (plugin->frame, plugin->size, plugin->width);
+        gtk_widget_set_size_request (plugin->frame, plugin->size, width);
     }
     gtk_widget_destroy (plugin->taskbar);
     plugin->taskbar = netk_tasklist_new(plugin->screen);
@@ -181,12 +240,13 @@ plugin_set_orientation (Control *ctrl, int orientation)
 {
     gui *plugin = ctrl->data;
     plugin->orientation = orientation;
+  
     plugin_recreate_gui(plugin);
 }
 
 static void
 plugin_read_config (Control *ctrl, xmlNodePtr node)
-{
+{    
     xmlChar *value;
     gui *plugin = ctrl->data;
 
@@ -199,13 +259,17 @@ plugin_read_config (Control *ctrl, xmlNodePtr node)
             if ((value = xmlGetProp(node, (const xmlChar *)"alwaysGroup"))) {
                 plugin->alwaysGroup = atoi(value);
                 g_free(value);
-	    }
+            }
             if ((value = xmlGetProp(node, (const xmlChar *)"includeAll"))) {
                 plugin->includeAll = atoi(value);
                 g_free(value);
-	    }
-	    break;
-	}
+            }
+            if ((value = xmlGetProp(node, (const xmlChar *)"expand"))) {
+                plugin->expand = atoi(value);
+                g_free(value);
+            }
+            break;
+        }
     }
     plugin_recreate_gui (plugin);
     plugin_eval_TaskbarOptions (plugin);
@@ -227,6 +291,9 @@ plugin_write_config (Control *ctrl, xmlNodePtr parent)
 
     g_snprintf(value, 10, "%d", plugin->includeAll);
     xmlSetProp(root, "includeAll", value);
+
+    g_snprintf(value, 10, "%d", plugin->expand);
+    xmlSetProp(root, "expand", value);  
 }    
 
 static void
@@ -234,7 +301,9 @@ plugin_spin_changed (GtkWidget *widget, gpointer data)
 {
     gui *plugin = data;
     plugin->width = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON(widget));
-    plugin_recreate_gui(plugin);
+    if (plugin->expand == FALSE ) {
+        plugin_recreate_gui (plugin);
+    }
 }
 
 static void
@@ -262,20 +331,34 @@ plugin_cb2_changed (GtkToggleButton *cb, gui *plugin)
 }
 
 static void
+plugin_cb3_changed (GtkToggleButton *cb, gui *plugin)
+{
+    gboolean expand;
+
+    expand = gtk_toggle_button_get_active (cb);
+
+    plugin->expand = expand;
+    gtk_widget_set_sensitive (plugin->spin, !expand);
+    
+    plugin_recreate_gui (plugin);
+}
+
+static void
 plugin_create_options (Control *ctrl, GtkContainer *con, GtkWidget *done)
 {
     gui *plugin = ctrl->data;
-    GtkWidget *hbox, *size, *spin, *cb1, *cb2, *vbox, *sep;
+    GtkWidget *hbox, *size, *cb1, *cb2, *cb3, *vbox, *sep;
     hbox = gtk_hbox_new (FALSE, 2);
     vbox = gtk_vbox_new (FALSE, 4);
 
     size = gtk_label_new ("Size");
 
-    spin = gtk_spin_button_new_with_range (1,1000,1.0);
+    plugin->spin = gtk_spin_button_new_with_range (1,1000,1.0);
 
-    gtk_spin_button_set_value (GTK_SPIN_BUTTON(spin), plugin->width);
+    gtk_spin_button_set_value (GTK_SPIN_BUTTON(plugin->spin), plugin->width);
+    gtk_widget_set_sensitive (plugin->spin, !plugin->expand);
     
-    g_signal_connect (spin, "value-changed", G_CALLBACK (plugin_spin_changed), plugin);
+    g_signal_connect (plugin->spin, "value-changed", G_CALLBACK (plugin_spin_changed), plugin);
 
     sep = gtk_hseparator_new ();
 
@@ -287,12 +370,17 @@ plugin_create_options (Control *ctrl, GtkContainer *con, GtkWidget *done)
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (cb2), plugin->includeAll);
     g_signal_connect (cb2, "toggled", G_CALLBACK (plugin_cb2_changed), plugin);
     
+    cb3 = gtk_check_button_new_with_label ("Expand to fill screen");
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (cb3), plugin->expand);
+    g_signal_connect (cb3, "toggled", G_CALLBACK (plugin_cb3_changed), plugin);
+    
     gtk_box_pack_start (GTK_BOX(hbox), size, FALSE, FALSE, 1);
     
-    gtk_box_pack_start (GTK_BOX(hbox), spin, FALSE, FALSE, 1);
+    gtk_box_pack_start (GTK_BOX(hbox), plugin->spin, FALSE, FALSE, 1);
 
     gtk_container_add (GTK_CONTAINER(vbox), hbox);
     gtk_container_add (GTK_CONTAINER(vbox), sep);
+    gtk_container_add (GTK_CONTAINER(vbox), cb3);
     gtk_container_add (GTK_CONTAINER(vbox), cb1);
     gtk_container_add (GTK_CONTAINER(vbox), cb2);
     gtk_container_add (GTK_CONTAINER(con), vbox);
