@@ -1,3 +1,7 @@
+2004-04-16 21:30 papermoon
+	* po/xfce-showdesktop.pot, po/de.po, panel-plugin/showdesktop.c:
+	Fixed some compile errors
+
 2004-01-09 19:44 papermoon
 	* Changelog, configure, configure.ac, po/pl.po po/pl.gmo: 
 	Added Polish translation by Andrzej Augustynowicz
