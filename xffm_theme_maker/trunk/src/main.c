@@ -22,8 +22,6 @@
 #include "callbacks.h"
 
 #warning "Please note that xffm_theme_maker requires xffm >= 4.1"
-#warning "FIXME:LIBDIR need to be defined by configure!"
-#define LIBDIR "/usr/local/lib/"
 
 GtkTreeView *treeview;
 GtkTreeStore *store;  

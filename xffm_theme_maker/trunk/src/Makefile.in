@@ -113,7 +113,7 @@ target_alias = @target_alias@
 INCLUDES = \
 	-DPACKAGE_DATA_DIR=\""$(datadir)"\" \
 	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
-	-I/usr/local/include/libxml2	\
+	-DLIBDIR=\"$(libdir)\" \
 	@PACKAGE_CFLAGS@
 
 
@@ -126,7 +126,7 @@ xffm_theme_maker_SOURCES = \
 	callbacks.c callbacks.h
 
 
-xffm_theme_maker_LDADD = @PACKAGE_LIBS@ -lxml2
+xffm_theme_maker_LDADD = @PACKAGE_LIBS@ 
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
