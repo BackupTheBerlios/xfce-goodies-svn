@@ -61,6 +61,9 @@
 #include <config.h>
 #endif
 
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
+
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 
@@ -82,7 +85,7 @@
 #endif
 #endif
 
-#define HFILE "xfrun_history"
+#define HFILE ("xfce4" G_DIR_SEPARATOR_S "xfrun_history")
 
 #define MAXHISTORY 10
 
@@ -175,7 +178,7 @@ static char *get_fileman(void)
 GList *get_history(void)
 {
     FILE *fp;
-    char *hfile = xfce_get_userfile(HFILE, NULL);
+    char *hfile = xfce_resource_lookup (XFCE_RESOURCE_CACHE, HFILE);
     char line[DEFAULT_LENGTH];
     char *check;
     GList *cbtemp = NULL;
@@ -183,12 +186,15 @@ GList *get_history(void)
 
     int i = 0;
 
-    if (!(fp = fopen(hfile, "r"))) {
-        g_free(hfile);
+    if (!hfile)
+        return NULL;
+
+    if (!(fp = fopen (hfile, "r"))) {
+        g_free (hfile);
 
         return NULL;
     }
-
+    
     line[DEFAULT_LENGTH - 1] = '\0';
 
     /* Add a single blank line at the begining */
@@ -229,7 +235,7 @@ GList *get_history(void)
 void put_history(const char *newest, gboolean in_terminal, GList * cb)
 {
     FILE *fp;
-    char *hfile = xfce_get_userfile(HFILE, NULL);
+    char *hfile = xfce_resource_save_location (XFCE_RESOURCE_CACHE, HFILE, TRUE);
     GList *node;
     int i;
 
@@ -311,6 +317,37 @@ static void scroll_history(gboolean forward, gint count)
     return;
 }
     
+
+static gboolean entry_buttonpress_cb(GtkWidget *entry, GdkEventButton *event, gpointer data)
+{
+	static Atom atom = 0;
+	GtkWidget *toplevel = gtk_widget_get_toplevel (entry);
+
+	if (event->button != 3 && toplevel && toplevel->window) {
+		XClientMessageEvent xev;
+
+		if (G_UNLIKELY(!atom))
+			atom = XInternAtom (GDK_DISPLAY(), "_NET_ACTIVE_WINDOW", FALSE);
+
+		xev.type = ClientMessage;
+		xev.window = GDK_WINDOW_XID (toplevel->window);
+		xev.message_type = atom;
+		xev.format = 32;
+		xev.data.l[0] = 0;
+		xev.data.l[1] = 0;
+		xev.data.l[2] = 0;
+		xev.data.l[3] = 0;	
+		xev.data.l[4] = 0;	
+
+		XSendEvent (GDK_DISPLAY (), GDK_ROOT_WINDOW (), False,
+					StructureNotifyMask, (XEvent *) & xev);
+
+                gtk_widget_grab_focus (entry);
+	}
+
+        return FALSE;
+}
+
 
 static gboolean entry_keypress_cb(GtkWidget *entry, GdkEventKey *event, gpointer user_data)
 {
@@ -425,6 +462,8 @@ static t_command *command_new(void)
     // g_signal_connect(command->entry, "activate", G_CALLBACK(runcl), command);
     g_signal_connect(command->entry, "key-press-event", G_CALLBACK(entry_keypress_cb), command);
 
+    g_signal_connect (command->entry, "button-press-event", G_CALLBACK(entry_buttonpress_cb), NULL);
+    
     return (command);
 };
 
