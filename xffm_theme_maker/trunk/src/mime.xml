@@ -1,0 +1,458 @@
+<?xml version="1.0"?>
+<mime-info>
+  <mime-type type="model/default"/>
+  <mime-type type="model/vrml"/>
+  <mime-type type="inode/default"/>
+  <mime-type type="inode/fifo" icon="pipe.png"/>
+  <mime-type type="inode/socket" icon="socket.png"/>
+  <mime-type type="inode/directory" icon="folder.png"/>
+  <mime-type type="inode/chardevice" icon="chardevice.png"/>
+  <mime-type type="inode/symlink" icon="arrows2.png"/>
+  <mime-type type="inode/blockdevice" icon="blockdevice.png"/>
+  <mime-type type="video/default"/>
+  <mime-type type="video/quicktime" icon="video.png"/>
+  <mime-type type="video/x-sgi-movie" icon="video.png"/>
+  <mime-type type="video/wavelet" icon="video.png"/>
+  <mime-type type="video/x-real-video" icon="video.png"/>
+  <mime-type type="video/x-ms-asf" icon="video.png"/>
+  <mime-type type="video/x-anim" icon="video.png"/>
+  <mime-type type="video/x-flic" icon="video.png"/>
+  <mime-type type="video/mpeg" icon="video.png"/>
+  <mime-type type="video/vivo" icon="video.png"/>
+  <mime-type type="video/x-mng" icon="video.png"/>
+  <mime-type type="video/x-ms-wmv" icon="video.png"/>
+  <mime-type type="video/isivideo" icon="video.png"/>
+  <mime-type type="video/x-msvideo" icon="video.png"/>
+  <mime-type type="video/any" icon="video.png"/>
+  <mime-type type="video/x-avi" icon="video.png"/>
+  <mime-type type="multipart/default"/>
+  <mime-type type="multipart/digest"/>
+  <mime-type type="multipart/mixed"/>
+  <mime-type type="multipart/encrypted" icon="Jxlock.png"/>
+  <mime-type type="multipart/signed"/>
+  <mime-type type="multipart/alternative"/>
+  <mime-type type="multipart/x-mixed-replace"/>
+  <mime-type type="multipart/related"/>
+  <mime-type type="multipart/appledouble"/>
+  <mime-type type="multipart/report"/>
+  <mime-type type="message/default"/>
+  <mime-type type="message/news"/>
+  <mime-type type="message/partial"/>
+  <mime-type type="message/external-body"/>
+  <mime-type type="message/disposition-notification"/>
+  <mime-type type="message/x-gnu-rmail"/>
+  <mime-type type="message/delivery-status"/>
+  <mime-type type="message/rfc822" icon="document.png"/>
+  <mime-type type="audio/default"/>
+  <mime-type type="audio/vnd.rn-realaudio" icon="sound.png"/>
+  <mime-type type="audio/x-aiff" icon="sound.png"/>
+  <mime-type type="audio/x-wav" icon="sound.png"/>
+  <mime-type type="audio/x-aifc" icon="sound.png"/>
+  <mime-type type="audio/x-stm" icon="sound.png"/>
+  <mime-type type="audio/x-pn-realaudio" icon="sound.png"/>
+  <mime-type type="audio/prs.sid" icon="sound.png"/>
+  <mime-type type="audio/midi" icon="sound.png"/>
+  <mime-type type="audio/x-aiffc" icon="sound.png"/>
+  <mime-type type="audio/x-mp3-playlist" icon="sound.png"/>
+  <mime-type type="audio/basic" icon="sound.png"/>
+  <mime-type type="audio/x-voc" icon="sound.png"/>
+  <mime-type type="audio/ac3" icon="sound.png"/>
+  <mime-type type="audio/x-s3m" icon="sound.png"/>
+  <mime-type type="audio/x-mod" icon="sound.png"/>
+  <mime-type type="audio/x-it" icon="sound.png"/>
+  <mime-type type="audio/x-bmx" icon="sound.png"/>
+  <mime-type type="audio/x-mp3" icon="sound.png"/>
+  <mime-type type="audio/x-adpcm" icon="sound.png"/>
+  <mime-type type="audio/x-xm" icon="sound.png"/>
+  <mime-type type="audio/x-mpeg" icon="sound.png"/>
+  <mime-type type="audio/x-xi" icon="sound.png"/>
+  <mime-type type="audio/x-scpls" icon="sound.png"/>
+  <mime-type type="audio/x-mpegurl" icon="sound.png"/>
+  <mime-type type="audio/any" icon="sound.png"/>
+  <mime-type type="audio/x-riff" icon="sound.png"/>
+  <mime-type type="xfce/default" icon="document.png"/>
+  <mime-type type="xfce/find_icon" icon="mag_glass.png"/>
+  <mime-type type="xfce/info_icon" icon="gtk-dialog-info"/>
+  <mime-type type="xfce/network_icon" icon="network.png"/>
+  <mime-type type="xfce/executable_icon" icon="exec.png"/>
+  <mime-type type="xfce/no-write" icon="locked_file.png"/>
+  <mime-type type="xfce/edit_icon" icon="gtk-dnd"/>
+  <mime-type type="xfce/ademo_icon" icon="folder_zap.png"/>
+  <mime-type type="xfce/bookmarks_icon" icon="library.png"/>
+  <mime-type type="xfce/floppy_icon" icon="3floppy_unmount.png"/>
+  <mime-type type="xfce/default_icon"/>
+  <mime-type type="xfce/asound_icon" icon="sound.png"/>
+  <mime-type type="xfce/broken_icon" icon="unknown.png"/>
+  <mime-type type="xfce/closed_folder_ro_lnk_icon" icon="folder_violet.png"/>
+  <mime-type type="xfce/hopen_folder_icon" icon="folder_grey_open.png"/>
+  <mime-type type="xfce/error_icon" icon="gtk-dialog-error"/>
+  <mime-type type="xfce/asys_icon" icon="konsole.png"/>
+  <mime-type type="xfce/file_icon" icon="gtk-open"/>
+  <mime-type type="xfce/closed_folder_ro_icon" icon="folder_red.png"/>
+  <mime-type type="xfce/dvd_icon" icon="cdrom_unmount.png"/>
+  <mime-type type="xfce/ipc_icon" icon="knu.png"/>
+  <mime-type type="xfce/acolor_icon" icon="xpaint.png"/>
+  <mime-type type="xfce/aopen_folder_icon" icon="folder_green_open.png"/>
+  <mime-type type="xfce/up_icon" icon="gtk-go-up"/>
+  <mime-type type="xfce/question_icon" icon="gtk-dialog-question"/>
+  <mime-type type="xfce/netws_icon" icon="background.png"/>
+  <mime-type type="xfce/hopen_folder_ro_icon" icon="folder_grey_open.png"/>
+  <mime-type type="xfce/autil_icon" icon="folder_zap.png"/>
+  <mime-type type="xfce/closed_folder_lnk_icon" icon="folder_violet.png"/>
+  <mime-type type="xfce/waste_basket_full_icon" icon="kfm_fulltrash.png"/>
+  <mime-type type="xfce/cdrom_icon" icon="cdrom_unmount.png"/>
+  <mime-type type="xfce/aopen_folder_ro_icon" icon="folder_green_open.png"/>
+  <mime-type type="xfce/noaccess_icon" icon="folder_locked.png"/>
+  <mime-type type="xfce/apenpd_icon" icon="text.png"/>
+  <mime-type type="xfce/go_icon" icon="gtk-goto-first"/>
+  <mime-type type="xfce/aprint_icon" icon="printer.png"/>
+  <mime-type type="xfce/adskt_icon" icon="folder_zap.png"/>
+  <mime-type type="xfce/help_icon" icon="gtk-help"/>
+  <mime-type type="xfce/aapps_icon" icon="folder_zap.png"/>
+  <mime-type type="xfce/no-access" icon="folder_locked.png"/>
+  <mime-type type="xfce/tasks_icon"/>
+  <mime-type type="xfce/terminal_icon" icon="Monitor.png"/>
+  <mime-type type="xfce/atool_icon" icon="folder_zap.png"/>
+  <mime-type type="xfce/open_folder_ro_icon" icon="folder_open.png"/>
+  <mime-type type="xfce/disk_mnt_icon" icon="harddrive_mount.png"/>
+  <mime-type type="xfce/amultimedia_icon" icon="video.png"/>
+  <mime-type type="xfce/nfs_mnt_icon" icon="harddrive_mount.png"/>
+  <mime-type type="xfce/nfs_icon" icon="harddrive_unmount.png"/>
+  <mime-type type="xfce/anetwork_icon" icon="network.png"/>
+  <mime-type type="xfce/aopen_folder_lnk_icon" icon="folder_green_open.png"/>
+  <mime-type type="xfce/ainfo_icon" icon="info.png"/>
+  <mime-type type="xfce/agames_icon" icon="folder_zap.png"/>
+  <mime-type type="xfce/floppy_mnt_icon" icon="3floppy_mount.png"/>
+  <mime-type type="xfce/adaily_icon" icon="karm.png"/>
+  <mime-type type="xfce/open_folder_icon" icon="folder_open.png"/>
+  <mime-type type="xfce/hopen_folder_lnk_icon" icon="folder_grey_open.png"/>
+  <mime-type type="xfce/share_open_icon" icon="folder_violet_open.png"/>
+  <mime-type type="xfce/amail_icon" icon="korn.png"/>
+  <mime-type type="xfce/cdrom_mnt_icon" icon="cdrom_mount.png"/>
+  <mime-type type="xfce/dvd_mnt_icon" icon="cdrom_mount.png"/>
+  <mime-type type="xfce/printer_icon" icon="printer.png"/>
+  <mime-type type="xfce/find_result_icon" icon="gtk-goto-last"/>
+  <mime-type type="xfce/open_folder_lnk_icon" icon="folder_open.png"/>
+  <mime-type type="xfce/amontune_icon" icon="folder_zap.png"/>
+  <mime-type type="xfce/warning_icon" icon="gtk-dialog-warning"/>
+  <mime-type type="xfce/afile_icon" icon="kfm.png"/>
+  <mime-type type="xfce/trash_open_icon" icon="Jrecycle.png"/>
+  <mime-type type="xfce/waste_basket_empty_icon" icon="kfm_trash.png"/>
+  <mime-type type="xfce/disk_icon" icon="harddrive_unmount.png"/>
+  <mime-type type="xfce/open_folder_ro_lnk_icon" icon="folder_open.png"/>
+  <mime-type type="xfce/trash_closed_icon" icon="Jrecycle.png"/>
+  <mime-type type="xfce/fstab_icon" icon="kcmpci.png"/>
+  <mime-type type="xfce/closed_folder_icon" icon="folder.png"/>
+  <mime-type type="xfce/asysmgr_icon" icon="folder_zap.png"/>
+  <mime-type type="xfce/view_icon" icon="gtk-select-color"/>
+  <mime-type type="xfce/process_mnt_icon" icon="kcmprocessor_mount.png"/>
+  <mime-type type="xfce/process_icon" icon="kcmprocessor.png"/>
+  <mime-type type="xfce/aopen_folder_ro_lnk_icon" icon="folder_green_open.png"/>
+  <mime-type type="xfce/aman_icon" icon="xman.png"/>
+  <mime-type type="xfce/hopen_folder_ro_lnk_icon" icon="folder_grey_open.png"/>
+  <mime-type type="xfce/agen_icon" icon="folder_zap.png"/>
+  <mime-type type="xfce/aschedule_icon" icon="karm.png"/>
+  <mime-type type="xfce/share_icon" icon="folder_violet.png"/>
+  <mime-type type="xfce/preferences_icon" icon="gtk-preferences"/>
+  <mime-type type="text/default"/>
+  <mime-type type="text/x-java" icon="java_src.png"/>
+  <mime-type type="text/htmlh" icon="html.png"/>
+  <mime-type type="text/x-makefile" icon="make.png"/>
+  <mime-type type="text/x-comma-separated-values"/>
+  <mime-type type="text/x-tex" icon="tex.png"/>
+  <mime-type type="text/mathml"/>
+  <mime-type type="text/x-patch"/>
+  <mime-type type="text/vnd.wap.wml"/>
+  <mime-type type="text/x-vcard"/>
+  <mime-type type="text/x-bibtex" icon="tex.png"/>
+  <mime-type type="text/x-idl"/>
+  <mime-type type="text/x-install" icon="karm.png"/>
+  <mime-type type="text/xml" icon="man.png"/>
+  <mime-type type="text/rfc822-headers"/>
+  <mime-type type="text/x-credits" icon="info.png"/>
+  <mime-type type="text/plain" icon="document.png"/>
+  <mime-type type="text/x-c++hdr" icon="h_src.png"/>
+  <mime-type type="text/richtext" icon="document.png"/>
+  <mime-type type="text/x-ksysv-log"/>
+  <mime-type type="text/x-adasrc"/>
+  <mime-type type="text/rdf"/>
+  <mime-type type="text/x-troff-ms"/>
+  <mime-type type="text/rss"/>
+  <mime-type type="text/x-troff-mm"/>
+  <mime-type type="text/x-literate-haskell" icon="karm.png"/>
+  <mime-type type="text/x-chdr" icon="h_src.png"/>
+  <mime-type type="text/x-log" icon="text.png"/>
+  <mime-type type="text/x-troff-me"/>
+  <mime-type type="text/x-diff"/>
+  <mime-type type="text/x-gettext-translation"/>
+  <mime-type type="text/xmcd"/>
+  <mime-type type="text/x-tcl" icon="resource.png"/>
+  <mime-type type="text/any" icon="utilities_package.png"/>
+  <mime-type type="text/html" icon="html.png"/>
+  <mime-type type="text/x-readme" icon="text.png"/>
+  <mime-type type="text/x-moc" icon="moc_src.png"/>
+  <mime-type type="text/x-ksh" icon="resource.png"/>
+  <mime-type type="text/x-vcalendar"/>
+  <mime-type type="text/tab-separated-values"/>
+  <mime-type type="text/x-dtd"/>
+  <mime-type type="text/enriched"/>
+  <mime-type type="text/x-xslfo"/>
+  <mime-type type="text/x-texinfo"/>
+  <mime-type type="text/x-emacs-lisp"/>
+  <mime-type type="text/x-copying" icon="info.png"/>
+  <mime-type type="text/x-gtkrc"/>
+  <mime-type type="text/sgml"/>
+  <mime-type type="text/x-sql" icon="karm.png"/>
+  <mime-type type="text/directory"/>
+  <mime-type type="text/x-uri" icon="html.png"/>
+  <mime-type type="text/x-authors" icon="info.png"/>
+  <mime-type type="text/x-dsl"/>
+  <mime-type type="text/x-fortran" icon="f_src.png"/>
+  <mime-type type="text/spreadsheet" icon="graphs.png"/>
+  <mime-type type="text/css" icon="text.png"/>
+  <mime-type type="text/x-dcl"/>
+  <mime-type type="text/x-scheme" icon="document.png"/>
+  <mime-type type="text/x-c++src" icon="c_src.png"/>
+  <mime-type type="text/x-haskell" icon="karm.png"/>
+  <mime-type type="text/x-pascal"/>
+  <mime-type type="text/x-setext"/>
+  <mime-type type="text/x-xslt"/>
+  <mime-type type="text/calendar"/>
+  <mime-type type="text/x-objcsrc"/>
+  <mime-type type="text/x-speech"/>
+  <mime-type type="text/x-csrc" icon="c_src.png"/>
+  <mime-type type="image/default"/>
+  <mime-type type="image/x-portable-anymap" icon="image.png"/>
+  <mime-type type="image/x-psd" icon="image.png"/>
+  <mime-type type="image/fax-g3" icon="image.png"/>
+  <mime-type type="image/x-portable-pixmap" icon="image.png"/>
+  <mime-type type="image/x-cmu-raster" icon="image.png"/>
+  <mime-type type="image/x-xbitmap" icon="image.png"/>
+  <mime-type type="image/x-xfig" icon="image.png"/>
+  <mime-type type="image/x-applix-graphics" icon="image.png"/>
+  <mime-type type="image/x-ico" icon="image.png"/>
+  <mime-type type="image/x-photo-cd" icon="image.png"/>
+  <mime-type type="image/x-portable-graymap" icon="image.png"/>
+  <mime-type type="image/x-jng" icon="image.png"/>
+  <mime-type type="image/x-eps" icon="eps.png"/>
+  <mime-type type="image/tiff" icon="image.png"/>
+  <mime-type type="image/x-3ds" icon="image.png"/>
+  <mime-type type="image/x-djvu" icon="image.png"/>
+  <mime-type type="image/vnd.dxf" icon="image.png"/>
+  <mime-type type="image/x-rgb" icon="image.png"/>
+  <mime-type type="image/bmp" icon="image.png"/>
+  <mime-type type="image/generic" icon="image.png"/>
+  <mime-type type="image/x-compressed-xcf" icon="image.png"/>
+  <mime-type type="image/x-xpixmap" icon="image.png"/>
+  <mime-type type="image/x-ilbm" icon="image.png"/>
+  <mime-type type="image/vnd.dwg" icon="image.png"/>
+  <mime-type type="image/x-tga" icon="image.png"/>
+  <mime-type type="image/x-portable-bitmap" icon="image.png"/>
+  <mime-type type="image/x-lws" icon="image.png"/>
+  <mime-type type="image/x-iff" icon="image.png"/>
+  <mime-type type="image/x-lwo" icon="image.png"/>
+  <mime-type type="image/x-xwindowdump" icon="image.png"/>
+  <mime-type type="image/x-niff" icon="image.png"/>
+  <mime-type type="image/cgm" icon="image.png"/>
+  <mime-type type="image/g3fax" icon="image.png"/>
+  <mime-type type="image/ief" icon="image.png"/>
+  <mime-type type="image/png" icon="image.png"/>
+  <mime-type type="image/svg+xml" icon="image.png"/>
+  <mime-type type="image/x-wmf" icon="image.png"/>
+  <mime-type type="image/x-xcf" icon="image.png"/>
+  <mime-type type="image/gif" icon="image.png"/>
+  <mime-type type="image/x-msod" icon="image.png"/>
+  <mime-type type="image/x-pcx" icon="image.png"/>
+  <mime-type type="image/jpeg" icon="image.png"/>
+  <mime-type type="application/default"/>
+  <mime-type type="application/x-pw"/>
+  <mime-type type="application/pgp-encrypted"/>
+  <mime-type type="application/vnd.ms-powerpoint"/>
+  <mime-type type="application/x-cd-image" icon="image.png"/>
+  <mime-type type="application/x-n64-rom" icon="document.png"/>
+  <mime-type type="application/x-executable"/>
+  <mime-type type="application/rtf" icon="text.png"/>
+  <mime-type type="application/x-abiword" icon="text.png"/>
+  <mime-type type="application/x-font-ttf"/>
+  <mime-type type="application/illustrator"/>
+  <mime-type type="application/x-glade" icon="moc_src.png"/>
+  <mime-type type="application/x-nes-rom" icon="document.png"/>
+  <mime-type type="application/x-oleo"/>
+  <mime-type type="application/x-lyx" icon="text.png"/>
+  <mime-type type="application/x-desktop" icon="document.png"/>
+  <mime-type type="application/x-shellscript" icon="konsole.png"/>
+  <mime-type type="application/x-applix-word" icon="text.png"/>
+  <mime-type type="application/x-zerosize"/>
+  <mime-type type="application/x-ksysv-package"/>
+  <mime-type type="application/x-asp"/>
+  <mime-type type="application/x-perl" icon="perl.png"/>
+  <mime-type type="application/x-stuffit" icon="sound.png"/>
+  <mime-type type="application/x-tsh" icon="konsole.png"/>
+  <mime-type type="application/x-gtktalog" icon="document.png"/>
+  <mime-type type="application/vnd.lotus-1-2-3" icon="graphs.png"/>
+  <mime-type type="application/x-tex-gf" icon="tex.png"/>
+  <mime-type type="application/x-deb" icon="applications_package.png"/>
+  <mime-type type="application/x-class-file" icon="java_src.png"/>
+  <mime-type type="application/x-core" icon="core.png"/>
+  <mime-type type="application/x-kugar"/>
+  <mime-type type="application/x-krita"/>
+  <mime-type type="application/vnd.rn-realmedia" icon="video.png"/>
+  <mime-type type="application/ogg" icon="document.png"/>
+  <mime-type type="application/x-dbase"/>
+  <mime-type type="application/x-ksh" icon="konsole.png"/>
+  <mime-type type="application/x-gnumeric" icon="document.png"/>
+  <mime-type type="application/x-font-linux-psf"/>
+  <mime-type type="application/x-ruby"/>
+  <mime-type type="application/x-python" icon="resource.png"/>
+  <mime-type type="application/x-gettext-translation"/>
+  <mime-type type="application/x-font-bdf"/>
+  <mime-type type="application/x-netcdf"/>
+  <mime-type type="application/vnd.sun.xml.impress" icon="document.png"/>
+  <mime-type type="application/pkcs7-signature"/>
+  <mime-type type="application/pgp" icon="Jxlock.png"/>
+  <mime-type type="application/x-font-tex-tfm"/>
+  <mime-type type="application/x-font-dos"/>
+  <mime-type type="application/x-bsh" icon="konsole.png"/>
+  <mime-type type="application/postscript" icon="postscript.png"/>
+  <mime-type type="application/x-dc-rom" icon="document.png"/>
+  <mime-type type="application/any"/>
+  <mime-type type="application/x-lhz"/>
+  <mime-type type="application/x-kspread-crypt"/>
+  <mime-type type="application/x-rar"/>
+  <mime-type type="application/vnd.ms-word"/>
+  <mime-type type="application/x-x509-ca-cert"/>
+  <mime-type type="application/x-scramble" icon="Jxlock.png"/>
+  <mime-type type="application/x-slp"/>
+  <mime-type type="application/x-egon"/>
+  <mime-type type="application/x-shar"/>
+  <mime-type type="application/x-mif"/>
+  <mime-type type="application/msword" icon="text.png"/>
+  <mime-type type="application/x-kword" icon="text.png"/>
+  <mime-type type="application/x-gnucash" icon="unknown.png"/>
+  <mime-type type="application/x-ustar"/>
+  <mime-type type="application/x-arj" icon="clamp.png"/>
+  <mime-type type="application/x-reject" icon="document.png"/>
+  <mime-type type="application/xhtml+xml"/>
+  <mime-type type="application/x-graphite"/>
+  <mime-type type="application/x-csh" icon="konsole.png"/>
+  <mime-type type="application/x-bcpio"/>
+  <mime-type type="application/x-pkcs12"/>
+  <mime-type type="application/x-arc"/>
+  <mime-type type="application/x-archive"/>
+  <mime-type type="application/x-awk"/>
+  <mime-type type="application/x-shockwave-flash"/>
+  <mime-type type="application/x-troff-man"/>
+  <mime-type type="application/x-tex-pk"/>
+  <mime-type type="application/x-default" icon="document.png"/>
+  <mime-type type="application/vnd.sun.xml.math"/>
+  <mime-type type="application/x-lha"/>
+  <mime-type type="application/x-kivio"/>
+  <mime-type type="application/vnd.sun.xml.calc.template"/>
+  <mime-type type="application/vnd.stardivision.math"/>
+  <mime-type type="application/x-shared-library-la" icon="binary.png"/>
+  <mime-type type="application/x-jar" icon="document.png"/>
+  <mime-type type="application/pkcs7-mime"/>
+  <mime-type type="application/x-rpm" icon="applications_package.png"/>
+  <mime-type type="application/x-palm-database"/>
+  <mime-type type="application/x-troff" icon="man.png"/>
+  <mime-type type="application/x-zoo"/>
+  <mime-type type="application/x-karbon"/>
+  <mime-type type="application/x-siag"/>
+  <mime-type type="application/x-profile"/>
+  <mime-type type="application/x-tar" icon="clamp.png"/>
+  <mime-type type="application/vnd.sun.xml.impress.template"/>
+  <mime-type type="application/package" icon="clamp.png"/>
+  <mime-type type="application/x-frame"/>
+  <mime-type type="application/vnd.stardivision.mail"/>
+  <mime-type type="application/x-trash" icon="document.png"/>
+  <mime-type type="application/x-font"/>
+  <mime-type type="application/x-tarz" icon="clamp.png"/>
+  <mime-type type="application/x-linguist"/>
+  <mime-type type="application/x-object" icon="binary.png"/>
+  <mime-type type="application/x-e-theme" icon="document.png"/>
+  <mime-type type="application/x-sc"/>
+  <mime-type type="application/x-pef-executable"/>
+  <mime-type type="application/x-applix-spreadsheet" icon="graphs.png"/>
+  <mime-type type="application/x-msx-rom" icon="document.png"/>
+  <mime-type type="application/x-killustrator" icon="graphs.png"/>
+  <mime-type type="application/x-mswrite"/>
+  <mime-type type="application/x-font-sunos-news" icon="document.png"/>
+  <mime-type type="application/pgp-signature"/>
+  <mime-type type="application/x-bzip-compressed-tar" icon="clamp.png"/>
+  <mime-type type="application/x-java" icon="java_src.png"/>
+  <mime-type type="application/x-gameboy-rom" icon="document.png"/>
+  <mime-type type="application/x-gzpostscript" icon="postscript.png"/>
+  <mime-type type="application/x-python-bytecode" icon="binary.png"/>
+  <mime-type type="application/x-amipro"/>
+  <mime-type type="application/vnd.sun.xml.draw"/>
+  <mime-type type="application/x-genesis-rom" icon="document.png"/>
+  <mime-type type="application/x-cgi"/>
+  <mime-type type="application/vnd.stardivision.draw"/>
+  <mime-type type="application/vnd.sun.xml.calc" icon="graphs.png"/>
+  <mime-type type="application/vnd.stardivision.impress" icon="document.png"/>
+  <mime-type type="application/x-designer"/>
+  <mime-type type="application/x-font-vfont"/>
+  <mime-type type="application/x-sms-rom" icon="document.png"/>
+  <mime-type type="application/x-dbm"/>
+  <mime-type type="application/vnd.stardivision.calc"/>
+  <mime-type type="application/x-kpresenter" icon="graphs.png"/>
+  <mime-type type="application/x-font-afm"/>
+  <mime-type type="application/x-sv4crc"/>
+  <mime-type type="application/x-compressed-tar" icon="clamp.png"/>
+  <mime-type type="application/andrew-inset"/>
+  <mime-type type="application/vnd.stardivision.writer" icon="text.png"/>
+  <mime-type type="application/vnd.sun.xml.writer.template"/>
+  <mime-type type="application/x-cpio-compressed"/>
+  <mime-type type="application/x-bzip" icon="clamp.png"/>
+  <mime-type type="application/vnd.ms-excel" icon="graphs.png"/>
+  <mime-type type="application/vnd.sun.xml.writer.global"/>
+  <mime-type type="application/x-hdf"/>
+  <mime-type type="application/x-toutdoux"/>
+  <mime-type type="application/x-zsh" icon="konsole.png"/>
+  <mime-type type="application/x-tzo"/>
+  <mime-type type="application/x-php"/>
+  <mime-type type="application/x-kword-crypt"/>
+  <mime-type type="application/x-theme"/>
+  <mime-type type="application/x-gtar"/>
+  <mime-type type="application/x-jbuilder-project"/>
+  <mime-type type="application/oda"/>
+  <mime-type type="application/x-font-tex"/>
+  <mime-type type="application/x-kpovmodeler"/>
+  <mime-type type="application/x-qw"/>
+  <mime-type type="application/wordperfect" icon="document.png"/>
+  <mime-type type="application/x-sv4cpio"/>
+  <mime-type type="application/x-kformula"/>
+  <mime-type type="application/x-dia-diagram" icon="graphs.png"/>
+  <mime-type type="application/x-wais-source"/>
+  <mime-type type="application/vnd.stardivision.chart" icon="graphs.png"/>
+  <mime-type type="application/vnd.sun.xml.draw.template"/>
+  <mime-type type="application/mac-binhex40"/>
+  <mime-type type="application/pdf" icon="pdf.png"/>
+  <mime-type type="application/x-font-pcf"/>
+  <mime-type type="application/blender" icon="document.png"/>
+  <mime-type type="application/x-troff-man-compressed"/>
+  <mime-type type="application/x-font-libgrx"/>
+  <mime-type type="application/pgp-keys"/>
+  <mime-type type="application/x-font-framemaker"/>
+  <mime-type type="application/x-mswinurl"/>
+  <mime-type type="application/zip" icon="clamp.png"/>
+  <mime-type type="application/x-nautilus-link"/>
+  <mime-type type="application/x-gzip" icon="clamp.png"/>
+  <mime-type type="application/x-dvi" icon="dvi.png"/>
+  <mime-type type="application/x-kchart" icon="graphs.png"/>
+  <mime-type type="application/octet-stream" icon="binary.png"/>
+  <mime-type type="application/x-quattropro" icon="graphs.png"/>
+  <mime-type type="application/x-lzop"/>
+  <mime-type type="application/x-kspread" icon="graphs.png"/>
+  <mime-type type="application/smil"/>
+  <mime-type type="application/vnd.sun.xml.writer" icon="text.png"/>
+  <mime-type type="application/x-cpio"/>
+  <mime-type type="application/x-font-speedo"/>
+  <mime-type type="application/x-kontour"/>
+  <mime-type type="application/x-gmc-link"/>
+  <mime-type type="application/x-gdbm"/>
+  <mime-type type="application/x-compress" icon="clamp.png"/>
+  <mime-type type="application/x-chess-pgn"/>
+  <mime-type type="application/x-sharedlib"/>
+  <mime-type type="application/x-tgif" icon="binary.png"/>
+</mime-info>
