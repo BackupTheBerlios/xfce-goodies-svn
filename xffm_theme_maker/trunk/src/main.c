@@ -148,9 +148,11 @@ static gboolean xmladd(GtkTreeModel * treemodel, GtkTreePath * treepath, GtkTree
     xmlNodePtr node;
     gtk_tree_model_get(treemodel, iter, NAME_COLUMN, &n, -1);
     gtk_tree_model_get(treemodel, iter, ICON_COLUMN, &i, -1);
-    node = xmlNewTextChild(rootM, NULL, "mime-type", NULL);
-    xmlSetProp(node,"type", n);
-    if (i && strlen(i)) xmlSetProp(node,"icon",i);
+    if (i && strlen(i)) {
+        node = xmlNewTextChild(rootM, NULL, "mime-type", NULL);
+    	xmlSetProp(node,"type", n);
+    	xmlSetProp(node,"icon",i);
+    }
 
     if (n) g_free(n);
     if (i) g_free(i);
@@ -358,38 +360,23 @@ gchar *icon_value;
 static gboolean find_row(GtkTreeModel * treemodel, GtkTreePath * treepath, GtkTreeIter * iter, gpointer data)
 {
     char *name = g_strdup  ((const gchar *) data);
-    char *lcname,*id;
-    char *n,*g,*group;
+    char *n;
     GtkIconSet *icon_set=NULL;
     GdkPixbuf *icon=NULL;   
 
     if (name_found) return TRUE;
     
-    if (!strstr(name,"/")){
-	    g_free(name);
-	    return FALSE;
-    }
-    group = g_strdup(name);
-    group = strtok(group,"/");
     gtk_tree_model_get(treemodel, iter, NAME_COLUMN, &n, -1);
 
-    gtk_tree_model_get(treemodel, iter, GROUP_COLUMN, &g, -1);
-
-    if (strncmp(name,"xfce/xf_",strlen("xfce/xf_"))==0){
-	    gchar *e=g_ascii_strdown  ((const gchar *) (name + strlen("xfce/xf_")),-1);
-	    lcname = g_strconcat ("xfce/",e,NULL);
-	    g_free(e);
-    } else lcname = g_ascii_strdown  ((const gchar *) name,-1);
-    if (strncmp(lcname,"xfce/xf_",strlen("xfce/xf_"))==0){
-	    id=lcname+strlen("xfce/xf_");
-    } else id=name;
-    /*printf("-->%s\n",n);*/
-    if (n &&  strcmp(n,lcname)==0){ /* duplicate entry... favour the last one to get the default group right */
+    if (n &&  strcmp(n,name)==0){ 
 	    
-	    printf("duplicate %s==%s, looking for icon %s\n",n,name,id);
+	    /*printf("duplicate %s==%s, looking for icon %s\n",n,name,id);*/
 	    name_found=TRUE;
 	    if (icon_value) {
-	            icon = gtk_image_get_pixbuf((GtkImage *) MIME_ICON_create_pixmap(xffm_theme_maker, icon_value));
+		    if (strncmp(icon_value,"gtk-",strlen("gtk-"))==0) 
+			    icon=gtk_widget_render_icon(xffm_theme_maker, icon_value, GTK_ICON_SIZE_DIALOG, NULL);
+	            else 
+			    icon = gtk_image_get_pixbuf((GtkImage *) MIME_ICON_create_pixmap(xffm_theme_maker, icon_value));
 		    if (icon) {
 			    gtk_tree_store_set((GtkTreeStore *) store, iter, PIXBUF_COLUMN, icon,-1);
    			    g_object_unref (G_OBJECT (icon));
@@ -397,46 +384,9 @@ static gboolean find_row(GtkTreeModel * treemodel, GtkTreePath * treepath, GtkTr
 		    gtk_tree_store_set((GtkTreeStore *) store, iter, ICON_COLUMN, icon_value,-1);
 	    }
     } 
-    else if (g && strcmp(g,group)==0){
-  	    GtkTreeIter child;
-	    group_found=TRUE;
-	    gtk_tree_store_insert (store, &child,iter,0);
-	    if (strncmp(name,"xfce/",strlen("xfce/"))==0 && strstr(name,"xf_")){
-		    gchar *lc;
-		    /*printf("name=%s id==%s\n",name,id);*/
-	    	    icon_set = MIME_ICON_get_iconset((const gchar *)(id+strlen("xfce/")), xffm_theme_maker, theme);
-		    /* change to lower case */
-		    lc=g_ascii_strdown ((const gchar *)name,-1);
-		    g_free(name);
-		    name=lc;
-	    }
-	    else {
-		    icon_set = MIME_ICON_get_iconset((const gchar *)name, xffm_theme_maker, theme);
-	    }
-	    
-	    name_found=TRUE;
-
-	    /*FIXME: This function leaks memory when replacing existing value. (gtk bug?): */
-	    gtk_tree_store_set((GtkTreeStore *) store, &child, NAME_COLUMN, lcname,-1);
-
-
-	    
-  	    if (icon_set) {
-	 	 icon = gtk_icon_set_render_icon(icon_set, style, GTK_DIR_RIGHT, GTK_STATE_NORMAL, GTK_ICON_SIZE_DIALOG, NULL, NULL);
-
-		  if (icon) {
-			  gtk_tree_store_set((GtkTreeStore *) store, &child, PIXBUF_COLUMN, icon,-1);
-   			  g_object_unref (G_OBJECT (icon));
-		  }
-	   }
-	   if (icon_value) gtk_tree_store_set((GtkTreeStore *) store, &child, ICON_COLUMN, icon_value,-1);
-    }
-
-    g_free(lcname);
-    g_free(n);
-    g_free(g);
     
-    g_free(group);
+    g_free(n);
+    
     g_free(name);
     return FALSE;
 }
@@ -464,14 +414,47 @@ gboolean   unref_row    (GtkTreeModel *model,
      gtk_tree_model_unref_node (model,iter);
 }
 
+static gboolean find_type(GtkTreeModel * treemodel, GtkTreePath * treepath, GtkTreeIter * iter, gpointer data)
+{
+    char *name = g_strdup  ((const gchar *) data);
+    char *n,*g,*group;
+
+    if (name_found) return TRUE;
+    if (!strstr(name,"/")){
+	    g_free(name);
+	    return FALSE;
+    }
+    group = g_strdup(name);
+    group = strtok(group,"/");
+    gtk_tree_model_get(treemodel, iter, GROUP_COLUMN, &g, -1);
+    gtk_tree_model_get(treemodel, iter, NAME_COLUMN, &n, -1);
+    if (g && strcmp(g,group)==0){
+	    GtkTreeIter child;
+	    group_found=TRUE;
+	    if (!name_found && strcmp(n,name)!=0) {
+	      gtk_tree_store_insert (store, &child, iter, 0);
+	      gtk_tree_store_set((GtkTreeStore *) store, &child, NAME_COLUMN, name,-1);
+	      name_found=TRUE;
+	    }
+    }
+    if (g) g_free(g);
+    
+    if (n) g_free(n);
+    g_free(name);
+    g_free(group);
+    return FALSE;
+}
+	    
 
 
 static gboolean create_icon_tree(const gchar *in_theme){
     gchar *mimefile;
+    gchar *typesfile;
     xmlDocPtr doc;
     xmlChar *id, *value;
     xmlNodePtr node;
     static gboolean quit=FALSE;
+    int i;
 
     MIME_ICON_load_theme(in_theme);
     theme=(char *)in_theme;
@@ -505,8 +488,60 @@ static gboolean create_icon_tree(const gchar *in_theme){
 		    G_DIR_SEPARATOR_S,"mime.xml",NULL);	    
     } 
     if (access(mimefile,F_OK)!=0) goto error_xml;    
+
+    /*********************** types defined in freedesktop.xml and xfce.xml ***/
+    for (i=0;i<2;i++){
+	gchar *tfiles[2]={"freedesktop.org.xml", "xfce.org.xml"};
+
+	typesfile=g_strconcat(PACKAGE_DATA_DIR,
+		    G_DIR_SEPARATOR_S,"xffm",
+		    G_DIR_SEPARATOR_S,tfiles[i],NULL);
+
+	
+    	if (access(typesfile,F_OK)!=0) continue;    
+    	xmlKeepBlanksDefault(0);
+    	if((doc = xmlParseFile(typesfile)) == NULL)
+    	{
+		g_warning("Error at %s.", typesfile);
+		continue;
+	}
+    	node = xmlDocGetRootElement(doc);
+    	if(!xmlStrEqual(node->name, (const xmlChar *)"mime-info"))
+    	{
+        	xmlFreeDoc(doc);
+		continue;
+    	}
+    	for(node = node->children; node; node = node->next)
+    	{
+		if(xmlStrEqual(node->name, (const xmlChar *)"mime-type"))
+		{
+	   	 id = xmlGetProp(node, (const xmlChar *)"type");
+		 if (id && strchr(id,'/')){
+			GtkTreeIter iter;
+			GtkTreeIter child;
+			name_found=group_found=FALSE;
+			gtk_tree_model_foreach((GtkTreeModel *)store, find_type,id);
+			if (!group_found){
+				gchar *n,*g=strdup(id);
+				g=strtok(g,"/");
+				n=g_strconcat(g,"/default",NULL);
+		  		gtk_tree_store_insert (store, &iter, NULL,0);
+		  		gtk_tree_store_set((GtkTreeStore *) store, &iter, GROUP_COLUMN, g,-1);
+				gtk_tree_store_set((GtkTreeStore *) store, &iter, NAME_COLUMN, n,-1);
+				g_free(n);
+				g_free(g);
+		  		gtk_tree_store_insert (store, &child, &iter, 0);
+				gtk_tree_store_set((GtkTreeStore *) store, &child, NAME_COLUMN, id,-1);
+			}
+		 	g_free(id);
+		 }
+		}
+	}
+    	xmlFreeDoc(doc); 
+	g_free(typesfile);
+    }
     
-    
+    /********************   icons defined in mime.types ***************/
     xmlKeepBlanksDefault(0);
     
     if((doc = xmlParseFile(mimefile)) == NULL)
@@ -532,80 +567,20 @@ static gboolean create_icon_tree(const gchar *in_theme){
 	if(xmlStrEqual(node->name, (const xmlChar *)"mime-type"))
 	{
 	    id = xmlGetProp(node, (const xmlChar *)"type");
-	    value = xmlGetProp(node, (const xmlChar *)"icon");
-	    if (id && !strchr(id,'/')) {
-		    char *p=g_strconcat("xfce/",id,NULL);
-		    g_free(id);
-		    id=p;
-	    }
+	    icon_value = xmlGetProp(node, (const xmlChar *)"icon");
 	    
-	    if (id) {
-		GtkTreeIter iter;   
-	        GtkIconSet *icon_set=NULL;
-    		GdkPixbuf *icon=NULL;
-		char *lcname;
-		
-		/*if (value) printf("key=%s value=%s\n",(char *)id,(char *)value);
-		else printf("key=%s value=%s\n",(char *)id,"null");*/	
+	    if (id && icon_value) {
+		name_found=FALSE;
 		if(!style) style = gtk_style_new();
-		
-    		if (strncmp(id,"xfce/xf_",strlen("xfce/xf_"))==0){
-	    		gchar *e=g_ascii_strdown  ((const gchar *) (id + strlen("xfce/xf_")),-1);
-	    		lcname = g_strconcat ("xfce/",e,NULL);
-	    		g_free(e);
-    		} else lcname = g_ascii_strdown  ((const gchar *) id,-1);
-
-		if (strchr((char *)id,'/')){
-			char *p,*q=g_strdup((char *)id);
-			GtkTreeIter child;
-			name_found=group_found=FALSE;
-			p=strtok(q,"/");
-			
-			//for each function adds child and exits if parent found.
-			icon_value=value;
-			gtk_tree_model_foreach((GtkTreeModel *)store, find_row,id);
-			if (!group_found && !name_found){
-				gchar *g;
-		  		gtk_tree_store_insert (store, &iter, NULL,0);
-		  		gtk_tree_store_set((GtkTreeStore *) store, &iter, GROUP_COLUMN, p,-1); 
-		  		g=g_strconcat(p,"/default",NULL);
-				gtk_tree_store_set((GtkTreeStore *) store, &iter, NAME_COLUMN, g,-1);
-				g_free(g);
-				
-				gtk_tree_store_insert (store, &child, &iter,0);
-				gtk_tree_store_set((GtkTreeStore *) store, &child, NAME_COLUMN, lcname,-1);
-				if (strncmp(id,"xfce/",strlen("xfce/"))==0){
-					gchar *t=g_ascii_strdown ((const gchar *)id,-1);
-		  			icon_set = MIME_ICON_get_iconset((const gchar *)(t),xffm_theme_maker, theme);
-
-					g_free(t);
-				}
-				else {
-					printf("getting iconset for %s\n",id);
-		  			icon_set = MIME_ICON_get_iconset((const gchar *)id, xffm_theme_maker, theme);
-				}
-		  		if (icon_set) {
-			 	 icon = gtk_icon_set_render_icon(icon_set, style, GTK_DIR_RIGHT, GTK_STATE_NORMAL, 
-					GTK_ICON_SIZE_DIALOG, NULL, NULL);
-
-				  if (icon) {
-					  gtk_tree_store_set((GtkTreeStore *) store, &child, PIXBUF_COLUMN, icon,-1);
-					  gtk_tree_store_set((GtkTreeStore *) store, &iter, PIXBUF_COLUMN, icon,-1);
-   					  g_object_unref (G_OBJECT (icon));
-					  
-				  }
-				}
-				if (value) gtk_tree_store_set((GtkTreeStore *) store, &iter, ICON_COLUMN, value,-1);
-				if (value) gtk_tree_store_set((GtkTreeStore *) store, &child, ICON_COLUMN, value,-1);
-			} 
-			g_free(q);
+		gtk_tree_model_foreach((GtkTreeModel *)store, find_row,id);
+		if (!name_found){
+			g_warning("type %s not found",id);
 		}
-		g_free(lcname);
 	
 
 	    }
-	    if (value) {g_free(value); value=NULL;}
-	    if (id) {g_free(id); id=NULL;}
+	    if (icon_value) g_free(icon_value); 
+	    if (id) g_free(id); 
 	}
     }
 
