@@ -1,3 +1,10 @@
+2003-08-03 19:51  benny
+
+	* ChangeLog, ChangeLog.pre_xfce-goodies, Makefile.am, Makefile.in,
+	NEWS, aclocal.m4, config.guess, config.sub, configure,
+	configure.ac, depcomp, install-sh, ltcf-c.sh, ltmain.sh,
+	panel-plugin/Makefile.am, panel-plugin/Makefile.in: Minor fixes.
+
 2003-08-03 18:09  papermoon
 
 	* stamp-h1, config.status, libtool, mkinstalldirs, missing,
