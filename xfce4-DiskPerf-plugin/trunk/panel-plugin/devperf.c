@@ -25,7 +25,7 @@
  */
 
 static char     _devperf_id[] =
-    "$Id: devperf.c,v 1.5 2003/11/04 10:26:13 rogerms Exp $";
+    "$Id: devperf.c,v 1.6 2003/11/10 23:00:41 benny Exp $";
 
 
 #define DEBUG	0
@@ -256,7 +256,7 @@ int DevPerfInit ()
 
 int DevCheckStatAvailability(char const **strptr)
 {
-	return(0);
+	return (0);
 }
 
 int DevGetPerfData (const void *p_pvDevice, struct devperf_t *perf)
@@ -290,10 +290,19 @@ int DevGetPerfData (const void *p_pvDevice, struct devperf_t *perf)
 		return(-1);
 
 	gettimeofday (&tv, 0);
-	perf->timestamp_ns = (uint64_t)1000ull *1000ull * 1000ull *
+	perf->timestamp_ns = (uint64_t)1000ull * 1000ull * 1000ull *
 		tv.tv_sec + 1000ull * tv.tv_usec;
 	perf->rbytes = drive.dk_rbytes;
 	perf->wbytes = drive.dk_wbytes;
+  /*
+   * XXX - Currently, I don't know of any way to determine write/read busy
+   * time separatly.
+   *                                              -- Benedikt
+   */
+  perf->qlen = drive.dk_xfer;
+	perf->rbusy_ns = ((uint64_t)1000ull * 1000ull * 1000ull * drive.dk_time_sec
+    + 1000ull * drive.dk_time_usec) / 2ull;
+  perf->wbusy_ns = perf->rbusy_ns;
 
 	return(0);
 }
@@ -313,6 +322,9 @@ int DevGetPerfData (const void *p_pvDevice, struct devperf_t *perf)
 
 /*
 $Log: devperf.c,v $
+Revision 1.6  2003/11/10 23:00:41  benny
+Added "busy time" support for NetBSD.
+
 Revision 1.5  2003/11/04 10:26:13  rogerms
 DiskPerf 1.3
 

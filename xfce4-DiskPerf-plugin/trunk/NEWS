@@ -24,3 +24,9 @@
 	* Added option for monitoring disk busy time statistics on Linux
 	  instead of I/O transfers
 	* Released 1.3.
+
+20031110:
+---------
+	* NetBSD port now supports busy time stats as well, though currently
+	  theres no way to gather separate read/write stats, therefore 
+	  read and write stats are just total/2 for now.

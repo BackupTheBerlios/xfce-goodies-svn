@@ -16,7 +16,7 @@ To know if your Linux kernel 2.4 provides such statistics:
 The code of this plugin has been written starting from the Xfce4 sample-plugin example (www.xfce.org), then looking at both systemload (Riccardo Persichetti - ricpersi@libero.it) and netload (Bernhard Walle - bernhard.walle@gmx.de) XFce4 goodies.
 The port onto NetBSD has been made by Benedikt Meurer - benedikt.meurer@unix-ag.uni-siegen.de
 
-DiskPerf has been intensively tested on Mandrake 9.1 (Linux kernel 2.4.21), 9.2 (2.4.22) and NetBSD 1.6W
+DiskPerf has been intensively tested on Mandrake 9.1 (Linux kernel 2.4.21), 9.2 (2.4.22) and NetBSD 1.6W and 1.6ZE.
 
 
 2 -	Installation
