@@ -57,3 +57,35 @@ on_drag_motion                         (GtkWidget       *widget,
                                         gint             y,
                                         guint            time,
                                         gpointer         user_data);
+
+void
+on_treeview1_drag_data_get             (GtkWidget       *widget,
+                                        GdkDragContext  *drag_context,
+                                        GtkSelectionData *data,
+                                        guint            info,
+                                        guint            time,
+                                        gpointer         user_data);
+
+gboolean
+on_drag_motion                         (GtkWidget       *widget,
+                                        GdkDragContext  *drag_context,
+                                        gint             x,
+                                        gint             y,
+                                        guint            time,
+                                        gpointer         user_data);
+
+gboolean
+on_treeview1_drag_drop                 (GtkWidget       *widget,
+                                        GdkDragContext  *drag_context,
+                                        gint             x,
+                                        gint             y,
+                                        guint            time,
+                                        gpointer         user_data);
+
+void
+on_treeview2_drag_data_get             (GtkWidget       *widget,
+                                        GdkDragContext  *drag_context,
+                                        GtkSelectionData *data,
+                                        guint            info,
+                                        guint            time,
+                                        gpointer         user_data);

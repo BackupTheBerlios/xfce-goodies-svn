@@ -150,11 +150,47 @@ on_treeview1_drag_data_get             (GtkWidget       *widget,
     if (n) {
       gchar *i=MIME_ICON_find_pixmap_file(n);
       if (i){
-        dnd_data = g_strdup(i);
+        dnd_data = g_strconcat("file:",i,NULL);
         gtk_selection_data_set(selection_data, selection_data->target, 
 		    8, (const guchar *)dnd_data,strlen(dnd_data)+ 1); 
 	g_free(i);
       }
+    }
+    
+    return;
+
+}
+void
+on_treeview2_drag_data_get             (GtkWidget       *widget,
+                                        GdkDragContext  *drag_context,
+                                        GtkSelectionData *selection_data,
+                                        guint            info,
+                                        guint            time,
+                                        gpointer         user_data)
+{
+    /*printf("drag get\n");*/
+    GtkTreeView *treeview = (GtkTreeView *)widget;
+    GtkTreeIter iter;
+    GtkTreeSelection *selection = gtk_tree_view_get_selection(treeview);
+    gchar *n;
+    
+    if (dnd_data) g_free(dnd_data);
+    gtk_tree_selection_get_selected (selection,(GtkTreeModel **)(&store2),&iter);
+                     /* GtkTreeModel **model,GtkTreeIter *iter);*/
+    gtk_tree_model_get((GtkTreeModel *)store2, &iter, ICON_COLUMN, &n, -1);
+    if (n && strncmp(n,"gtk-",strlen("gtk-"))!=0) {
+      gchar *i=MIME_ICON_find_pixmap_file(n);
+      if (i){
+        dnd_data = g_strconcat("file:",i,NULL);
+        gtk_selection_data_set(selection_data, selection_data->target, 
+		    8, (const guchar *)dnd_data,strlen(dnd_data)+ 1); 
+	g_free(i);
+      }
+    }
+    if (n && strncmp(n,"gtk-",strlen("gtk-"))==0) {
+        dnd_data = g_strconcat("file:/",n,NULL);
+        gtk_selection_data_set(selection_data, selection_data->target, 
+		    8, (const guchar *)dnd_data,strlen(dnd_data)+ 1); 
     }
     
     return;
@@ -266,9 +302,10 @@ void on_drag_data(GtkWidget * widget, GdkDragContext * context, gint x, gint y, 
     int title_offset;
     GtkTreePath *treepath;
     GtkTreeIter iter;
-    GdkPixbuf *icon=NULL;   
+    GdkPixbuf *icon=NULL;  
+    GtkTreeView *treeview = (GtkTreeView *)widget; 
     
-    /*printf("DBG: on drag data\n"); */
+    //printf("DBG: on drag data\n"); 
 
     if(!widget || data->length < 0 || data->format != 8)
     {
@@ -276,7 +313,7 @@ void on_drag_data(GtkWidget * widget, GdkDragContext * context, gint x, gint y, 
 	return;
     }
 
-    /*printf("dbg:on_drag_data\n"); */
+    //printf("dbg:on_drag_data2\n"); 
 
 
     if(!(info == TARGET_STRING) && !(info == TARGET_URI_LIST))
@@ -309,7 +346,7 @@ void on_drag_data(GtkWidget * widget, GdkDragContext * context, gint x, gint y, 
 
 
     
-    printf("DBG:drag data=%s\n",(const char *) data->data); 
+    //printf("DBG:drag data=%s\n",(const char *) data->data); 
     if (!strstr((const char *) data->data,"file:")) 
     {
 	gtk_drag_finish(context, FALSE, FALSE, time);
@@ -318,6 +355,8 @@ void on_drag_data(GtkWidget * widget, GdkDragContext * context, gint x, gint y, 
     g=g_strdup((const char *) data->data);
     if (strstr(g,"\n")) *(strstr(g,"\n"))=0;
     if (strstr(g,"\r")) *(strstr(g,"\r"))=0;
+
+    
     b=g_path_get_basename(g);
   /*
     {
@@ -328,8 +367,10 @@ void on_drag_data(GtkWidget * widget, GdkDragContext * context, gint x, gint y, 
       */
     
 
-    
-    icon = gtk_image_get_pixbuf((GtkImage *) MIME_ICON_create_pixmap(xfmime_edit, b));
+    if (strncmp(b,"gtk-",strlen("gtk-"))==0)
+	icon=gtk_widget_render_icon(xfmime_edit, b, GTK_ICON_SIZE_DIALOG, NULL);
+    else 
+	icon = gtk_image_get_pixbuf((GtkImage *) MIME_ICON_create_pixmap(xfmime_edit, b));
     if (icon) {
 	    gtk_tree_store_set(store, &iter, PIXBUF_COLUMN, icon,-1);
 	    gtk_tree_store_set(store, &iter, ICON_COLUMN, b,-1);
@@ -799,7 +840,7 @@ void mk_treeview(){
   GtkTreeViewColumn *column;
   treeview =(GtkTreeView *)lookup_widget((GtkWidget *)xfmime_edit,"treeview1");
   gtk_tree_view_set_model (treeview,(GtkTreeModel *)store);
-   
+   gtk_tree_view_set_headers_visible(treeview,FALSE);
 
   gtk_drag_dest_set((GtkWidget *) treeview, GTK_DEST_DEFAULT_DROP | GTK_DEST_DEFAULT_HIGHLIGHT, target_table, NUM_TARGETS, GDK_ACTION_MOVE | GDK_ACTION_COPY | GDK_ACTION_LINK);
 
@@ -833,7 +874,7 @@ void mk_treeview(){
     gtk_tree_view_column_set_spacing(column,2);
     cell = gtk_cell_renderer_text_new();
     g_object_set(G_OBJECT(cell), "editable", FALSE, NULL);
-    gtk_tree_view_column_set_title(column, "Group");
+    //gtk_tree_view_column_set_title(column, "Group");
     gtk_tree_view_column_set_clickable(column, TRUE);
 
     gtk_tree_view_column_pack_start(column, cell, FALSE);
@@ -850,7 +891,7 @@ void mk_treeview(){
     gtk_tree_view_column_set_spacing(column,2);
     cell = gtk_cell_renderer_text_new();
     g_object_set(G_OBJECT(cell), "editable", FALSE, NULL);
-    gtk_tree_view_column_set_title(column, "Name");
+    //gtk_tree_view_column_set_title(column, "Name");
     gtk_tree_view_column_set_clickable(column, TRUE);
 
     gtk_tree_view_column_pack_start(column, cell, FALSE);
@@ -872,7 +913,7 @@ void mk_treeview(){
     g_object_set_data (G_OBJECT (cell), "column", (gint *)ICON_COLUMN);
 
     
-    gtk_tree_view_column_set_title(column, "Icon");
+    //gtk_tree_view_column_set_title(column, "Icon");
     gtk_tree_view_column_set_clickable(column, TRUE);
 
     gtk_tree_view_column_pack_start(column, cell, FALSE);
@@ -897,6 +938,7 @@ void mk_treeview2(void){
   treeview2 =(GtkTreeView *)lookup_widget((GtkWidget *)xfmime_edit,"treeview2");
   gtk_tree_view_set_model (treeview2,(GtkTreeModel *)store2);
    
+   gtk_tree_view_set_headers_visible(treeview2,FALSE);
 
   //gtk_drag_dest_set((GtkWidget *) treeview2, GTK_DEST_DEFAULT_DROP | GTK_DEST_DEFAULT_HIGHLIGHT, target_table, NUM_TARGETS, GDK_ACTION_MOVE | GDK_ACTION_COPY | GDK_ACTION_LINK);
 

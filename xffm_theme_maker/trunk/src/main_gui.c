@@ -84,12 +84,12 @@ create_xfmime_edit (void)
   gtk_widget_show (hbuttonbox1);
   gtk_box_pack_start (GTK_BOX (hbox3), hbuttonbox1, FALSE, FALSE, 0);
 
-  save = gtk_button_new_with_mnemonic ("write mime file");
+  save = gtk_button_new_from_stock ("gtk-save");
   gtk_widget_show (save);
   gtk_container_add (GTK_CONTAINER (hbuttonbox1), save);
   GTK_WIDGET_SET_FLAGS (save, GTK_CAN_DEFAULT);
 
-  quit = gtk_button_new_with_mnemonic ("quit");
+  quit = gtk_button_new_from_stock ("gtk-quit");
   gtk_widget_show (quit);
   gtk_container_add (GTK_CONTAINER (hbuttonbox1), quit);
   GTK_WIDGET_SET_FLAGS (quit, GTK_CAN_DEFAULT);
@@ -105,6 +105,15 @@ create_xfmime_edit (void)
                     NULL);
   g_signal_connect ((gpointer) treeview1, "drag_motion",
                     G_CALLBACK (on_drag_motion),
+                    NULL);
+  g_signal_connect ((gpointer) treeview2, "drag_data_get",
+                    G_CALLBACK (on_treeview2_drag_data_get),
+                    NULL);
+  g_signal_connect ((gpointer) treeview2, "drag_motion",
+                    G_CALLBACK (on_drag_motion),
+                    NULL);
+  g_signal_connect ((gpointer) treeview2, "drag_drop",
+                    G_CALLBACK (on_treeview1_drag_drop),
                     NULL);
   g_signal_connect ((gpointer) save, "clicked",
                     G_CALLBACK (on_save_clicked),

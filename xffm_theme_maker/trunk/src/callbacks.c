@@ -26,21 +26,6 @@ on_load_clicked                        (GtkButton       *button,
 
 
 
-/*
-void
-on_drag_data                           (GtkWidget       *widget,
-                                        GdkDragContext  *drag_context,
-                                        gint             x,
-                                        gint             y,
-                                        GtkSelectionData *data,
-                                        guint            info,
-                                        guint            time,
-                                        gpointer         user_data)
-{
-
-}*/
-
-
 
 gboolean
 on_treeview1_drag_drop                 (GtkWidget       *widget,
@@ -50,20 +35,12 @@ on_treeview1_drag_drop                 (GtkWidget       *widget,
                                         guint            time,
                                         gpointer         user_data)
 {
-printf ("drag drop\n");
+//printf ("drag drop\n");
   return FALSE;
 }
 
-/*
-gboolean
-on_drag_motion                         (GtkWidget       *widget,
-                                        GdkDragContext  *drag_context,
-                                        gint             x,
-                                        gint             y,
-                                        guint            time,
-                                        gpointer         user_data)
-{
 
-  return FALSE;
-}
-*/
+
+
+
+

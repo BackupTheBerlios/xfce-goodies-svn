@@ -75,6 +75,9 @@
 		  <property name="rules_hint">False</property>
 		  <property name="reorderable">False</property>
 		  <property name="enable_search">True</property>
+		  <signal name="drag_data_get" handler="on_treeview2_drag_data_get" last_modification_time="Tue, 20 Apr 2004 05:35:57 GMT"/>
+		  <signal name="drag_motion" handler="on_drag_motion" last_modification_time="Tue, 20 Apr 2004 05:15:54 GMT"/>
+		  <signal name="drag_drop" handler="on_treeview1_drag_drop" last_modification_time="Tue, 20 Apr 2004 05:26:10 GMT"/>
 		</widget>
 	      </child>
 	    </widget>
@@ -122,8 +125,8 @@
 		  <property name="visible">True</property>
 		  <property name="can_default">True</property>
 		  <property name="can_focus">True</property>
-		  <property name="label" translatable="yes">write mime file</property>
-		  <property name="use_underline">True</property>
+		  <property name="label">gtk-save</property>
+		  <property name="use_stock">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <signal name="clicked" handler="on_save_clicked" last_modification_time="Thu, 13 Nov 2003 19:32:09 GMT"/>
 		</widget>
@@ -134,8 +137,8 @@
 		  <property name="visible">True</property>
 		  <property name="can_default">True</property>
 		  <property name="can_focus">True</property>
-		  <property name="label" translatable="yes">quit</property>
-		  <property name="use_underline">True</property>
+		  <property name="label">gtk-quit</property>
+		  <property name="use_stock">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <signal name="clicked" handler="on_quit_clicked" last_modification_time="Thu, 13 Nov 2003 19:32:15 GMT"/>
 		</widget>
