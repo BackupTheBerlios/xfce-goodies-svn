@@ -500,13 +500,13 @@ static gboolean create_icon_tree(const gchar *in_theme){
     } else store=create_treestore();
 
  
-    if (!theme) theme="gnome";	    
+    if (!theme) theme="Gnome";	    
 
     printf("DBG: creating icons for theme=%s\n",theme);
    
     mimefile=g_strconcat(PACKAGE_DATA_DIR,
 		    G_DIR_SEPARATOR_S,"xfce4",
-		    G_DIR_SEPARATOR_S,"pixmaps",
+		    G_DIR_SEPARATOR_S,"themes",
 		    G_DIR_SEPARATOR_S,theme,
 		    G_DIR_SEPARATOR_S,"mime.xml",NULL);
 
@@ -514,13 +514,13 @@ static gboolean create_icon_tree(const gchar *in_theme){
     
     if (access(mimefile,F_OK)!=0){
 	/* fall back to plain */
-	g_warning("%s theme not found. Using plain icons instead. Install package xffm-icons for richer icons.",
+	g_warning("%s theme not found.  Install package xffm-icons for richer icons.",
 			theme);
 	g_free(mimefile);
     	mimefile=g_strconcat(PACKAGE_DATA_DIR,
 		    G_DIR_SEPARATOR_S,"xfce4",
-		    G_DIR_SEPARATOR_S,"pixmaps",
-		    G_DIR_SEPARATOR_S,"plain",
+		    G_DIR_SEPARATOR_S,"themes",
+		    G_DIR_SEPARATOR_S,"Plain",
 		    G_DIR_SEPARATOR_S,"mime.xml",NULL);	    
     } 
     if (access(mimefile,F_OK)!=0) goto error_xml;    
@@ -718,7 +718,7 @@ main (int argc, char *argv[])
     GDir *gdir;
     const char *file;
     GtkOptionMenu *optionmenu=(GtkOptionMenu *)lookup_widget(xffm_theme_maker,"optionmenu2");
-    gchar *theme_dir=g_strconcat(PACKAGE_DATA_DIR, G_DIR_SEPARATOR_S,"xffm", G_DIR_SEPARATOR_S,"pixmaps",G_DIR_SEPARATOR_S,theme,NULL);
+    gchar *theme_dir=g_strconcat(PACKAGE_DATA_DIR, G_DIR_SEPARATOR_S,"xfce4", G_DIR_SEPARATOR_S,"themes",G_DIR_SEPARATOR_S,theme,NULL);
     
 
     {
