@@ -1,4 +1,16 @@
 ------------------------------------------------------------------------
+rev 43:  botsie | 2003-10-02 12:50:15 +0530 (Thu, 02 Oct 2003) | 3 lines
+
+Integrated Eduard's TAB completion patch and updated the version number to
+v0.2.0.
+
+------------------------------------------------------------------------
+rev 33:  botsie | 2003-08-08 12:54:35 +0530 (Fri, 08 Aug 2003) | 3 lines
+
+* Updated ChangeLog.
+* Dropped sample plugin history from ChangeLog
+
+------------------------------------------------------------------------
 rev 32:  botsie | 2003-08-08 12:49:08 +0530 (Fri, 08 Aug 2003) | 4 lines
 
 * Fixed scrolling bug

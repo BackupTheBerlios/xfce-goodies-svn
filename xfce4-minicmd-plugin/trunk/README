@@ -2,7 +2,9 @@ Minicmd XFce4 panel plugin (C) 2003 Biju Philip Chacko <botsie@users.sf.net>
 
 Displays a mini-command line on the xfce4-panel. Uses the same history file as
 xfrun4. Use <Up> and <Down> to scroll through history. <Enter> executes the
-command and <Ctrl>-<Enter> executes the command in a terminal.
+command and <Ctrl>-<Enter> executes the command in a terminal. <Tab>
+auto-completes commands against history. Successive <Tab>s display successive
+matches.
 
 This panel plugin is distributed under the terms of the GNU GPL. See the file
 'COPYING' for details. 

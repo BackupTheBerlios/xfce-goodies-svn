@@ -1,12 +1,14 @@
-/*  
+/*
  *  xfce4-minicmd-plugin
  *  Copyright (C) 2003 Biju Philip Chacko (botsie@users.sf.net)
+ *  Copyright (C) 2003 Eduard Roccatello (master@spine-group.org)
  *
  *  Based on code from:
  *
  *  xfrun4
  *  Copyright (C) 2000, 2002 Olivier Fourdan (fourdan@xfce.org)
  *  Copyright (C) 2002 Jasper Huijsmans (huysmans@users.sourceforge.net)
+ *  Copyright (C) 2003 Eduard Roccatello (master@spine-group.org)
  *
  *  command.c
  *  Copyright (C) Dan <daniel@ats.energo.ru>
@@ -108,6 +110,25 @@ const int DISPLAY_CHARS = 10;   /* Number of characters to display in entry */
 static GList *History = NULL; /* Command Entry History                */
 static char  *Fileman = NULL; /* Default File Manager                 */
 static GList *Curr    = NULL; /* Current History Item Being Displayed */
+
+GCompletion *complete;        /* Command Completion Structure         */
+gint nComplete;               /* Number of iteration done             */
+
+/* Load history items in *complete item for autocompletion */
+GCompletion *load_completion (void) {
+    GList *hitem, *hstrings;
+    XFCommand *current;
+
+    for (hitem = History, hstrings = NULL; hitem != NULL; hitem = hitem->next) {
+        current = hitem->data;
+        hstrings = g_list_append(hstrings,current->command);
+    }
+    complete = g_completion_new(NULL);
+    if (hstrings != NULL) {
+        g_completion_add_items(complete, hstrings);
+    }
+    return complete;
+}
 
 static gboolean do_run(const char *cmd, gboolean in_terminal)
 {
@@ -253,7 +274,7 @@ static void free_history(GList *history)
 
     DBG("");
 
-    tmp = History; 
+    tmp = History;
     while(tmp) {
         hitem = (XFCommand *)tmp->data;
         DBG("Freeing Item: %s", hitem->command);
@@ -293,10 +314,17 @@ static void scroll_history(gboolean forward, gint count)
 
 static gboolean entry_keypress_cb(GtkWidget *entry, GdkEventKey *event, gpointer user_data)
 {
-    static gboolean terminal = FALSE; /* Run in a terminal?      */
-    gchar *cmd               = NULL;  /* command line to execute */
-    XFCommand *hitem         = NULL;  /* history item data       */
-    
+    static gboolean terminal = FALSE; /* Run in a terminal?         */
+    gboolean selected        = FALSE; /* Is there any selection?    */
+    const gchar *cmd         = NULL;  /* command line to execute    */
+    const gchar *prefix      = NULL;  /* common prefix              */
+    XFCommand *hitem         = NULL;  /* history item data          */
+    GList *similar           = NULL;  /* list of similar commands   */
+    gint selstart;                    /* selection start            */
+    gint i;                           /* just a counter             */
+    gint len;                         /* command length             */
+
+
     switch (event->keyval) {
         case GDK_Down:
             scroll_history(TRUE,1);
@@ -324,21 +352,52 @@ static gboolean entry_keypress_cb(GtkWidget *entry, GdkEventKey *event, gpointer
             if (do_run(cmd, terminal)) {
                 put_history(cmd, terminal, History);      /* save this cmdline to history       */
                 free_history(History);                    /* Delete current history             */
+                g_completion_free(complete);              /* Free completion items              */
                 History  = get_history();                 /* reload modified history            */
+                complete = load_completion();             /* Reload completion items            */
                 Curr     = NULL;                          /* reset current history item pointer */
                 terminal = FALSE;                         /* Reset run in term flag             */
                 gtk_entry_set_text(GTK_ENTRY(entry), ""); /* clear the entry                    */
             }
             return TRUE;
+        case GDK_Tab:
+            cmd = gtk_entry_get_text(GTK_ENTRY(entry));
+            if ((len = g_utf8_strlen(cmd, -1)) != 0) {
+                /* Check for a selection */
+                if ((selected = gtk_editable_get_selection_bounds(GTK_EDITABLE(entry), &selstart, NULL)) && selstart != 0) {
+                    nComplete++;
+                    prefix = g_strndup(cmd, selstart);
+                }
+                else {
+                    nComplete = 0;
+                    prefix = cmd;
+                }
+                /* Make the completion if there is items in similar */
+                if ((similar = g_completion_complete(complete, prefix, NULL)) != NULL) {
+                    /* Choose next element */
+                    if (selected && selstart != 0) {
+                        if (nComplete >= g_list_length(similar))
+                            nComplete = 0;
+                        for (i=0; i<nComplete; i++) {
+                            if (similar->next!=NULL)
+                                similar = similar->next;
+                        }
+                    }
+                    /* Write in the entry and select the added text */
+                    gtk_entry_set_text(GTK_ENTRY(entry), similar->data);
+                    gtk_editable_select_region(GTK_EDITABLE(entry), (selstart == 0 ? len : selstart), -1);
+                }
+            }
+            return TRUE;
         default:
             /* hand over to default signal handler */
             return FALSE;
-    }                           
+    }
 }
 
 static void runcl(GtkWidget * entry, gpointer data)
 {
-    gchar *cmd = gtk_entry_get_text(GTK_ENTRY(entry));
+    const gchar *cmd = gtk_entry_get_text(GTK_ENTRY(entry));
     if (do_run(cmd, FALSE)) {
         // save history
         put_history(cmd, FALSE, History);
@@ -376,6 +435,8 @@ static gboolean command_control_new(Control * ctrl)
     command = command_new();
 
     History = get_history();
+    complete = load_completion();
+
     Fileman = get_fileman();
 
     gtk_container_add(GTK_CONTAINER(ctrl->base), command->ebox);
@@ -402,13 +463,13 @@ static void command_free(Control * ctrl)
 
 static void command_read_config(Control * ctrl, xmlNodePtr parent)
 {
-    /* 
+    /*
      * TODO:
      * optional "run in terminal" checkbox
      * optional "run in terminal" by some prefix, like "t links" (links in terminal)
      * optional "run button" (possible themable image button)
      * history (with optional xfrun4 history support
-     * auto completion 
+     * auto completion
      * */
 };
 
