@@ -94,7 +94,7 @@ void unload_mime_icon_module(void){
 	}
 #ifdef DEBUG
 	else {
-           g_message ("xffm: module libxffm_mime_icons unloaded");
+           g_message ("xffm: module libxfce4_mime_icons unloaded");
 	}	   
 #endif
 	xfmime_icon_cm=NULL;
@@ -106,8 +106,8 @@ xfmime_icon_functions *load_mime_icon_module(void){
     
     if (xfmime_icon_fun) return xfmime_icon_fun;
     
-    library=g_strconcat("libxffm_mime_icons.",G_MODULE_SUFFIX, NULL);
-    module = g_build_filename (LIBDIR, "xffm", library, NULL);
+    library=g_strconcat("libxfce4_mime_icons.",G_MODULE_SUFFIX, NULL);
+    module = g_build_filename (LIBDIR, "xfce4","modules", library, NULL);
     
     xfmime_icon_cm=g_module_open (module, 0);
     if (!xfmime_icon_cm){
@@ -136,7 +136,7 @@ xfmime_icon_functions *load_mime_icon_module(void){
         exit(1);
     }
 #ifdef DEBUG
-    g_message ("xffm: module %s successfully loaded", library);	    
+    g_message ("module %s successfully loaded", library);	    
 #endif
     g_free(library);
     g_free(module);
@@ -505,11 +505,12 @@ static gboolean create_icon_tree(const gchar *in_theme){
     printf("DBG: creating icons for theme=%s\n",theme);
    
     mimefile=g_strconcat(PACKAGE_DATA_DIR,
-		    G_DIR_SEPARATOR_S,"xffm",
+		    G_DIR_SEPARATOR_S,"xfce4",
 		    G_DIR_SEPARATOR_S,"pixmaps",
 		    G_DIR_SEPARATOR_S,theme,
 		    G_DIR_SEPARATOR_S,"mime.xml",NULL);
 
+    printf("DBG: creating icons for theme=%s (%s)\n",theme,mimefile);
     
     if (access(mimefile,F_OK)!=0){
 	/* fall back to plain */
@@ -517,7 +518,7 @@ static gboolean create_icon_tree(const gchar *in_theme){
 			theme);
 	g_free(mimefile);
     	mimefile=g_strconcat(PACKAGE_DATA_DIR,
-		    G_DIR_SEPARATOR_S,"xffm",
+		    G_DIR_SEPARATOR_S,"xfce4",
 		    G_DIR_SEPARATOR_S,"pixmaps",
 		    G_DIR_SEPARATOR_S,"plain",
 		    G_DIR_SEPARATOR_S,"mime.xml",NULL);	    
@@ -529,7 +530,8 @@ static gboolean create_icon_tree(const gchar *in_theme){
 	gchar *tfiles[2]={"freedesktop.org.xml", "xfce.org.xml"};
 
 	typesfile=g_strconcat(PACKAGE_DATA_DIR,
-		    G_DIR_SEPARATOR_S,"xffm",
+		    G_DIR_SEPARATOR_S,"xfce4",
+		    G_DIR_SEPARATOR_S,"mime",
 		    G_DIR_SEPARATOR_S,tfiles[i],NULL);
 
 	
