@@ -1,0 +1,8 @@
+Windowlist plugin for the panel. 
+
+The menubutton shows the icon of the active window.
+
+Leftclick on the menubutton pops up a configurable window
+list (windows on the current workspace or all windows).
+Leftclick on the window list activates the selected window,
+rightclick pops up a window action menu.
