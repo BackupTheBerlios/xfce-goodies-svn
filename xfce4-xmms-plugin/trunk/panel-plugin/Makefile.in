@@ -145,7 +145,7 @@ libxmms_plugin_la_SOURCES = \
 libxmms_plugin_la_CFLAGS = \
 	@XFCE4_PANEL_CFLAGS@						\
         `xmms-config --cflags`						\
-        -DDATA_DIR=\"/usr/local/share/xfce4/xmms-plugin\"
+        -DDATA_DIR=\"$(datadir)/xfce4/xmms-plugin\"
 
 
 libxmms_plugin_la_LIBADD = \
@@ -479,9 +479,6 @@ uninstall-am: uninstall-info-am uninstall-pluginLTLIBRARIES
 	tags uninstall uninstall-am uninstall-info-am \
 	uninstall-pluginLTLIBRARIES
 
-
-clean:	
-	rm *~ -f
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

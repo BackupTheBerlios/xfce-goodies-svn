@@ -1,3 +1,8 @@
+2003-11-20 04:56EST  pat
+	PATCH: Rudolf Kastl <che666@uni.de>
+	* panel-plugin/Makefile.am - get rid of hardcoded base dir
+	Thanks Rudolf!
+
 2003-11-09 18:11EST  pat
 
 	* unofficial 0.0.9 release

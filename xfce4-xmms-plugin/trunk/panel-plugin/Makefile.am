@@ -15,10 +15,7 @@ libxmms_plugin_la_SOURCES =						\
 libxmms_plugin_la_CFLAGS =						\
 	@XFCE4_PANEL_CFLAGS@						\
         `xmms-config --cflags`						\
-        -DDATA_DIR=\"/usr/local/share/xfce4/xmms-plugin\"
+        -DDATA_DIR=\"$(datadir)/xfce4/xmms-plugin\"
 
 libxmms_plugin_la_LIBADD = 						\
 	@XFCE4_PANEL_LIBS@
-
-clean:	
-	rm *~ -f
