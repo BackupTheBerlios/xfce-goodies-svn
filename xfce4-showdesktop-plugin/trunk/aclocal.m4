@@ -2339,6 +2339,26 @@ linux*)
   # people can always --disable-shared, the test was removed, and we
   # assume the GNU/Linux dynamic linker is in use.
   dynamic_linker='GNU/Linux ld.so'
+
+  # Find out which ABI we are using (multilib Linux x86_64 hack).
+  libsuff=
+  case "$host_cpu" in
+  x86_64*|s390x*)
+    echo '[#]line __oline__ "configure"' > conftest.$ac_ext
+    if AC_TRY_EVAL(ac_compile); then
+      case `/usr/bin/file conftest.$ac_objext` in
+      *64-bit*)
+        libsuff=64
+        ;;
+      esac
+    fi
+    rm -rf conftest*
+    ;;
+  *)
+    ;;
+  esac
+  sys_lib_dlsearch_path_spec="/lib${libsuff} /usr/lib${libsuff}"
+  sys_lib_search_path_spec="/lib${libsuff} /usr/lib${libsuff} /usr/local/lib${libsuff}"
   ;;
 
 netbsd*)
@@ -2924,7 +2944,7 @@ AC_DEFUN([AC_PROG_LD_GNU],
 [AC_REQUIRE([AC_PROG_EGREP])dnl
 AC_CACHE_CHECK([if the linker ($LD) is GNU ld], lt_cv_prog_gnu_ld,
 [# I'd rather use --version here, but apparently some GNU ld's only accept -v.
-case `"$LD" -v 2>&1 </dev/null` in
+case `$LD -v 2>&1 </dev/null` in
 *GNU* | *'with BFD'*)
   lt_cv_prog_gnu_ld=yes
   ;;
@@ -3072,7 +3092,7 @@ irix5* | irix6* | nonstopux*)
 # This must be Linux ELF.
 linux*)
   case $host_cpu in
-  alpha* | hppa* | i*86 | ia64* | m68* | mips | mipsel | powerpc* | sparc* | s390* | sh*)
+  alpha* | hppa* | i*86 | ia64* | m68* | mips | mipsel | powerpc* | sparc* | s390* | sh* | x86_64*)
     lt_cv_deplibs_check_method=pass_all ;;
   *)
     # glibc up to 2.1.1 does not perform some relocations on ARM
@@ -3601,7 +3621,7 @@ if test "$GXX" = yes; then
     # linker, instead of GNU ld.  If possible, this setting should
     # overridden to take advantage of the native linker features on
     # the platform it is being used on.
-    _LT_AC_TAGVAR(archive_cmds, $1)='$CC -shared $predep_objects $libobjs $deplibs $postdep_objects $compiler_flags -o $lib'
+    _LT_AC_TAGVAR(archive_cmds, $1)='$CC -shared -nostdlib $predep_objects $libobjs $deplibs $postdep_objects $compiler_flags -o $lib'
   fi
 
   # Commands to make compiler produce verbose output that lists
@@ -5233,7 +5253,7 @@ osf*)
   symcode='[[BCDEGQRST]]'
   ;;
 solaris* | sysv5*)
-  symcode='[[BDT]]'
+  symcode='[[BDRT]]'
   ;;
 sysv4)
   symcode='[[DFNSTU]]'
@@ -5251,7 +5271,7 @@ esac
 # If we're using GNU nm, then use its standard symbol codes.
 case `$NM -V 2>&1` in
 *GNU* | *'with BFD'*)
-  symcode='[[ABCDGISTW]]' ;;
+  symcode='[[ABCDGIRSTW]]' ;;
 esac
 
 # Try without a prefix undercore, then with it.
@@ -6020,6 +6040,31 @@ EOF
       _LT_AC_TAGVAR(hardcode_shlibpath_var, $1)=no
       ;;
 
+  linux*)
+    if $LD --help 2>&1 | egrep ': supported targets:.* elf' > /dev/null; then
+        tmp_archive_cmds='$CC -shared $libobjs $deplibs $compiler_flags ${wl}-soname $wl$soname -o $lib'
+	_LT_AC_TAGVAR(archive_cmds, $1)="$tmp_archive_cmds"
+      supports_anon_versioning=no
+      case `$LD -v 2>/dev/null` in
+        *\ [01].* | *\ 2.[[0-9]].* | *\ 2.10.*) ;; # catch versions < 2.11
+        *\ 2.11.93.0.2\ *) supports_anon_versioning=yes ;; # RH7.3 ...
+        *\ 2.11.92.0.12\ *) supports_anon_versioning=yes ;; # Mandrake 8.2 ...
+        *\ 2.11.*) ;; # other 2.11 versions
+        *) supports_anon_versioning=yes ;;
+      esac
+      if test $supports_anon_versioning = yes; then
+        _LT_AC_TAGVAR(archive_expsym_cmds, $1)='$echo "{ global:" > $output_objdir/$libname.ver~
+cat $export_symbols | sed -e "s/\(.*\)/\1;/" >> $output_objdir/$libname.ver~
+$echo "local: *; };" >> $output_objdir/$libname.ver~
+        $CC -shared $libobjs $deplibs $compiler_flags ${wl}-soname $wl$soname ${wl}-version-script ${wl}$output_objdir/$libname.ver -o $lib'
+      else
+        _LT_AC_TAGVAR(archive_expsym_cmds, $1)="$tmp_archive_cmds"
+      fi
+    else
+      _LT_AC_TAGVAR(ld_shlibs, $1)=no
+    fi
+    ;;
+
     *)
       if $LD --help 2>&1 | grep ': supported targets:.* elf' > /dev/null; then
 	_LT_AC_TAGVAR(archive_cmds, $1)='$CC -shared $libobjs $deplibs $compiler_flags ${wl}-soname $wl$soname -o $lib'
@@ -6756,6 +6801,412 @@ SED=$lt_cv_path_SED
 ])
 AC_MSG_RESULT([$SED])
 ])
+
+dnl I18n support
+dnl
+dnl Copyright (c) 2003  Benedikt Meurer <benedikt.meurer@unix-ag.uni-siegen.de>
+dnl
+
+dnl BM_I18N(pkgname, languages)
+AC_DEFUN([BM_I18N],
+[
+  GETTEXT_PACKAGE=$1
+  AC_SUBST([GETTEXT_PACKAGE])
+  AC_DEFINE([GETTEXT_PACKAGE], ["$1"], [Name of default gettext domain])
+
+  ALL_LINGUAS="$2"
+
+  AM_GLIB_GNU_GETTEXT
+
+  dnl This is required on some linux systems
+  AC_CHECK_FUNC([bind_textdomain_codeset])
+
+  AC_MSG_CHECKING([for locales directory])
+  AC_ARG_WITH([locales-dir],
+    AC_HELP_STRING([--with-locales-dir=DIR], [Install locales into DIR]),
+    [localedir=$withval],
+    [localedir=$datadir/locale])
+  AC_MSG_RESULT([$localedir])
+  AC_SUBST([localedir])
+])
+
+# Copyright (C) 1995-2002 Free Software Foundation, Inc.
+# Copyright (C) 2001-2003 Red Hat, Inc.
+#
+# This file is free software, distributed under the terms of the GNU
+# General Public License.  As a special exception to the GNU General
+# Public License, this file may be distributed as part of a program
+# that contains a configuration script generated by Autoconf, under
+# the same distribution terms as the rest of that program.
+#
+# This file can be copied and used freely without restrictions.  It can
+# be used in projects which are not available under the GNU Public License
+# but which still want to provide support for the GNU gettext functionality.
+#
+# Macro to add for using GNU gettext.
+# Ulrich Drepper <drepper@cygnus.com>, 1995, 1996
+#
+# Modified to never use included libintl. 
+# Owen Taylor <otaylor@redhat.com>, 12/15/1998
+#
+# Major rework to remove unused code
+# Owen Taylor <otaylor@redhat.com>, 12/11/2002
+#
+# Added better handling of ALL_LINGUAS from GNU gettext version 
+# written by Bruno Haible, Owen Taylor <otaylor.redhat.com> 5/30/3002
+
+#
+# We need this here as well, since someone might use autoconf-2.5x
+# to configure GLib then an older version to configure a package
+# using AM_GLIB_GNU_GETTEXT
+AC_PREREQ(2.53)
+
+dnl
+dnl We go to great lengths to make sure that aclocal won't 
+dnl try to pull in the installed version of these macros
+dnl when running aclocal in the glib directory.
+dnl
+m4_copy([AC_DEFUN],[glib_DEFUN])
+m4_copy([AC_REQUIRE],[glib_REQUIRE])
+dnl
+dnl At the end, if we're not within glib, we'll define the public
+dnl definitions in terms of our private definitions.
+dnl
+
+# GLIB_LC_MESSAGES
+#--------------------
+glib_DEFUN([GLIB_LC_MESSAGES],
+  [AC_CHECK_HEADERS([locale.h])
+    if test $ac_cv_header_locale_h = yes; then
+    AC_CACHE_CHECK([for LC_MESSAGES], am_cv_val_LC_MESSAGES,
+      [AC_TRY_LINK([#include <locale.h>], [return LC_MESSAGES],
+       am_cv_val_LC_MESSAGES=yes, am_cv_val_LC_MESSAGES=no)])
+    if test $am_cv_val_LC_MESSAGES = yes; then
+      AC_DEFINE(HAVE_LC_MESSAGES, 1,
+        [Define if your <locale.h> file defines LC_MESSAGES.])
+    fi
+  fi])
+
+# GLIB_PATH_PROG_WITH_TEST
+#----------------------------
+dnl GLIB_PATH_PROG_WITH_TEST(VARIABLE, PROG-TO-CHECK-FOR,
+dnl   TEST-PERFORMED-ON-FOUND_PROGRAM [, VALUE-IF-NOT-FOUND [, PATH]])
+glib_DEFUN([GLIB_PATH_PROG_WITH_TEST],
+[# Extract the first word of "$2", so it can be a program name with args.
+set dummy $2; ac_word=[$]2
+AC_MSG_CHECKING([for $ac_word])
+AC_CACHE_VAL(ac_cv_path_$1,
+[case "[$]$1" in
+  /*)
+  ac_cv_path_$1="[$]$1" # Let the user override the test with a path.
+  ;;
+  *)
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:"
+  for ac_dir in ifelse([$5], , $PATH, [$5]); do
+    test -z "$ac_dir" && ac_dir=.
+    if test -f $ac_dir/$ac_word; then
+      if [$3]; then
+	ac_cv_path_$1="$ac_dir/$ac_word"
+	break
+      fi
+    fi
+  done
+  IFS="$ac_save_ifs"
+dnl If no 4th arg is given, leave the cache variable unset,
+dnl so AC_PATH_PROGS will keep looking.
+ifelse([$4], , , [  test -z "[$]ac_cv_path_$1" && ac_cv_path_$1="$4"
+])dnl
+  ;;
+esac])dnl
+$1="$ac_cv_path_$1"
+if test ifelse([$4], , [-n "[$]$1"], ["[$]$1" != "$4"]); then
+  AC_MSG_RESULT([$]$1)
+else
+  AC_MSG_RESULT(no)
+fi
+AC_SUBST($1)dnl
+])
+
+# GLIB_WITH_NLS
+#-----------------
+glib_DEFUN([GLIB_WITH_NLS],
+  dnl NLS is obligatory
+  [USE_NLS=yes
+    AC_SUBST(USE_NLS)
+
+    gt_cv_have_gettext=no
+
+    CATOBJEXT=NONE
+    XGETTEXT=:
+    INTLLIBS=
+
+    AC_CHECK_HEADER(libintl.h,
+     [gt_cv_func_dgettext_libintl="no"
+      libintl_extra_libs=""
+
+      #
+      # First check in libc
+      #
+      AC_CACHE_CHECK([for dgettext in libc], gt_cv_func_dgettext_libc,
+        [AC_TRY_LINK([
+#include <libintl.h>
+],
+          [return (int) dgettext ("","")],
+	  gt_cv_func_dgettext_libc=yes,
+          gt_cv_func_dgettext_libc=no)
+        ])
+  
+      if test "$gt_cv_func_dgettext_libc" = "yes" ; then
+        AC_CHECK_FUNCS(bind_textdomain_codeset)
+      fi
+
+      #
+      # If we don't have everything we want, check in libintl
+      #
+      if test "$gt_cv_func_dgettext_libc" != "yes" \
+         || test "$ac_cv_func_bind_textdomain_codeset" != "yes" ; then
+        
+        AC_CHECK_LIB(intl, bindtextdomain,
+	    [AC_CHECK_LIB(intl, dgettext,
+		          gt_cv_func_dgettext_libintl=yes)])
+
+	if test "$gt_cv_func_dgettext_libintl" != "yes" ; then
+	  AC_MSG_CHECKING([if -liconv is needed to use gettext])
+	  AC_MSG_RESULT([])
+          AC_CHECK_LIB(intl, dcgettext,
+		       [gt_cv_func_dgettext_libintl=yes
+			libintl_extra_libs=-liconv],
+			:,-liconv)
+        fi
+
+        #
+        # If we found libintl, then check in it for bind_textdomain_codeset();
+        # we'll prefer libc if neither have bind_textdomain_codeset(),
+        # and both have dgettext
+        #
+        if test "$gt_cv_func_dgettext_libintl" = "yes" ; then
+          glib_save_LIBS="$LIBS"
+          LIBS="$LIBS -lintl $libintl_extra_libs"
+          unset ac_cv_func_bind_textdomain_codeset
+          AC_CHECK_FUNCS(bind_textdomain_codeset)
+          LIBS="$glib_save_LIBS"
+
+          if test "$ac_cv_func_bind_textdomain_codeset" = "yes" ; then
+            gt_cv_func_dgettext_libc=no
+          else
+            if test "$gt_cv_func_dgettext_libc" = "yes"; then
+              gt_cv_func_dgettext_libintl=no
+            fi
+          fi
+        fi
+      fi
+
+      if test "$gt_cv_func_dgettext_libc" = "yes" \
+	|| test "$gt_cv_func_dgettext_libintl" = "yes"; then
+        gt_cv_have_gettext=yes
+      fi
+  
+      if test "$gt_cv_func_dgettext_libintl" = "yes"; then
+        INTLLIBS="-lintl $libintl_extra_libs"
+      fi
+  
+      if test "$gt_cv_have_gettext" = "yes"; then
+	AC_DEFINE(HAVE_GETTEXT,1,
+	  [Define if the GNU gettext() function is already present or preinstalled.])
+	GLIB_PATH_PROG_WITH_TEST(MSGFMT, msgfmt,
+	  [test -z "`$ac_dir/$ac_word -h 2>&1 | grep 'dv '`"], no)dnl
+	if test "$MSGFMT" != "no"; then
+	  AC_CHECK_FUNCS(dcgettext)
+	  AC_PATH_PROG(GMSGFMT, gmsgfmt, $MSGFMT)
+	  GLIB_PATH_PROG_WITH_TEST(XGETTEXT, xgettext,
+	    [test -z "`$ac_dir/$ac_word -h 2>&1 | grep '(HELP)'`"], :)
+	  AC_TRY_LINK(, [extern int _nl_msg_cat_cntr;
+			 return _nl_msg_cat_cntr],
+	    [CATOBJEXT=.gmo 
+             DATADIRNAME=share],
+	    [case $host in
+	    *-*-solaris*)
+	    dnl On Solaris, if bind_textdomain_codeset is in libc,
+	    dnl GNU format message catalog is always supported,
+            dnl since both are added to the libc all together.
+	    dnl Hence, we'd like to go with DATADIRNAME=share and
+	    dnl and CATOBJEXT=.gmo in this case.
+            AC_CHECK_FUNC(bind_textdomain_codeset,
+	      [CATOBJEXT=.gmo 
+               DATADIRNAME=share],
+	      [CATOBJEXT=.mo
+               DATADIRNAME=lib])
+	    ;;
+	    *)
+	    CATOBJEXT=.mo
+            DATADIRNAME=lib
+	    ;;
+	    esac])
+	  INSTOBJEXT=.mo
+	else
+	  gt_cv_have_gettext=no
+	fi
+      fi
+    ])
+
+    if test "$gt_cv_have_gettext" = "yes" ; then
+      AC_DEFINE(ENABLE_NLS, 1,
+        [always defined to indicate that i18n is enabled])
+    fi
+
+    dnl Test whether we really found GNU xgettext.
+    if test "$XGETTEXT" != ":"; then
+      dnl If it is not GNU xgettext we define it as : so that the
+      dnl Makefiles still can work.
+      if $XGETTEXT --omit-header /dev/null 2> /dev/null; then
+        : ;
+      else
+        AC_MSG_RESULT(
+	  [found xgettext program is not GNU xgettext; ignore it])
+        XGETTEXT=":"
+      fi
+    fi
+
+    # We need to process the po/ directory.
+    POSUB=po
+
+    AC_OUTPUT_COMMANDS(
+      [case "$CONFIG_FILES" in *po/Makefile.in*)
+        sed -e "/POTFILES =/r po/POTFILES" po/Makefile.in > po/Makefile
+      esac])
+
+    dnl These rules are solely for the distribution goal.  While doing this
+    dnl we only have to keep exactly one list of the available catalogs
+    dnl in configure.in.
+    for lang in $ALL_LINGUAS; do
+      GMOFILES="$GMOFILES $lang.gmo"
+      POFILES="$POFILES $lang.po"
+    done
+
+    dnl Make all variables we use known to autoconf.
+    AC_SUBST(CATALOGS)
+    AC_SUBST(CATOBJEXT)
+    AC_SUBST(DATADIRNAME)
+    AC_SUBST(GMOFILES)
+    AC_SUBST(INSTOBJEXT)
+    AC_SUBST(INTLLIBS)
+    AC_SUBST(PO_IN_DATADIR_TRUE)
+    AC_SUBST(PO_IN_DATADIR_FALSE)
+    AC_SUBST(POFILES)
+    AC_SUBST(POSUB)
+  ])
+
+# AM_GLIB_GNU_GETTEXT
+# -------------------
+# Do checks necessary for use of gettext. If a suitable implementation 
+# of gettext is found in either in libintl or in the C library,
+# it will set INTLLIBS to the libraries needed for use of gettext
+# and AC_DEFINE() HAVE_GETTEXT and ENABLE_NLS. (The shell variable
+# gt_cv_have_gettext will be set to "yes".) It will also call AC_SUBST()
+# on various variables needed by the Makefile.in.in installed by 
+# glib-gettextize.
+dnl
+glib_DEFUN(GLIB_GNU_GETTEXT,
+  [AC_REQUIRE([AC_PROG_CC])dnl
+   AC_REQUIRE([AC_HEADER_STDC])dnl
+   
+   GLIB_LC_MESSAGES
+   GLIB_WITH_NLS
+
+   if test "$gt_cv_have_gettext" = "yes"; then
+     if test "x$ALL_LINGUAS" = "x"; then
+       LINGUAS=
+     else
+       AC_MSG_CHECKING(for catalogs to be installed)
+       NEW_LINGUAS=
+       for presentlang in $ALL_LINGUAS; do
+         useit=no
+         if test "%UNSET%" != "${LINGUAS-%UNSET%}"; then
+           desiredlanguages="$LINGUAS"
+         else
+           desiredlanguages="$ALL_LINGUAS"
+         fi
+         for desiredlang in $desiredlanguages; do
+ 	   # Use the presentlang catalog if desiredlang is
+           #   a. equal to presentlang, or
+           #   b. a variant of presentlang (because in this case,
+           #      presentlang can be used as a fallback for messages
+           #      which are not translated in the desiredlang catalog).
+           case "$desiredlang" in
+             "$presentlang"*) useit=yes;;
+           esac
+         done
+         if test $useit = yes; then
+           NEW_LINGUAS="$NEW_LINGUAS $presentlang"
+         fi
+       done
+       LINGUAS=$NEW_LINGUAS
+       AC_MSG_RESULT($LINGUAS)
+     fi
+
+     dnl Construct list of names of catalog files to be constructed.
+     if test -n "$LINGUAS"; then
+       for lang in $LINGUAS; do CATALOGS="$CATALOGS $lang$CATOBJEXT"; done
+     fi
+   fi
+
+   dnl If the AC_CONFIG_AUX_DIR macro for autoconf is used we possibly
+   dnl find the mkinstalldirs script in another subdir but ($top_srcdir).
+   dnl Try to locate is.
+   MKINSTALLDIRS=
+   if test -n "$ac_aux_dir"; then
+     MKINSTALLDIRS="$ac_aux_dir/mkinstalldirs"
+   fi
+   if test -z "$MKINSTALLDIRS"; then
+     MKINSTALLDIRS="\$(top_srcdir)/mkinstalldirs"
+   fi
+   AC_SUBST(MKINSTALLDIRS)
+
+   dnl Generate list of files to be processed by xgettext which will
+   dnl be included in po/Makefile.
+   test -d po || mkdir po
+   if test "x$srcdir" != "x."; then
+     if test "x`echo $srcdir | sed 's@/.*@@'`" = "x"; then
+       posrcprefix="$srcdir/"
+     else
+       posrcprefix="../$srcdir/"
+     fi
+   else
+     posrcprefix="../"
+   fi
+   rm -f po/POTFILES
+   sed -e "/^#/d" -e "/^\$/d" -e "s,.*,	$posrcprefix& \\\\," -e "\$s/\(.*\) \\\\/\1/" \
+	< $srcdir/po/POTFILES.in > po/POTFILES
+  ])
+
+# AM_GLIB_DEFINE_LOCALEDIR(VARIABLE)
+# -------------------------------
+# Define VARIABLE to the location where catalog files will
+# be installed by po/Makefile.
+glib_DEFUN(GLIB_DEFINE_LOCALEDIR,
+[glib_REQUIRE([GLIB_GNU_GETTEXT])dnl
+glib_save_prefix="$prefix"
+glib_save_exec_prefix="$exec_prefix"
+test "x$prefix" = xNONE && prefix=$ac_default_prefix
+test "x$exec_prefix" = xNONE && exec_prefix=$prefix
+if test "x$CATOBJEXT" = "x.mo" ; then
+  localedir=`eval echo "${libdir}/locale"`
+else
+  localedir=`eval echo "${datadir}/locale"`
+fi
+prefix="$glib_save_prefix"
+exec_prefix="$glib_save_exec_prefix"
+AC_DEFINE_UNQUOTED($1, "$localedir",
+  [Define the location where the catalogs will be installed])
+])
+
+dnl
+dnl Now the definitions that aclocal will find
+dnl
+ifdef(glib_configure_in,[],[
+AC_DEFUN(AM_GLIB_GNU_GETTEXT,[GLIB_GNU_GETTEXT($@)])
+AC_DEFUN(AM_GLIB_DEFINE_LOCALEDIR,[GLIB_DEFINE_LOCALEDIR($@)])
+])dnl
 
 dnl From Benedikt Meurer (benedikt.meurer@unix-ag.uni-siegen.de)
 dnl

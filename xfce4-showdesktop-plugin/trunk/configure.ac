@@ -1,6 +1,6 @@
 dnl configure.ac
 dnl
-dnl xfce4-showdesktop-plugin - <no description>
+dnl xfce4-showdesktop-plugin - <Plugin for xfce4-panel>
 dnl
 dnl 2003 Benedikt Meurer <benedikt.meurer@unix-ag.uni-siegen.de>
 dnl
@@ -9,7 +9,7 @@ AC_INIT([configure])
 
 AM_CONFIG_HEADER([config.h])
 
-AM_INIT_AUTOMAKE([xfce4-showdesktop-plugin], [0.2.0])
+AM_INIT_AUTOMAKE([xfce4-showdesktop-plugin], [0.3.0])
 
 AM_MAINTAINER_MODE
 
@@ -26,8 +26,11 @@ AC_PROG_LIBTOOL
 dnl Check for standard header files
 AC_HEADER_STDC
 
+dnl check for i18n support
+BM_I18N([xfce4-showdesktop], [de])
+
 dnl configure the panel plugin
-XFCE_PANEL_PLUGIN([XFCE4_PANEL], [0.10.1])
+XFCE_PANEL_PLUGIN([XFCE4_PANEL], [4.0.0])
 
 dnl Check for debugging support
 BM_DEBUG_SUPPORT
@@ -35,4 +38,5 @@ BM_DEBUG_SUPPORT
 AC_OUTPUT([
 Makefile
 panel-plugin/Makefile
+po/Makefile.in
 ])

@@ -12,6 +12,7 @@ libshowdesktop_la_SOURCES =						\
 	showdesktop.c
 
 libshowdesktop_la_CFLAGS =						\
+        -DPACKAGE_LOCALE_DIR=\"$(localedir)\"                           \
 	@XFCE4_PANEL_CFLAGS@
 
 libshowdesktop_la_LIBADD = 						\
