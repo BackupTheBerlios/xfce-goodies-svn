@@ -1,0 +1,5 @@
+20031016:
+---------
+
+	* Added support for NetBSD. Adding support for Open/FreeBSD and
+	  Darwin should be trivial now.

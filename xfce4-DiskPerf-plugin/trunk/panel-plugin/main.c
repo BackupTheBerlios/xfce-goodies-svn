@@ -24,10 +24,8 @@
  */
 
 static char     _main_id[] =
-    "$Id: main.c,v 1.1 2003/10/07 03:39:25 rogerms Exp $";
+    "$Id: main.c,v 1.2 2003/10/16 18:48:39 benny Exp $";
 
-
-#define DEBUG	0
 
 #include "config_gui.h"
 #include "devperf.h"
@@ -76,7 +74,6 @@ typedef enum monitor_bar_order_t {
 typedef struct param_t {
     /* Configurable parameters */
     char            acDevice[64];
-    dev_t           st_rdev;
     int             fTitleDisplayed;
     char            acTitle[16];
     int             iMaxXferMBperSec;
@@ -136,7 +133,7 @@ static int DisplayPerf (struct plugin_t *p_poPlugin)
     struct param_t *poConf = &(p_poPlugin->oConf.oParam);
     struct monitor_t *poMonitor = &(p_poPlugin->oMonitor);
     struct perfbar_t *poPerf = poMonitor->aoPerfBar;
-    uint64_t        iInterval_ns, rbytes, wbytes;
+    uint64_t        iInterval_ns, rbytes = 0, wbytes = 0;
     const double    K = 1.0 * 1000 * 1000 * 1000 / 1024 / 1024;
     double          arPerf[NMONITORS], *pr;
     char            acToolTips[64];
@@ -145,7 +142,7 @@ static int DisplayPerf (struct plugin_t *p_poPlugin)
     if (!s_poToolTips)
 	s_poToolTips = gtk_tooltips_new ();
 
-    status = DevGetPerfData (poConf->st_rdev, &oPerf);
+    status = DevGetPerfData (poConf->acDevice, &oPerf);
     if (status == -1)
 	return (-1);
     if (poMonitor->oPrevPerf.timestamp_ns) {
@@ -337,20 +334,21 @@ static plugin_t *NewPlugin ()
     struct plugin_t *poPlugin;
     struct param_t *poConf;
     struct monitor_t *poMonitor;
-    struct stat     oStat;
-    int             status;
 
     poPlugin = g_new (plugin_t, 1);
     memset (poPlugin, 0, sizeof (plugin_t));
     poConf = &(poPlugin->oConf.oParam);
     poMonitor = &(poPlugin->oMonitor);
 
+#ifdef __NetBSD__
+    strcpy (poConf->acDevice, "wd0");
+    poConf->fTitleDisplayed = 1;
+    strcpy (poConf->acTitle, "wd0");
+#else
     strcpy (poConf->acDevice, "/dev/hda");
-    status = stat (poConf->acDevice, &oStat);
-    poConf->st_rdev = (status == -1 ? 0 : oStat.st_rdev);
-
     poConf->fTitleDisplayed = 1;
     strcpy (poConf->acTitle, "hda");
+#endif
 
     gdk_color_parse ("#0000FF", poConf->aoColor + R_DATA);
     gdk_color_parse ("#FF0000", poConf->aoColor + W_DATA);
@@ -430,8 +428,6 @@ static void plugin_read_config (Control * p_poCtrl, xmlNodePtr p_poParent)
     Widget_t       *pw2ndBar = poPlugin->oMonitor.awProgressBar + 1;
     xmlNodePtr      poNode;
     char           *pc;
-    struct stat     oStat;
-    int             status;
 
     TRACE ("plugin_read_config()\n");
     if (!p_poParent)
@@ -444,8 +440,6 @@ static void plugin_read_config (Control * p_poCtrl, xmlNodePtr p_poParent)
 	    memset (poConf->acDevice, 0, sizeof (poConf->acDevice));
 	    strncpy (poConf->acDevice, pc, sizeof (poConf->acDevice) - 1);
 	    xmlFree (pc);
-	    status = stat (poConf->acDevice, &oStat);
-	    poConf->st_rdev = (status == -1 ? 0 : oStat.st_rdev);
 	}
 
 	if ((pc = xmlGetProp (poNode, (CONF_USE_LABEL)))) {
@@ -570,19 +564,9 @@ static void SetDevice (Widget_t p_wTF, void *p_pvPlugin)
     struct plugin_t *poPlugin = (plugin_t *) p_pvPlugin;
     struct param_t *poConf = &(poPlugin->oConf.oParam);
     const char     *pcDevice = gtk_entry_get_text (GTK_ENTRY (p_wTF));
-    struct stat     oStat;
-    int             status;
 
-    status = stat (pcDevice, &oStat);
-    if (status == -1) {
-	xfce_err ("%s\n"
-		  "%s: %s (%d)",
-		  PLUGIN_NAME, pcDevice, strerror (errno), errno);
-	return;
-    }
     memset (poConf->acDevice, 0, sizeof (poConf->acDevice));
     strncpy (poConf->acDevice, pcDevice, sizeof (poConf->acDevice) - 1);
-    poConf->st_rdev = oStat.st_rdev;
 }				/* SetDevice() */
 
 	/**************************************************************/
@@ -964,8 +948,11 @@ XFCE_PLUGIN_CHECK_INIT
 	/**************************************************************/
 /*
 $Log: main.c,v $
-Revision 1.1  2003/10/07 03:39:25  rogerms
-Initial revision
+Revision 1.2  2003/10/16 18:48:39  benny
+Added support for NetBSD.
+
+Revision 1.1.1.1  2003/10/07 03:39:25  rogerms
+Initial release - v1.0
 
 Revision 1.6  2003/10/02 04:16:07  RogerSeguin
 Compute using rbytes/wbytes instead of rsect/wsect

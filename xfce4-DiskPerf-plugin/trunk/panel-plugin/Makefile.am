@@ -9,10 +9,13 @@ libdiskperf_la_LDFLAGS =		\
 	-module
 
 libdiskperf_la_SOURCES =		\
-	main.c			\
+	main.c				\
 	config_gui.c			\
+	config_gui.h			\
 	devperf.c			\
-	debug.c
+	devperf.h			\
+	debug.c				\
+	debug.h
 
 libdiskperf_la_CFLAGS =			\
 	@XFCE4_PANEL_CFLAGS@

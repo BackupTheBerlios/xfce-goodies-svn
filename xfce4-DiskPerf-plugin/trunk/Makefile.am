@@ -3,6 +3,9 @@
 SUBDIRS = panel-plugin
 
 EXTRA_DIST =								\
+	AUTHORS								\
+	ChangeLog							\
+	NEWS								\
 	README
 
 distclean-local:

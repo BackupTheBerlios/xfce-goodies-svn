@@ -25,7 +25,7 @@
 #ifndef _debug_h
 #define _debug_h
 static char     _debug_h_id[] =
-    "$Id: debug.h,v 1.1 2003/10/07 03:39:22 rogerms Exp $";
+    "$Id: debug.h,v 1.2 2003/10/16 18:48:39 benny Exp $";
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -36,10 +36,7 @@ static char     _debug_h_id[] =
 #include <unistd.h>
 #include <stdarg.h>
 
-#ifndef DEBUG
 #define DEBUG	0
-#endif
-
 
 #define TRACE		if (!DEBUG) {} else Trace
 
@@ -59,8 +56,11 @@ extern          "C" {
 #endif
 /*
 $Log: debug.h,v $
-Revision 1.1  2003/10/07 03:39:22  rogerms
-Initial revision
+Revision 1.2  2003/10/16 18:48:39  benny
+Added support for NetBSD.
+
+Revision 1.1.1.1  2003/10/07 03:39:22  rogerms
+Initial release - v1.0
 
 Revision 1.3  2003/09/24 10:55:08  RogerSeguin
 Changed name of log file

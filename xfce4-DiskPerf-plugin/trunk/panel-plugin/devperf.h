@@ -25,7 +25,7 @@
 #ifndef _devperf_h
 #define _devperf_h
 static char     _devperf_h_id[] =
-    "$Id: devperf.h,v 1.1 2003/10/07 03:39:23 rogerms Exp $";
+    "$Id: devperf.h,v 1.2 2003/10/16 18:48:39 benny Exp $";
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -57,7 +57,7 @@ extern          "C" {
     /* Check the availability of required kernel statistics */
     /* Return 0 on success */
 
-    int             DevGetPerfData (dev_t device, struct devperf_t *perf);
+    int             DevGetPerfData (const char* device, struct devperf_t *perf);
     /* Get disk performance data stored by the kernel (/proc/partitions) */
     /* Return 0 on success, -1 otherwise */
 
@@ -66,8 +66,11 @@ extern          "C" {
 #endif
 /*
 $Log: devperf.h,v $
-Revision 1.1  2003/10/07 03:39:23  rogerms
-Initial revision
+Revision 1.2  2003/10/16 18:48:39  benny
+Added support for NetBSD.
+
+Revision 1.1.1.1  2003/10/07 03:39:23  rogerms
+Initial release - v1.0
 
 Revision 1.3  2003/10/02 04:14:41  RogerSeguin
 Compute using rbytes/wbytes instead of rsect/wsect

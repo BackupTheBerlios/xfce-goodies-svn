@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2003 RogerSeguin <roger_seguin@msn.com>
+ * Copyright (c) 2003 Benedikt Meurer <benedikt.meurer@unix-ag.uni-siegen.de>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -24,10 +25,8 @@
  */
 
 static char     _devperf_id[] =
-    "$Id: devperf.c,v 1.1 2003/10/07 03:39:22 rogerms Exp $";
+    "$Id: devperf.c,v 1.2 2003/10/16 18:48:39 benny Exp $";
 
-
-#define DEBUG	0
 
 #include "devperf.h"
 #include "debug.h"
@@ -44,11 +43,12 @@ static char     _devperf_id[] =
 #include <memory.h>
 #include <string.h>
 #include <errno.h>
+#include <sys/stat.h>
 #include <sys/time.h>
 
+#if defined(__linux__)
 
 #define STATISTICS_FILE	"/proc/partitions"
-
 
 int DevCheckStatAvailability ()
 {
@@ -66,15 +66,21 @@ int DevCheckStatAvailability ()
 }				/* DevCheckStatAvailability() */
 
 
-int DevGetPerfData (dev_t p_iDevice, struct devperf_t *p_poPerf)
+int DevGetPerfData (const char* device, struct devperf_t *p_poPerf)
 {
     const uint64_t  SECTOR_SIZE = 512;
-    const int       iMajorNo = (p_iDevice >> 8) & 0xFF, /**/
-	iMinorNo = p_iDevice & 0xFF;
     struct timeval  oTimeStamp;
     FILE           *pF;
     unsigned int    major, minor, ruse, wuse, use, rsect, wsect;
-    int             c, n;
+    int             c, n, iMajorNo, iMinorNo;
+    struct stat	    sb;
+    dev_t           p_iDevice;
+
+    if (stat(device, &sb) < 0)
+	    return(-1);
+    p_iDevice = sb.st_dev;
+    iMajorNo = (p_iDevice >> 8) & 0xFF;
+    iMinorNo = p_iDevice & 0xFF;
 
     pF = fopen (STATISTICS_FILE, "r");
     if (!pF)
@@ -99,11 +105,67 @@ int DevGetPerfData (dev_t p_iDevice, struct devperf_t *p_poPerf)
     return (-1);
 }				/* DevGetPerfData() */
 
+#elif defined(__NetBSD__)
+
+#include <sys/disk.h>
+#include <sys/param.h>
+#include <sys/sysctl.h>
+
+int DevCheckStatAvailability()
+{
+	return(0);
+}
+
+int DevGetPerfData(const char* device, struct devperf_t *perf)
+{
+	struct timeval tv;
+	size_t size, i, ndrives;
+	struct disk_sysctl *drives, drive;
+	int mib[3];
+
+	mib[0] = CTL_HW;
+	mib[1] = HW_DISKSTATS;
+	mib[2] = sizeof(struct disk_sysctl);
+	if (sysctl(mib, 3, NULL, &size, NULL, 0) == -1)
+		return(-1);
+	ndrives = size / sizeof(struct disk_sysctl);
+	drives = malloc(size);
+	if (sysctl(mib, 3, drives, &size, NULL, 0) == -1)
+		return(-1);
+
+	for (i = 0; i < ndrives; i++) {
+		if (strcmp(drives[i].dk_name, device) == 0) {
+			drive = drives[i];
+			break;
+		}
+	}
+
+	free(drives);
+
+	if (i == ndrives)
+		return(-1);
+
+	gettimeofday (&tv, 0);
+	perf->timestamp_ns = (uint64_t)1000ull *1000ull * 1000ull *
+		tv.tv_sec + 1000ull * tv.tv_usec;
+	perf->rbytes = drive.dk_rbytes;
+	perf->wbytes = drive.dk_wbytes;
+
+	return(0);
+}
+
+#else
+#error "Your plattform is not yet supported"
+#endif
+
 
 /*
 $Log: devperf.c,v $
-Revision 1.1  2003/10/07 03:39:22  rogerms
-Initial revision
+Revision 1.2  2003/10/16 18:48:39  benny
+Added support for NetBSD.
+
+Revision 1.1.1.1  2003/10/07 03:39:22  rogerms
+Initial release - v1.0
 
 Revision 1.4  2003/10/04 06:05:08  RogerSeguin
 Fixed a possibility of 32-bit integer overflow introcduced by previous release
