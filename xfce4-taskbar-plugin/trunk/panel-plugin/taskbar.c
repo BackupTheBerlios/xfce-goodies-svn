@@ -54,6 +54,9 @@
 #define SIZESMALL 30
 #define SIZEMEDIUM 45
 #define SIZELARGE 60
+#define AUTOGROUP 0
+#define ALWAYSGROUP 1
+#define NEVERGROUP 2
 
 // }}}
 
@@ -66,7 +69,7 @@ typedef struct
     GtkWidget	    *taskbar;
     GtkWidget       *spin; // The spin from properties dialog
     NetkScreen      *screen;
-    gboolean	    alwaysGroup;
+    int	    	    group;
     gboolean	    includeAll;
     gboolean        expand;
     gulong          callbackID;
@@ -86,7 +89,14 @@ static void plugin_determine_expand_width (gpointer data);
 static void
 plugin_eval_TaskbarOptions(gui *plugin)
 {
-    netk_tasklist_set_grouping(NETK_TASKLIST(plugin->taskbar), plugin->alwaysGroup ? NETK_TASKLIST_ALWAYS_GROUP : NETK_TASKLIST_AUTO_GROUP);
+    if (plugin->group==AUTOGROUP) {
+        netk_tasklist_set_grouping(NETK_TASKLIST(plugin->taskbar), NETK_TASKLIST_AUTO_GROUP);
+    } else if (plugin->group==ALWAYSGROUP) {
+        netk_tasklist_set_grouping(NETK_TASKLIST(plugin->taskbar), NETK_TASKLIST_ALWAYS_GROUP);
+    } else {
+        netk_tasklist_set_grouping(NETK_TASKLIST(plugin->taskbar), NETK_TASKLIST_NEVER_GROUP);
+    }
+
     netk_tasklist_set_include_all_workspaces(NETK_TASKLIST(plugin->taskbar), plugin->includeAll);
 }
 
@@ -99,8 +109,9 @@ gui_new ()
     plugin->ebox = gtk_event_box_new();
     
     plugin->width=100;
-    plugin->alwaysGroup = TRUE;
+    plugin->group = 0;
     plugin->includeAll = FALSE;
+    plugin->expand = FALSE;
     plugin->screen=netk_screen_get_default();
     netk_screen_force_update (plugin->screen);
 
@@ -138,18 +149,15 @@ plugin_determine_expand_width (gpointer data)
 {
     gui *plugin = data;
 
-    int screen, mainFrame, handle, current;
+    int screen, mainFrame, current;
 
-  
     if (plugin->orientation == HORIZONTAL){
         screen = netk_screen_get_width (plugin->screen);
         mainFrame = panel.toplevel->allocation.width;
-        handle = panel.handles[0]->allocation.width;
         current = plugin->ebox->allocation.width;
     } else {
         screen = netk_screen_get_height (plugin->screen);
         mainFrame = panel.toplevel->allocation.height;
-        handle = panel.handles[0]->allocation.height;
         current = plugin->ebox->allocation.height;
     }
 
@@ -209,6 +217,9 @@ plugin_free (Control *ctrl)
     g_return_if_fail (ctrl != NULL);
     g_return_if_fail (ctrl->data != NULL);
     plugin = ctrl->data;
+    if (plugin->callbackID != 0) {
+        g_signal_handler_disconnect (panel.toplevel, plugin->callbackID);
+    }
     g_free(plugin);
 }
 
@@ -256,8 +267,8 @@ plugin_read_config (Control *ctrl, xmlNodePtr node)
                 plugin->width = atoi(value);
                 g_free(value);
             }
-            if ((value = xmlGetProp(node, (const xmlChar *)"alwaysGroup"))) {
-                plugin->alwaysGroup = atoi(value);
+            if ((value = xmlGetProp(node, (const xmlChar *)"group"))) {
+                plugin->group = atoi(value);
                 g_free(value);
             }
             if ((value = xmlGetProp(node, (const xmlChar *)"includeAll"))) {
@@ -286,8 +297,8 @@ plugin_write_config (Control *ctrl, xmlNodePtr parent)
     g_snprintf(value, 10, "%d", plugin->width);
     xmlSetProp(root, "size", value);
 
-    g_snprintf(value, 10, "%d", plugin->alwaysGroup);
-    xmlSetProp(root, "alwaysGroup", value);
+    g_snprintf(value, 10, "%d", plugin->group);
+    xmlSetProp(root, "group", value);
 
     g_snprintf(value, 10, "%d", plugin->includeAll);
     xmlSetProp(root, "includeAll", value);
@@ -307,14 +318,46 @@ plugin_spin_changed (GtkWidget *widget, gpointer data)
 }
 
 static void
+plugin_rb1_changed (GtkRadioButton *rb, gpointer data)
+{
+    gui *plugin = data;
+    if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(rb))) {
+        plugin->group=NEVERGROUP;
+    }
+    plugin_eval_TaskbarOptions(plugin);
+}
+
+static void
+plugin_rb2_changed (GtkRadioButton *rb, gpointer data)
+{
+    gui *plugin = data;
+    if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(rb))) {
+        plugin->group=ALWAYSGROUP;
+    }
+    plugin_eval_TaskbarOptions(plugin);
+}
+
+static void
+plugin_rb3_changed (GtkRadioButton *rb, gpointer data)
+{
+    gui *plugin = data;
+    if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(rb))) {
+        plugin->group=AUTOGROUP;
+    }
+    plugin_eval_TaskbarOptions(plugin);
+}
+
+static void
 plugin_cb1_changed (GtkToggleButton *cb, gui *plugin)
 {
-    gboolean alwaysGroup;
+    gboolean expand;
 
-    alwaysGroup = gtk_toggle_button_get_active (cb);
+    expand = gtk_toggle_button_get_active (cb);
 
-    plugin->alwaysGroup = alwaysGroup;
+    plugin->expand = expand;
+    gtk_widget_set_sensitive (plugin->spin, !expand);
     
+    plugin_recreate_gui (plugin);
     plugin_eval_TaskbarOptions(plugin);
 }
 
@@ -331,25 +374,13 @@ plugin_cb2_changed (GtkToggleButton *cb, gui *plugin)
 }
 
 static void
-plugin_cb3_changed (GtkToggleButton *cb, gui *plugin)
-{
-    gboolean expand;
-
-    expand = gtk_toggle_button_get_active (cb);
-
-    plugin->expand = expand;
-    gtk_widget_set_sensitive (plugin->spin, !expand);
-    
-    plugin_recreate_gui (plugin);
-}
-
-static void
 plugin_create_options (Control *ctrl, GtkContainer *con, GtkWidget *done)
 {
     gui *plugin = ctrl->data;
-    GtkWidget *hbox, *size, *cb1, *cb2, *cb3, *vbox, *sep;
+    GtkWidget *hbox, *size, *rb1, *rb2, *rb3, *cb1, *cb2, *vbox, *frame, *rvbox;
     hbox = gtk_hbox_new (FALSE, 2);
     vbox = gtk_vbox_new (FALSE, 4);
+    rvbox = gtk_vbox_new (FALSE, 2);
 
     size = gtk_label_new ("Size");
 
@@ -360,27 +391,42 @@ plugin_create_options (Control *ctrl, GtkContainer *con, GtkWidget *done)
     
     g_signal_connect (plugin->spin, "value-changed", G_CALLBACK (plugin_spin_changed), plugin);
 
-    sep = gtk_hseparator_new ();
+    frame = gtk_frame_new ("group options");
+    rb1 = gtk_radio_button_new_with_label (NULL, "never");
+    rb2 = gtk_radio_button_new_with_label (gtk_radio_button_get_group(GTK_RADIO_BUTTON(rb1)), "always");
+    rb3 = gtk_radio_button_new_with_label (gtk_radio_button_get_group(GTK_RADIO_BUTTON(rb1)), "automatic");
 
-    cb1 = gtk_check_button_new_with_label ("Always group tasks");
-    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (cb1), plugin->alwaysGroup);
+    if (plugin->group==AUTOGROUP) {
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(rb3), True);
+    } else if (plugin->group==ALWAYSGROUP) {
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(rb2), True);
+    } else {
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(rb1), True);
+    }
+
+    g_signal_connect (rb1, "toggled", G_CALLBACK (plugin_rb1_changed), plugin);
+    g_signal_connect (rb2, "toggled", G_CALLBACK (plugin_rb2_changed), plugin);
+    g_signal_connect (rb3, "toggled", G_CALLBACK (plugin_rb3_changed), plugin);
+
+    gtk_container_add(GTK_CONTAINER(rvbox), rb1);
+    gtk_container_add(GTK_CONTAINER(rvbox), rb2);
+    gtk_container_add(GTK_CONTAINER(rvbox), rb3);
+
+    cb1 = gtk_check_button_new_with_label ("Expand to fill screen");
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (cb1), plugin->expand);
     g_signal_connect (cb1, "toggled", G_CALLBACK (plugin_cb1_changed), plugin);
 
     cb2 = gtk_check_button_new_with_label ("Include all Workspaces");
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (cb2), plugin->includeAll);
     g_signal_connect (cb2, "toggled", G_CALLBACK (plugin_cb2_changed), plugin);
     
-    cb3 = gtk_check_button_new_with_label ("Expand to fill screen");
-    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (cb3), plugin->expand);
-    g_signal_connect (cb3, "toggled", G_CALLBACK (plugin_cb3_changed), plugin);
-    
     gtk_box_pack_start (GTK_BOX(hbox), size, FALSE, FALSE, 1);
     
     gtk_box_pack_start (GTK_BOX(hbox), plugin->spin, FALSE, FALSE, 1);
 
     gtk_container_add (GTK_CONTAINER(vbox), hbox);
-    gtk_container_add (GTK_CONTAINER(vbox), sep);
-    gtk_container_add (GTK_CONTAINER(vbox), cb3);
+    gtk_container_add (GTK_CONTAINER(frame), rvbox);
+    gtk_container_add (GTK_CONTAINER(vbox), frame);
     gtk_container_add (GTK_CONTAINER(vbox), cb1);
     gtk_container_add (GTK_CONTAINER(vbox), cb2);
     gtk_container_add (GTK_CONTAINER(con), vbox);

@@ -1,3 +1,10 @@
+2003-05-12 20:55 papermoon
+
+         * panel-plugin/taskbar.c:
+	 Fixed bug that crashes the Panel
+	 Added new option to never/always/auto-group
+	 the tasks
+
 2003-05-04 20:05  papermoon
  
          * panel-plugin/taskbar.c:
