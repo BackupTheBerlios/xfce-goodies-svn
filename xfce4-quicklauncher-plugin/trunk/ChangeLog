@@ -1,0 +1,6 @@
++fixes some possible memory leaks
++some internal changes.
+
+Version 0.5:
+************
++First public release

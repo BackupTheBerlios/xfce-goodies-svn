@@ -2,7 +2,7 @@
  *            main.c
  *
  *  Thu Jul 15 06:01:04 2004
- *  Last Update: 07/02/2005
+ *  Last Update: 08/03/2005
  *  Copyright  2004 - 2005  bountykiller
  *  Email: masse_nicolas@yahoo.fr
  ****************************************************************************/
@@ -100,7 +100,6 @@ launcher_new (const gchar *command, gint icon_id, const gchar *icon_name)
 	}
 	else launcher->command = NULL;
 	launcher->icon_id = icon_id;
-	//NOTE : I affect the name of the icon even if she's useless for now
 	if (icon_name)
 	{
 		launcher->icon_name = g_malloc( (strlen(icon_name)+1)*sizeof(gchar) );
@@ -246,6 +245,7 @@ quicklauncher_organize()
 		else
 		{
 			_quicklauncher->table = g_object_ref(gtk_table_new(nb_lines, launch_per_line, TRUE));
+			gtk_table_set_col_spacings(GTK_TABLE(_quicklauncher->table), 0);
 			gtk_container_add (GTK_CONTAINER (_quicklauncher->base), _quicklauncher->table);
 			gtk_widget_show(_quicklauncher->table);
 		}

@@ -158,8 +158,8 @@ btn_clicked(GtkButton *button, gpointer icon_id)
 			}
 		}
 		launcher_update_icon(launcher);
-		pixbuf = _create_pixbuf((gint)icon_id, icon_name, _quicklauncher->icon_size);//is there a way to get the pixbuf from the
-		gtk_list_store_set(GTK_LIST_STORE(treemodel), &iter, 0, pixbuf, -1);					//xfce_icon_button from the launcher???
+		pixbuf = _create_pixbuf((gint)icon_id, icon_name, _quicklauncher->icon_size); 
+		gtk_list_store_set(GTK_LIST_STORE(treemodel), &iter, 0, pixbuf, -1);				
 		UNREF(pixbuf);
 	}
 }
@@ -319,8 +319,8 @@ on_btn_remove_clicked (GtkButton  *button, gpointer user_data)
 		removed = quicklauncher_remove_element(indice[0]);
 		quicklauncher_organize();
 		launcher_free (removed);
-//		gtk_tree_path_free(path); it crash  :-(
-		g_free(indice);		
+		gtk_tree_path_free(path); 
+		//g_free(indice);		
 	}
 }
 
@@ -349,9 +349,9 @@ on_btn_up_clicked (GtkButton *button, gpointer user_data)
 			quicklauncher_empty_widgets();
 			quicklauncher_organize();
 			g_list_free(launcher);
-			g_free(indice);
+			//g_free(indice);
 		}
-		//gtk_tree_path_free(path);
+		gtk_tree_path_free(path);
 	}
 }
 
@@ -380,9 +380,9 @@ on_btn_down_clicked (GtkButton *button, gpointer user_data)
 			_quicklauncher->launchers = g_list_insert(_quicklauncher->launchers, launcher->data, indice[0]);
 			quicklauncher_empty_widgets();
 			quicklauncher_organize();
-			//gtk_tree_path_free(path);
+			gtk_tree_path_free (path);
 			g_list_free(launcher);
-			g_free(indice);
+			//g_free(indice);
 		}
 	}
 }
@@ -407,7 +407,7 @@ void cmd_changed(GtkCellRendererText *cellrenderertext, gchar *arg1, gchar *arg2
 		strcpy(launcher->command, arg2);
 		gtk_list_store_set(GTK_LIST_STORE(treemodel), &iter, 1, launcher->command, -1);
 		launcher_update_command(launcher);
-		//gtk_tree_path_free(path);
-		g_free(indice);
+		gtk_tree_path_free(path);
+		//g_free(indice);
 	}
 }
