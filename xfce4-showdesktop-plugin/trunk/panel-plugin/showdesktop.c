@@ -225,10 +225,12 @@ create_plugin_control (Control *ctrl)
 static void
 plugin_free (Control *ctrl)
 {
+    gui *plugin;
+    
     g_return_if_fail (ctrl != NULL);
     g_return_if_fail (ctrl->data != NULL);
 
-    gui *plugin = ctrl->data;
+    plugin = ctrl->data;
     g_free(plugin);
 }
 
