@@ -25,7 +25,7 @@
 #ifndef _devperf_h
 #define _devperf_h
 static char     _devperf_h_id[] =
-    "$Id: devperf.h,v 1.2 2003/10/16 18:48:39 benny Exp $";
+    "$Id: devperf.h,v 1.3 2003/10/18 23:02:58 rogerms Exp $";
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -53,12 +53,18 @@ typedef struct devperf_t {
 extern          "C" {
 #endif
 
-    int             DevCheckStatAvailability ();
-    /* Check the availability of required kernel statistics */
+    int             DevPerfInit ();
+    /* Make required initialisations */
     /* Return 0 on success */
 
-    int             DevGetPerfData (const char* device, struct devperf_t *perf);
-    /* Get disk performance data stored by the kernel (/proc/partitions) */
+    int             DevCheckStatAvailability (char const **StatisticsFile);
+    /* Check the availability of required kernel statistics */
+    /* Get the statistics file name */
+    /* Return 0 on success */
+
+    int             DevGetPerfData (const void *devid,
+				    struct devperf_t *perf);
+    /* Get disk performance data stored by the kernel */
     /* Return 0 on success, -1 otherwise */
 
 #ifdef __cplusplus
@@ -66,8 +72,17 @@ extern          "C" {
 #endif
 /*
 $Log: devperf.h,v $
+Revision 1.3  2003/10/18 23:02:58  rogerms
+DiskPerf release 1.1
+
+Revision 1.5  2003/10/18 06:56:32  RogerSeguin
+Integration of Benedikt Meurer's work on NetBSD port
+
 Revision 1.2  2003/10/16 18:48:39  benny
 Added support for NetBSD.
+
+Revision 1.4  2003/10/16 13:09:14  RogerSeguin
+Kernel 2.6 support
 
 Revision 1.1.1.1  2003/10/07 03:39:23  rogerms
 Initial release - v1.0

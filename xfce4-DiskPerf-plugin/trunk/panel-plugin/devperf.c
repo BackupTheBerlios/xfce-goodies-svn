@@ -25,8 +25,10 @@
  */
 
 static char     _devperf_id[] =
-    "$Id: devperf.c,v 1.2 2003/10/16 18:48:39 benny Exp $";
+    "$Id: devperf.c,v 1.3 2003/10/18 23:02:58 rogerms Exp $";
 
+
+#define DEBUG	0
 
 #include "devperf.h"
 #include "debug.h"
@@ -43,54 +45,93 @@ static char     _devperf_id[] =
 #include <memory.h>
 #include <string.h>
 #include <errno.h>
-#include <sys/stat.h>
 #include <sys/time.h>
 
+
 #if defined(__linux__)
+	/**************************************************************/
+	/**************************	Linux	***********************/
+	/**************************************************************/
 
-#define STATISTICS_FILE	"/proc/partitions"
+static const char STATISTICS_FILE_1[] = "/proc/diskstats";	/* Kernel
+								   2.6 */
+static const char STATISTICS_FILE_2[] = "/proc/partitions";	/* Kernel
+								   2.4 */
 
-int DevCheckStatAvailability ()
+static const uint64_t SECTOR_SIZE = 512;
+
+static int      m_iInitStatus = 0;
+static const char *m_pcStatFile = 0;
+
+typedef int     (*GetPerfData_t) (dev_t dev, struct devperf_t * perf);
+
+static GetPerfData_t m_mGetPerfData = 0;
+
+	/**************************************************************/
+
+static int DevGetPerfData1 (dev_t p_iDevice, struct devperf_t *p_poPerf)
+	/* Get disk performance statistics from STATISTICS_FILE_1 */
 {
-    FILE           *pF;
-    char            acLine[256];
-    int             status;
-
-    pF = fopen (STATISTICS_FILE, "r");
-    if (!pF)
-	return (-errno);
-    status = (((fgets (acLine, sizeof (acLine), pF))
-	       && (strstr (acLine, "rsect"))) ? 0 : NO_EXTENDED_STATS);
-    fclose (pF);
-    return (status);
-}				/* DevCheckStatAvailability() */
-
-
-int DevGetPerfData (const char* device, struct devperf_t *p_poPerf)
-{
-    const uint64_t  SECTOR_SIZE = 512;
+    const int       iMajorNo = (p_iDevice >> 8) & 0xFF, /**/
+	iMinorNo = p_iDevice & 0xFF;
     struct timeval  oTimeStamp;
     FILE           *pF;
-    unsigned int    major, minor, ruse, wuse, use, rsect, wsect;
-    int             c, n, iMajorNo, iMinorNo;
-    struct stat	    sb;
-    dev_t           p_iDevice;
+    unsigned int    major, minor, rsect, wsect;
+    int             c, n;
 
-    if (stat(device, &sb) < 0)
-	    return(-1);
-    p_iDevice = sb.st_dev;
-    iMajorNo = (p_iDevice >> 8) & 0xFF;
-    iMinorNo = p_iDevice & 0xFF;
-
-    pF = fopen (STATISTICS_FILE, "r");
-    if (!pF)
+    pF = fopen (STATISTICS_FILE_1, "r");
+    if (!pF) {
+	perror (STATISTICS_FILE_1);
 	return (-1);
+    }
+    while (1) {
+	n = fscanf (pF, "%u %u", &major, &minor);
+	if (n != 2)
+	    goto Error;
+	if ((major != iMajorNo) || (minor != iMinorNo)) {
+	    while ((c = fgetc (pF)) && (c != '\n'));	/* Goto next line */
+	    continue;
+	}
+	n = fscanf (pF,
+		    (minor == 0 ?
+		     "%*s %*u %*u %u %*u %*u %*u %u %*u %*u %*u %*u"
+		     : "%*s %*u %u %*u %u"), &rsect, &wsect);
+	if (n != 2)
+	    goto Error;
+	fclose (pF);
+	gettimeofday (&oTimeStamp, 0);
+	p_poPerf->timestamp_ns =
+	    (uint64_t) 1000 *1000 * 1000 * oTimeStamp.tv_sec +
+	    1000 * oTimeStamp.tv_usec;
+	p_poPerf->rbytes = SECTOR_SIZE * rsect;
+	p_poPerf->wbytes = SECTOR_SIZE * wsect;
+	return (0);
+    }
+  Error:
+    fclose (pF);
+    return (-1);
+}				/* DevGetPerfData1() */
+
+
+static int DevGetPerfData2 (dev_t p_iDevice, struct devperf_t *p_poPerf)
+	/* Get disk performance statistics from STATISTICS_FILE_2 */
+{
+    const int       iMajorNo = (p_iDevice >> 8) & 0xFF, /**/
+	iMinorNo = p_iDevice & 0xFF;
+    struct timeval  oTimeStamp;
+    FILE           *pF;
+    unsigned int    major, minor, rsect, wsect;
+    int             c, n;
+
+    pF = fopen (STATISTICS_FILE_2, "r");
+    if (!pF) {
+	perror (STATISTICS_FILE_2);
+	return (-1);
+    }
     while ((c = fgetc (pF)) && (c != '\n'));	/* Skip the header line */
-    while ((n =
-	    fscanf (pF,
-		    "%u %u %*u %*s %*u %*u %u %u %*u %*u %u %u %*u %u %*u",
-		    &major, &minor, &rsect, &ruse, &wsect, &wuse,
-		    &use)) == 7)
+    while ((n = fscanf (pF,
+			"%u %u %*u %*s %*u %*u %u %*u %*u %*u %u %*u %*u %*u %*u",
+			&major, &minor, &rsect, &wsect)) == 4)
 	if ((major == iMajorNo) && (minor == iMinorNo)) {
 	    fclose (pF);
 	    gettimeofday (&oTimeStamp, 0);
@@ -103,21 +144,106 @@ int DevGetPerfData (const char* device, struct devperf_t *p_poPerf)
 	}
     fclose (pF);
     return (-1);
+}				/* DevGetPerfData2() */
+
+	/**************************************************************/
+
+int DevPerfInit ()
+{
+    FILE           *pF = 0;
+    char            acLine[256];
+
+    /* Kernel 2.6 ? */
+    m_pcStatFile = STATISTICS_FILE_1;
+    m_mGetPerfData = DevGetPerfData1;
+    pF = fopen (m_pcStatFile, "r");
+    m_iInitStatus = 0;
+    if (pF)
+	goto End;
+
+    /* Kernel 2.4 */
+    m_pcStatFile = STATISTICS_FILE_2;
+    m_mGetPerfData = DevGetPerfData2;
+    pF = fopen (m_pcStatFile, "r");
+    if (pF)
+	m_iInitStatus = (((fgets (acLine, sizeof (acLine), pF))
+			  && (strstr (acLine, "rsect"))) ? 0 :
+			 NO_EXTENDED_STATS);
+    else
+	m_iInitStatus = -errno;
+
+  End:
+    if (pF)
+	fclose (pF);
+    return (m_iInitStatus);
+}				/* DevPerfInit() */
+
+
+int DevCheckStatAvailability (char const **p_ppcStatFile)
+{
+    if (p_ppcStatFile)
+	*p_ppcStatFile = m_pcStatFile;
+    return (m_iInitStatus);
+}				/* DevCheckStatAvailability() */
+
+
+int DevGetPerfData (const void *p_pvDevice, struct devperf_t *p_poPerf)
+{
+    const dev_t     p_iDevice = *((dev_t *) p_pvDevice);
+    return ((m_mGetPerfData && !m_iInitStatus) ?
+	    (*m_mGetPerfData) (p_iDevice, p_poPerf) : -1);
 }				/* DevGetPerfData() */
 
+	/**************************************************************/
+
+#if 0				/* Standalone test purpose */
+int main ()
+{
+    int             iMajor = 3, /**/ iMinor = 3;
+    dev_t           iDev = (iMajor << 8) + iMinor;
+    struct devperf_t oPerf;
+    unsigned int    rsect, wsect;
+    int             status;
+
+    status = DevPerfInit ();
+    if (status)
+	fprintf (stderr, "DevPerfInit() error\n");
+    status = DevGetPerfData (&iDev, &oPerf);
+    if (status)
+	fprintf (stderr, "DevGetPerfData() error\n");
+    rsect = oPerf.rbytes / SECTOR_SIZE;
+    wsect = oPerf.wbytes / SECTOR_SIZE;
+    printf ("%u\t%u\n", rsect, wsect);
+    return (0);
+}
+#endif
+
+	/**************************	Linux End	***************/
+
+
 #elif defined(__NetBSD__)
+	/**************************************************************/
+	/**************************	NetBSD	***********************/
+	/**************************************************************/
+/* *INDENT-OFF* */
 
 #include <sys/disk.h>
 #include <sys/param.h>
 #include <sys/sysctl.h>
 
-int DevCheckStatAvailability()
+int DevPerfInit ()
+{
+	return (0);
+}
+
+int DevCheckStatAvailability(char const **strptr)
 {
 	return(0);
 }
 
-int DevGetPerfData(const char* device, struct devperf_t *perf)
+int DevGetPerfData (const void *p_pvDevice, struct devperf_t *perf)
 {
+	const char     *device = (const char *) p_pvDevice;
 	struct timeval tv;
 	size_t size, i, ndrives;
 	struct disk_sysctl *drives, drive;
@@ -154,13 +280,33 @@ int DevGetPerfData(const char* device, struct devperf_t *perf)
 	return(0);
 }
 
+/* *INDENT-ON* */
+	/**************************	NetBSD End	***************/
+
 #else
+	/**************************************************************/
+	/********************	Unsupported platform	***************/
+	/**************************************************************/
 #error "Your plattform is not yet supported"
 #endif
 
 
+	/**************************************************************/
+
 /*
 $Log: devperf.c,v $
+Revision 1.3  2003/10/18 23:02:58  rogerms
+DiskPerf release 1.1
+
+Revision 1.7  2003/10/18 06:56:41  RogerSeguin
+Integration of Benedikt Meurer's work on NetBSD port
+
+Revision 1.6  2003/10/17 20:15:05  RogerSeguin
+Minor change related to Linux kernel 2.6
+
+Revision 1.5  2003/10/16 13:08:18  RogerSeguin
+Kernel 2.6 support
+
 Revision 1.2  2003/10/16 18:48:39  benny
 Added support for NetBSD.
 

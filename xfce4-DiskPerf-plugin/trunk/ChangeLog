@@ -1,2 +1,7 @@
 2003-10-07 Roger Seguin
-	* Initial release
+	* Initial release (1.0) - Linux 2.4.x, x >= 20
+
+2003-10-19 Roger Seguin & Benedikt Meurer
+	* Release 1.1
+	* Linux kernel 2.6 support added
+	* NetBSD support added by Benedikt Meurer

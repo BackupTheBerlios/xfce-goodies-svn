@@ -24,8 +24,10 @@
  */
 
 static char     _main_id[] =
-    "$Id: main.c,v 1.2 2003/10/16 18:48:39 benny Exp $";
+    "$Id: main.c,v 1.3 2003/10/18 23:02:58 rogerms Exp $";
 
+
+#define DEBUG	0
 
 #include "config_gui.h"
 #include "devperf.h"
@@ -74,6 +76,9 @@ typedef enum monitor_bar_order_t {
 typedef struct param_t {
     /* Configurable parameters */
     char            acDevice[64];
+#if  !defined(__NetBSD__)
+    dev_t           st_rdev;
+#endif
     int             fTitleDisplayed;
     char            acTitle[16];
     int             iMaxXferMBperSec;
@@ -133,7 +138,7 @@ static int DisplayPerf (struct plugin_t *p_poPlugin)
     struct param_t *poConf = &(p_poPlugin->oConf.oParam);
     struct monitor_t *poMonitor = &(p_poPlugin->oMonitor);
     struct perfbar_t *poPerf = poMonitor->aoPerfBar;
-    uint64_t        iInterval_ns, rbytes = 0, wbytes = 0;
+    uint64_t        iInterval_ns, rbytes, wbytes;
     const double    K = 1.0 * 1000 * 1000 * 1000 / 1024 / 1024;
     double          arPerf[NMONITORS], *pr;
     char            acToolTips[64];
@@ -142,7 +147,11 @@ static int DisplayPerf (struct plugin_t *p_poPlugin)
     if (!s_poToolTips)
 	s_poToolTips = gtk_tooltips_new ();
 
+#if defined (__NetBSD__)
     status = DevGetPerfData (poConf->acDevice, &oPerf);
+#else
+    status = DevGetPerfData (&(poConf->st_rdev), &oPerf);
+#endif
     if (status == -1)
 	return (-1);
     if (poMonitor->oPrevPerf.timestamp_ns) {
@@ -334,21 +343,27 @@ static plugin_t *NewPlugin ()
     struct plugin_t *poPlugin;
     struct param_t *poConf;
     struct monitor_t *poMonitor;
+#if !defined(__NetBSD__)
+    struct stat     oStat;
+    int             status;
+#endif
 
     poPlugin = g_new (plugin_t, 1);
     memset (poPlugin, 0, sizeof (plugin_t));
     poConf = &(poPlugin->oConf.oParam);
     poMonitor = &(poPlugin->oMonitor);
 
-#ifdef __NetBSD__
+#if defined(__NetBSD__)
     strcpy (poConf->acDevice, "wd0");
-    poConf->fTitleDisplayed = 1;
     strcpy (poConf->acTitle, "wd0");
 #else
     strcpy (poConf->acDevice, "/dev/hda");
-    poConf->fTitleDisplayed = 1;
+    status = stat (poConf->acDevice, &oStat);
+    poConf->st_rdev = (status == -1 ? 0 : oStat.st_rdev);
     strcpy (poConf->acTitle, "hda");
 #endif
+
+    poConf->fTitleDisplayed = 1;
 
     gdk_color_parse ("#0000FF", poConf->aoColor + R_DATA);
     gdk_color_parse ("#FF0000", poConf->aoColor + W_DATA);
@@ -428,6 +443,10 @@ static void plugin_read_config (Control * p_poCtrl, xmlNodePtr p_poParent)
     Widget_t       *pw2ndBar = poPlugin->oMonitor.awProgressBar + 1;
     xmlNodePtr      poNode;
     char           *pc;
+#if !defined(__NetBSD__)
+    struct stat     oStat;
+    int             status;
+#endif
 
     TRACE ("plugin_read_config()\n");
     if (!p_poParent)
@@ -440,6 +459,10 @@ static void plugin_read_config (Control * p_poCtrl, xmlNodePtr p_poParent)
 	    memset (poConf->acDevice, 0, sizeof (poConf->acDevice));
 	    strncpy (poConf->acDevice, pc, sizeof (poConf->acDevice) - 1);
 	    xmlFree (pc);
+#if !defined(__NetBSD__)
+	    status = stat (poConf->acDevice, &oStat);
+	    poConf->st_rdev = (status == -1 ? 0 : oStat.st_rdev);
+#endif
 	}
 
 	if ((pc = xmlGetProp (poNode, (CONF_USE_LABEL)))) {
@@ -564,7 +587,19 @@ static void SetDevice (Widget_t p_wTF, void *p_pvPlugin)
     struct plugin_t *poPlugin = (plugin_t *) p_pvPlugin;
     struct param_t *poConf = &(poPlugin->oConf.oParam);
     const char     *pcDevice = gtk_entry_get_text (GTK_ENTRY (p_wTF));
+#if !defined(__NetBSD__)
+    struct stat     oStat;
+    int             status;
 
+    status = stat (pcDevice, &oStat);
+    if (status == -1) {
+	xfce_err ("%s\n"
+		  "%s: %s (%d)",
+		  PLUGIN_NAME, pcDevice, strerror (errno), errno);
+	return;
+    }
+    poConf->st_rdev = oStat.st_rdev;
+#endif
     memset (poConf->acDevice, 0, sizeof (poConf->acDevice));
     strncpy (poConf->acDevice, pcDevice, sizeof (poConf->acDevice) - 1);
 }				/* SetDevice() */
@@ -746,18 +781,20 @@ static int CheckStatsAvailability ()
 	/* Check disk performance statistics availability */
 	/* Return 0 on success, -1 otherwise */
 {
+    const char     *pcStatFile = 0;
     int             status;
 
-    status = DevCheckStatAvailability ();
+    status = DevCheckStatAvailability (&pcStatFile);
     if (!status)
 	return (0);
     if (status < 0) {
 	status *= -1;
 	xfce_err ("%s\n"
-		  "/proc/partitions: %s (%d)\n\n"
+		  "%s: %s (%d)\n\n"
 		  "This monitor will not work!\n"
 		  "Please remove it.",
-		  PLUGIN_NAME, strerror (status), status);
+		  PLUGIN_NAME, (pcStatFile ? pcStatFile : ""),
+		  strerror (status), status);
 	return (-1);
     }
     switch (status) {
@@ -930,6 +967,8 @@ G_MODULE_EXPORT void xfce_control_class_init (ControlClass * cc)
 {
     TRACE ("xfce_control_class_init()\n");
 
+    (void) DevPerfInit ();
+
     cc->name = PLUGIN_NAME;
     cc->caption = _("Disk Performance");
     cc->create_control = (CreateControlFunc) plugin_create_control;
@@ -948,6 +987,15 @@ XFCE_PLUGIN_CHECK_INIT
 	/**************************************************************/
 /*
 $Log: main.c,v $
+Revision 1.3  2003/10/18 23:02:58  rogerms
+DiskPerf release 1.1
+
+Revision 1.8  2003/10/18 06:56:50  RogerSeguin
+Integration of Benedikt Meurer's work on NetBSD port
+
+Revision 1.7  2003/10/16 13:07:42  RogerSeguin
+Kernel 2.6 support
+
 Revision 1.2  2003/10/16 18:48:39  benny
 Added support for NetBSD.
 

@@ -1,5 +1,14 @@
+20031008:
+---------
+	* Initial release (1.0) for Linux 2.4.x, x>= 20
+
 20031016:
 ---------
 
 	* Added support for NetBSD. Adding support for Open/FreeBSD and
 	  Darwin should be trivial now.
+
+20031019:
+---------
+	* Added support for Linux 2.6.
+	* Released 1.1.
