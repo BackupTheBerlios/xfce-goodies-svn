@@ -1,17 +1,21 @@
+2004-10-16 17:30 papermoon:
+	* panel-plugin/taskbar.c:
+	Xinerama fixes, preparation for the new relase
+
 2004-06-27 13:30 papermoon
 
-	 * panel-plugin/taskbar.c:
-	 Added option to show/hide the label
+	* panel-plugin/taskbar.c:
+	Added option to show/hide the label
 
 2004-05-12 20:55 papermoon
 
-         * panel-plugin/taskbar.c:
-	 Fixed bug that crashes the Panel
-	 Added new option to never/always/auto-group
-	 the tasks
+	* panel-plugin/taskbar.c:
+	Fixed bug that crashes the Panel
+	Added new option to never/always/auto-group
+	the tasks
 
 2004-05-04 20:05  papermoon
- 
-         * panel-plugin/taskbar.c:
-	 Added option "expand to fill screen"
-	 Many thanks to Brady Eidson
+
+	* panel-plugin/taskbar.c:
+	Added option "expand to fill screen"
+	Many thanks to Brady Eidson

@@ -45,15 +45,6 @@
 
 #define HORIZONTAL 0
 
-#define TINY 0
-#define SMALL 1
-#define MEDIUM 2
-#define LARGE 3
-
-#define SIZETINY 24 
-#define SIZESMALL 30
-#define SIZEMEDIUM 45
-#define SIZELARGE 60
 #define AUTOGROUP 0
 #define ALWAYSGROUP 1
 #define NEVERGROUP 2
@@ -68,6 +59,7 @@ typedef struct
     GtkWidget	    *frame;
     GtkWidget	    *taskbar;
     GtkWidget       *spin; // The spin from properties dialog
+    GdkScreen       *gscr;
     NetkScreen      *screen;
     int	    	    group;
     gboolean	    includeAll;
@@ -90,16 +82,16 @@ static void plugin_determine_expand_width (gpointer data);
 static void
 plugin_eval_taskbar_options(gui *plugin)
 {
-    if (plugin->group==AUTOGROUP) {
-        netk_tasklist_set_grouping(NETK_TASKLIST(plugin->taskbar), NETK_TASKLIST_AUTO_GROUP);
-    } else if (plugin->group==ALWAYSGROUP) {
-        netk_tasklist_set_grouping(NETK_TASKLIST(plugin->taskbar), NETK_TASKLIST_ALWAYS_GROUP);
+    if (plugin->group == AUTOGROUP) {
+        netk_tasklist_set_grouping (NETK_TASKLIST(plugin->taskbar), NETK_TASKLIST_AUTO_GROUP);
+    } else if (plugin->group == ALWAYSGROUP) {
+        netk_tasklist_set_grouping (NETK_TASKLIST(plugin->taskbar), NETK_TASKLIST_ALWAYS_GROUP);
     } else {
-        netk_tasklist_set_grouping(NETK_TASKLIST(plugin->taskbar), NETK_TASKLIST_NEVER_GROUP);
+        netk_tasklist_set_grouping (NETK_TASKLIST(plugin->taskbar), NETK_TASKLIST_NEVER_GROUP);
     }
 
-    netk_tasklist_set_include_all_workspaces(NETK_TASKLIST(plugin->taskbar), plugin->includeAll);
-    netk_tasklist_set_show_label(NETK_TASKLIST(plugin->taskbar), plugin->showLabel);
+    netk_tasklist_set_include_all_workspaces (NETK_TASKLIST(plugin->taskbar), plugin->includeAll);
+    netk_tasklist_set_show_label (NETK_TASKLIST(plugin->taskbar), plugin->showLabel);
 }
 
 static gui *
@@ -108,18 +100,20 @@ gui_new ()
     gui *plugin;
 
     plugin = g_new(gui, 1);
-    plugin->ebox = gtk_event_box_new();
+    plugin->ebox = gtk_event_box_new ();
+
+    plugin->gscr = gdk_screen_get_default ();
     
-    plugin->width=100;
+    plugin->width = 100;
     plugin->group = 0;
     plugin->includeAll = FALSE;
     plugin->expand = FALSE;
     plugin->showLabel = TRUE;
-    plugin->screen=netk_screen_get_default();
+    plugin->screen=netk_screen_get_default ();
     netk_screen_force_update (plugin->screen);
 
     plugin->frame = gtk_frame_new (NULL);
-    plugin->taskbar = netk_tasklist_new(plugin->screen);
+    plugin->taskbar = netk_tasklist_new (plugin->screen);
 
     gtk_container_add (GTK_CONTAINER(plugin->frame), plugin->taskbar);
     gtk_container_add (GTK_CONTAINER(plugin->ebox), plugin->frame);
@@ -128,7 +122,7 @@ gui_new ()
 
     gtk_widget_show_all (plugin->ebox);
     
-    plugin->callbackID = g_signal_connect(G_OBJECT(panel.toplevel), "size-allocate", G_CALLBACK(plugin_panel_resize_callback), (gpointer)plugin );
+    plugin->callbackID = g_signal_connect (G_OBJECT(panel.toplevel), "size-allocate", G_CALLBACK(plugin_panel_resize_callback), (gpointer)plugin );
     
     return(plugin);
 }
@@ -151,15 +145,22 @@ static void
 plugin_determine_expand_width (gpointer data)
 {
     gui *plugin = data;
+    GdkRectangle rect;
 
-    int screen, mainFrame, current;
+    int screen, mainFrame, current, monitor;
+
+    if (!GDK_IS_WINDOW(panel.toplevel->window))
+        return;
+    
+    monitor = gdk_screen_get_monitor_at_window (plugin->gscr, panel.toplevel->window);
+    gdk_screen_get_monitor_geometry (plugin->gscr, monitor, &rect);
 
     if (plugin->orientation == HORIZONTAL){
-        screen = netk_screen_get_width (plugin->screen);
+        screen = rect.width;
         mainFrame = panel.toplevel->allocation.width;
         current = plugin->ebox->allocation.width;
     } else {
-        screen = netk_screen_get_height (plugin->screen);
+        screen = rect.height;
         mainFrame = panel.toplevel->allocation.height;
         current = plugin->ebox->allocation.height;
     }
@@ -188,7 +189,7 @@ plugin_recreate_gui (gpointer data)
         width = plugin->width;
     }
 
-    if (plugin->orientation==HORIZONTAL) {
+    if (plugin->orientation == HORIZONTAL) {
         gtk_widget_set_size_request (plugin->frame, width, plugin->size);
     } else {
         gtk_widget_set_size_request (plugin->frame, plugin->size, width);
@@ -232,15 +233,8 @@ static void
 plugin_set_size (Control *ctrl, int size)
 {
     gui *plugin = ctrl->data;
-    if (size == TINY) {
-        plugin->size = SIZETINY;
-    } else if (size == SMALL) {
-        plugin->size = SIZESMALL;
-    } else if (size == MEDIUM) {
-        plugin->size = SIZEMEDIUM;
-    } else {
-        plugin->size = SIZELARGE;
-    }	
+    plugin->size = icon_size[size];
+
     plugin_recreate_gui (plugin);
 }
 
@@ -250,7 +244,7 @@ plugin_set_orientation (Control *ctrl, int orientation)
     gui *plugin = ctrl->data;
     plugin->orientation = orientation;
   
-    plugin_recreate_gui(plugin);
+    plugin_recreate_gui (plugin);
 }
 
 static void
@@ -282,7 +276,6 @@ plugin_read_config (Control *ctrl, xmlNodePtr node)
                 plugin->showLabel = atoi(value);
                 g_free(value);
             }
- 
             break;
         }
     }
