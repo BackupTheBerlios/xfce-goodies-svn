@@ -1,3 +1,6 @@
+2004-10-10 17:45 papermoon:
+	* po/de.po
+	fixed typo in german translation
 2004-10-10 16:00 papermoon:
 	* panel-plugin/showdesktop.c
 	preparing for new release and minor i18n fixes
