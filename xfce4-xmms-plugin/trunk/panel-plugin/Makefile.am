@@ -5,17 +5,16 @@ plugin_LTLIBRARIES =							\
 
 libxmms_plugin_la_LDFLAGS =						\
 	-avoid-version							\
-	-export-dynamic							\
-	-module								\
-	`xmms-config --libs`
+	-module
 
 libxmms_plugin_la_SOURCES =						\
 	xmms_plugin.c
 
 libxmms_plugin_la_CFLAGS =						\
 	@XFCE4_PANEL_CFLAGS@						\
-        `xmms-config --cflags`						\
+	@PLAYER_CFLAGS@							\
         -DDATA_DIR=\"$(datadir)/xfce4/xmms-plugin\"
 
 libxmms_plugin_la_LIBADD = 						\
-	@XFCE4_PANEL_LIBS@
+	@XFCE4_PANEL_LIBS@						\
+	@PLAYER_LIBS@

@@ -11,18 +11,27 @@
 #include <config.h>
 #endif
 
-#include <gtk/gtk.h>
-
-#include <libxfce4util/i18n.h>
-#include <libxfcegui4/dialogs.h>
-#include <panel/plugins.h>
-#include <panel/xfce.h>
+#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
+#endif
 #include <sys/wait.h>
 
-#include <xmmsctrl.h>
+#include <gtk/gtk.h>
 
-#define XMMS_CMD "xmms"
+#include <libxfce4util/libxfce4util.h>
+#include <libxfcegui4/libxfcegui4.h>
+
+#include <panel/plugins.h>
+#include <panel/xfce.h>
+
+#if defined(PLAYER_XMMS)
+#include <xmmsctrl.h>
+#elif defined(PLAYER_BEEP)
+#include <beep/beepctrl.h>
+#else
+#error "Unsupported media player"
+#endif
+
 #define UPDATE_TIMEOUT 500
 
 /* GLOBALS */
@@ -71,7 +80,7 @@ typedef struct
 
 static void start_xmms(void)
 {
-	g_spawn_command_line_async(XMMS_CMD, NULL);
+	g_spawn_command_line_async(PLAYER_COMMAND, NULL);
 }
 
 static gchar* build_file_path(gchar *path)
@@ -634,14 +643,16 @@ static void xfcexmms_create_options (Control *ctrl, GtkContainer *con, GtkWidget
 	label = gtk_label_new("Paused Text:");
 	gtk_box_pack_start(GTK_BOX(vbox), label, TRUE, FALSE, 1);
 	
-	pentry = gtk_entry_new_with_max_length(19);
+	pentry = gtk_entry_new();
+	gtk_entry_set_max_length(GTK_ENTRY(pentry), 19);
 	gtk_entry_set_text(GTK_ENTRY(pentry), paused_text);
 	gtk_box_pack_start(GTK_BOX(vbox), pentry, TRUE, TRUE, 1);
 	
 	label = gtk_label_new("Stopped Text:");
 	gtk_box_pack_start(GTK_BOX(vbox), label, TRUE, FALSE, 1);
 	
-	sentry = gtk_entry_new_with_max_length(19);
+	sentry = gtk_entry_new();
+	gtk_entry_set_max_length(GTK_ENTRY(sentry), 19);
 	gtk_entry_set_text(GTK_ENTRY(sentry), stopped_text);
 	gtk_box_pack_start(GTK_BOX(vbox), sentry, TRUE, TRUE, 1);
  
