@@ -27,34 +27,50 @@
   g_object_set_data (G_OBJECT (component), name, widget)
 
 GtkWidget*
-create_xffm_theme_maker (void)
+create_xfmime_edit (void)
 {
-  GtkWidget *xffm_theme_maker;
+  GtkWidget *xfmime_edit;
   GtkWidget *vbox1;
-  GtkWidget *scrolledwindow1;
+  GtkWidget *hpaned1;
+  GtkWidget *scrolledwindow3;
   GtkWidget *treeview1;
+  GtkWidget *scrolledwindow2;
+  GtkWidget *treeview2;
   GtkWidget *hbox3;
   GtkWidget *optionmenu2;
   GtkWidget *hbuttonbox1;
   GtkWidget *save;
   GtkWidget *quit;
 
-  xffm_theme_maker = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_widget_set_size_request (xffm_theme_maker, 400, 537);
-  gtk_window_set_title (GTK_WINDOW (xffm_theme_maker), "xffm theme maker");
-  gtk_window_set_default_size (GTK_WINDOW (xffm_theme_maker), 640, 480);
+  xfmime_edit = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  gtk_widget_set_size_request (xfmime_edit, 400, 537);
+  gtk_window_set_title (GTK_WINDOW (xfmime_edit), "xfmime_edit");
+  gtk_window_set_default_size (GTK_WINDOW (xfmime_edit), 640, 480);
 
   vbox1 = gtk_vbox_new (FALSE, 0);
   gtk_widget_show (vbox1);
-  gtk_container_add (GTK_CONTAINER (xffm_theme_maker), vbox1);
+  gtk_container_add (GTK_CONTAINER (xfmime_edit), vbox1);
 
-  scrolledwindow1 = gtk_scrolled_window_new (NULL, NULL);
-  gtk_widget_show (scrolledwindow1);
-  gtk_box_pack_start (GTK_BOX (vbox1), scrolledwindow1, TRUE, TRUE, 0);
+  hpaned1 = gtk_hpaned_new ();
+  gtk_widget_show (hpaned1);
+  gtk_box_pack_start (GTK_BOX (vbox1), hpaned1, TRUE, TRUE, 0);
+  gtk_paned_set_position (GTK_PANED (hpaned1), 345);
+
+  scrolledwindow3 = gtk_scrolled_window_new (NULL, NULL);
+  gtk_widget_show (scrolledwindow3);
+  gtk_paned_pack1 (GTK_PANED (hpaned1), scrolledwindow3, FALSE, TRUE);
 
   treeview1 = gtk_tree_view_new ();
   gtk_widget_show (treeview1);
-  gtk_container_add (GTK_CONTAINER (scrolledwindow1), treeview1);
+  gtk_container_add (GTK_CONTAINER (scrolledwindow3), treeview1);
+
+  scrolledwindow2 = gtk_scrolled_window_new (NULL, NULL);
+  gtk_widget_show (scrolledwindow2);
+  gtk_paned_pack2 (GTK_PANED (hpaned1), scrolledwindow2, TRUE, TRUE);
+
+  treeview2 = gtk_tree_view_new ();
+  gtk_widget_show (treeview2);
+  gtk_container_add (GTK_CONTAINER (scrolledwindow2), treeview2);
 
   hbox3 = gtk_hbox_new (FALSE, 0);
   gtk_widget_show (hbox3);
@@ -62,7 +78,7 @@ create_xffm_theme_maker (void)
 
   optionmenu2 = gtk_option_menu_new ();
   gtk_widget_show (optionmenu2);
-  gtk_box_pack_start (GTK_BOX (hbox3), optionmenu2, TRUE, TRUE, 0);
+  gtk_box_pack_end (GTK_BOX (hbox3), optionmenu2, TRUE, TRUE, 0);
 
   hbuttonbox1 = gtk_hbutton_box_new ();
   gtk_widget_show (hbuttonbox1);
@@ -98,16 +114,19 @@ create_xffm_theme_maker (void)
                     NULL);
 
   /* Store pointers to all widgets, for use by lookup_widget(). */
-  GLADE_HOOKUP_OBJECT_NO_REF (xffm_theme_maker, xffm_theme_maker, "xffm_theme_maker");
-  GLADE_HOOKUP_OBJECT (xffm_theme_maker, vbox1, "vbox1");
-  GLADE_HOOKUP_OBJECT (xffm_theme_maker, scrolledwindow1, "scrolledwindow1");
-  GLADE_HOOKUP_OBJECT (xffm_theme_maker, treeview1, "treeview1");
-  GLADE_HOOKUP_OBJECT (xffm_theme_maker, hbox3, "hbox3");
-  GLADE_HOOKUP_OBJECT (xffm_theme_maker, optionmenu2, "optionmenu2");
-  GLADE_HOOKUP_OBJECT (xffm_theme_maker, hbuttonbox1, "hbuttonbox1");
-  GLADE_HOOKUP_OBJECT (xffm_theme_maker, save, "save");
-  GLADE_HOOKUP_OBJECT (xffm_theme_maker, quit, "quit");
+  GLADE_HOOKUP_OBJECT_NO_REF (xfmime_edit, xfmime_edit, "xfmime_edit");
+  GLADE_HOOKUP_OBJECT (xfmime_edit, vbox1, "vbox1");
+  GLADE_HOOKUP_OBJECT (xfmime_edit, hpaned1, "hpaned1");
+  GLADE_HOOKUP_OBJECT (xfmime_edit, scrolledwindow3, "scrolledwindow3");
+  GLADE_HOOKUP_OBJECT (xfmime_edit, treeview1, "treeview1");
+  GLADE_HOOKUP_OBJECT (xfmime_edit, scrolledwindow2, "scrolledwindow2");
+  GLADE_HOOKUP_OBJECT (xfmime_edit, treeview2, "treeview2");
+  GLADE_HOOKUP_OBJECT (xfmime_edit, hbox3, "hbox3");
+  GLADE_HOOKUP_OBJECT (xfmime_edit, optionmenu2, "optionmenu2");
+  GLADE_HOOKUP_OBJECT (xfmime_edit, hbuttonbox1, "hbuttonbox1");
+  GLADE_HOOKUP_OBJECT (xfmime_edit, save, "save");
+  GLADE_HOOKUP_OBJECT (xfmime_edit, quit, "quit");
 
-  return xffm_theme_maker;
+  return xfmime_edit;
 }
 

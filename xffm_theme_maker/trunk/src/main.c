@@ -22,12 +22,15 @@
 #include "support.h"
 #include "callbacks.h"
 
-#warning "Please note that xffm_theme_maker requires xffm >= 4.1"
 #define SEARCH_DIRS {"/usr/X11R6/share/icons","/usr/share/icons","/usr/local/share/icons",PACKAGE_DATA_DIR "/xfce4/icons",NULL}
 
 GtkTreeView *treeview;
+GtkTreeView *treeview2;
 GtkTreeStore *store;  
-GtkWidget *xffm_theme_maker;
+GtkTreeStore *store2;  
+GtkWidget *xfmime_edit;
+
+#define STOCK_STUFF {GTK_STOCK_DIALOG_INFO,GTK_STOCK_DIALOG_WARNING,GTK_STOCK_DIALOG_ERROR,GTK_STOCK_DIALOG_QUESTION,GTK_STOCK_DND,GTK_STOCK_DND_MULTIPLE,GTK_STOCK_ADD,GTK_STOCK_APPLY,GTK_STOCK_BOLD,GTK_STOCK_CANCEL,GTK_STOCK_CDROM,GTK_STOCK_CLEAR,GTK_STOCK_CLOSE,GTK_STOCK_COLOR_PICKER,GTK_STOCK_CONVERT,GTK_STOCK_COPY,GTK_STOCK_CUT,GTK_STOCK_DELETE,GTK_STOCK_EXECUTE,GTK_STOCK_FIND,GTK_STOCK_FIND_AND_REPLACE,GTK_STOCK_FLOPPY,GTK_STOCK_GOTO_BOTTOM,GTK_STOCK_GOTO_FIRST,GTK_STOCK_GOTO_LAST,GTK_STOCK_GOTO_TOP,GTK_STOCK_GO_BACK,GTK_STOCK_GO_DOWN,GTK_STOCK_GO_FORWARD,GTK_STOCK_GO_UP,GTK_STOCK_HELP,GTK_STOCK_HOME,GTK_STOCK_INDEX,GTK_STOCK_ITALIC,GTK_STOCK_JUMP_TO,GTK_STOCK_JUSTIFY_CENTER,GTK_STOCK_JUSTIFY_FILL,GTK_STOCK_JUSTIFY_LEFT,GTK_STOCK_JUSTIFY_RIGHT,GTK_STOCK_MISSING_IMAGE,GTK_STOCK_NEW,GTK_STOCK_NO,GTK_STOCK_OK,GTK_STOCK_OPEN,GTK_STOCK_PASTE,GTK_STOCK_PREFERENCES,GTK_STOCK_PRINT,GTK_STOCK_PRINT_PREVIEW,GTK_STOCK_PROPERTIES,GTK_STOCK_QUIT,GTK_STOCK_REDO,GTK_STOCK_REFRESH,GTK_STOCK_REMOVE,GTK_STOCK_REVERT_TO_SAVED,GTK_STOCK_SAVE,GTK_STOCK_SAVE_AS,GTK_STOCK_SELECT_COLOR,GTK_STOCK_SELECT_FONT,GTK_STOCK_SORT_ASCENDING,GTK_STOCK_SORT_DESCENDING,GTK_STOCK_SPELL_CHECK,GTK_STOCK_STOP,GTK_STOCK_STRIKETHROUGH,GTK_STOCK_UNDELETE,GTK_STOCK_UNDERLINE,GTK_STOCK_UNDO,GTK_STOCK_YES,GTK_STOCK_ZOOM_100,GTK_STOCK_ZOOM_FIT,GTK_STOCK_ZOOM_IN,GTK_STOCK_ZOOM_OUT,NULL}
 
 enum
 {
@@ -204,7 +207,7 @@ static void writexml(void){
 
     xmlFreeDoc(doc);
     { 
- 		GtkWidget *dialog = gtk_message_dialog_new ((GtkWindow *)xffm_theme_maker,
+ 		GtkWidget *dialog = gtk_message_dialog_new ((GtkWindow *)xfmime_edit,
                                   GTK_DIALOG_DESTROY_WITH_PARENT,
                                   GTK_MESSAGE_INFO,
                                   GTK_BUTTONS_CLOSE,mimefile);
@@ -326,12 +329,12 @@ void on_drag_data(GtkWidget * widget, GdkDragContext * context, gint x, gint y, 
     
 
     
-    icon = gtk_image_get_pixbuf((GtkImage *) MIME_ICON_create_pixmap(xffm_theme_maker, b));
+    icon = gtk_image_get_pixbuf((GtkImage *) MIME_ICON_create_pixmap(xfmime_edit, b));
     if (icon) {
 	    gtk_tree_store_set(store, &iter, PIXBUF_COLUMN, icon,-1);
 	    gtk_tree_store_set(store, &iter, ICON_COLUMN, b,-1);
     } else {
- 	GtkWidget *dialog = gtk_message_dialog_new ((GtkWindow *)xffm_theme_maker,
+ 	GtkWidget *dialog = gtk_message_dialog_new ((GtkWindow *)xfmime_edit,
                                GTK_DIALOG_DESTROY_WITH_PARENT,
                                GTK_MESSAGE_ERROR,
                                GTK_BUTTONS_CLOSE,"Cannot render icon from %s\n",b);
@@ -392,9 +395,9 @@ static gboolean find_row(GtkTreeModel * treemodel, GtkTreePath * treepath, GtkTr
 	    name_found=TRUE;
 	    if (icon_value) {
 		    if (strncmp(icon_value,"gtk-",strlen("gtk-"))==0) 
-			    icon=gtk_widget_render_icon(xffm_theme_maker, icon_value, GTK_ICON_SIZE_DIALOG, NULL);
+			    icon=gtk_widget_render_icon(xfmime_edit, icon_value, GTK_ICON_SIZE_DIALOG, NULL);
 	            else 
-			    icon = gtk_image_get_pixbuf((GtkImage *) MIME_ICON_create_pixmap(xffm_theme_maker, icon_value));
+			    icon = gtk_image_get_pixbuf((GtkImage *) MIME_ICON_create_pixmap(xfmime_edit, icon_value));
 		    if (icon) {
 			    gtk_tree_store_set((GtkTreeStore *) store, iter, PIXBUF_COLUMN, icon,-1);
    			    g_object_unref (G_OBJECT (icon));
@@ -462,7 +465,98 @@ static gboolean find_type(GtkTreeModel * treemodel, GtkTreePath * treepath, GtkT
     g_free(group);
     return FALSE;
 }
-	    
+	  
+int insert_dir(const gchar *in_theme_dir,const gchar *subdir,GtkTreeIter *parent){
+    GtkTreeIter child,grandchild;
+    gboolean ok=FALSE;
+    gchar *n=g_build_filename(in_theme_dir,subdir,NULL);
+    if (g_file_test(n,G_FILE_TEST_IS_DIR)){
+	GDir *gdir;
+	const char *file;
+        gtk_tree_store_insert (store2, &child,parent,0);
+        gtk_tree_store_set((GtkTreeStore *) store2, &child, ICON_COLUMN, subdir,-1);
+	if ((gdir = g_dir_open(n, 0, NULL)) != NULL) {
+	    while((file = g_dir_read_name(gdir))) {
+		char *path = g_build_filename(n, file, NULL);
+		if(g_file_test(path, G_FILE_TEST_IS_DIR))
+		{
+		    int r=insert_dir((const gchar *)n,file,&child);
+		    if (r) ok=TRUE;
+		}
+		g_free(path);
+		if (strstr(file,".png")||strstr(file,".svg")){
+		    GdkPixbuf *icon=NULL;   
+		    ok=TRUE;
+		    gtk_tree_store_append (store2, &grandchild,&child);
+		    gtk_tree_store_set((GtkTreeStore *) store2, &grandchild, ICON_COLUMN, file,-1);
+		    icon = gtk_image_get_pixbuf((GtkImage *) MIME_ICON_create_pixmap(xfmime_edit, file));
+		    if (icon) {
+			gtk_tree_store_set((GtkTreeStore *) store2, &grandchild, PIXBUF_COLUMN, icon,-1);
+			g_object_unref (G_OBJECT (icon));
+		    } 
+		}
+	    }
+	    g_dir_close(gdir);
+	    if (!ok) {
+		//printf("should now remove %s\n",subdir);
+		gtk_tree_store_remove(store2, &child);
+	    }
+	}
+    }
+    g_free(n);
+    return ok;
+}
+
+static gboolean create_icon_tree2(const gchar *in_theme_dir){
+    GtkTreeIter iter;
+    GtkTreeIter child;
+    if (store2){
+    	gtk_tree_model_foreach((GtkTreeModel *)store2, unref_row, NULL);
+	gtk_tree_store_clear (store2);
+    } else store2=create_treestore();
+
+
+    // insert theme dir
+    if (g_file_test(in_theme_dir,G_FILE_TEST_IS_DIR)){
+	gchar *n=g_path_get_basename(in_theme_dir);
+	gtk_tree_store_insert (store2, &iter, NULL,0);
+	gtk_tree_store_set((GtkTreeStore *) store2, &iter, ICON_COLUMN, n,-1);
+	g_free(n);
+	insert_dir(in_theme_dir,"48x48",&iter);
+	insert_dir(in_theme_dir,"scalable",&iter);
+    }
+    else printf("%s not a dir\n",in_theme_dir);
+
+    // insert fallback Xfce directory
+    {
+	gchar *n=g_strconcat(PACKAGE_DATA_DIR,G_DIR_SEPARATOR_S,"icons",G_DIR_SEPARATOR_S,"Xfce",NULL);
+	//printf("inserting %s\n",n);
+	if (n) {
+	    gtk_tree_store_append (store2, &iter, NULL);
+	    gtk_tree_store_set((GtkTreeStore *) store2, &iter, ICON_COLUMN, "Xfce",-1);
+	    insert_dir(n,"48x48",&iter);
+	}
+    }
+  
+    {
+       gchar **p,*stocks[]=STOCK_STUFF;
+       gtk_tree_store_append (store2, &iter,NULL);
+       gtk_tree_store_set((GtkTreeStore *) store2, &iter, ICON_COLUMN, "gtk-stock",-1);
+       for (p=stocks;p && *p; p++){
+	    GdkPixbuf *icon=NULL;   
+	    gtk_tree_store_append (store2, &child,&iter);
+	    //printf("gtk -> %s\n",*p);
+	    gtk_tree_store_set((GtkTreeStore *) store2, &child, ICON_COLUMN, *p,-1);
+	    icon=gtk_widget_render_icon(xfmime_edit, *p, GTK_ICON_SIZE_DIALOG, NULL);
+	    if (icon) {
+	      gtk_tree_store_set((GtkTreeStore *) store2, &child, PIXBUF_COLUMN, icon,-1);
+	      g_object_unref (G_OBJECT (icon));
+	    } 
+       }
+    }
+       
+    
+}
 
 
 static gboolean create_icon_tree(const gchar *in_theme_dir){
@@ -635,6 +729,7 @@ static gint change_theme(gpointer data){
 	g_free(theme_dir);
 	theme_dir = txt = g_strdup (gtk_label_get_text (label));
   	create_icon_tree(txt);
+  	create_icon_tree2(txt);
 	gtk_main_quit();
 	gtk_widget_destroy(dialog);
     
@@ -643,11 +738,11 @@ static gint change_theme(gpointer data){
 
 void theme_changed (GtkOptionMenu *om, gpointer user_data){
 	const gchar *message_format="Please wait. Icon regeneration in progress...";
-	dialog = gtk_message_dialog_new ((GtkWindow *)xffm_theme_maker,GTK_DIALOG_MODAL|GTK_DIALOG_DESTROY_WITH_PARENT,
+	dialog = gtk_message_dialog_new ((GtkWindow *)xfmime_edit,GTK_DIALOG_MODAL|GTK_DIALOG_DESTROY_WITH_PARENT,
                                              GTK_MESSAGE_INFO,
                                              GTK_BUTTONS_NONE,
 					     message_format);
-	gtk_window_set_transient_for (GTK_WINDOW (xffm_theme_maker),  GTK_WINDOW (dialog));
+	gtk_window_set_transient_for (GTK_WINDOW (xfmime_edit),  GTK_WINDOW (dialog));
         changer=g_timeout_add_full(0, 260, (GtkFunction) change_theme, (gpointer)(om), NULL);
 	gtk_widget_show_all(dialog);
 	gtk_main();
@@ -677,14 +772,14 @@ static gboolean icon_changed(GtkCellRendererText *cell,
 	if (!new_text) gtk_tree_store_set (store, &iter, column,"",-1);
 	else gtk_tree_store_set (store, &iter, column,new_text,-1);
 	if (strncmp(new_text,"gtk-",strlen("gtk-"))==0){
-	   icon = gtk_widget_render_icon(xffm_theme_maker, new_text, GTK_ICON_SIZE_DIALOG, NULL);
+	   icon = gtk_widget_render_icon(xfmime_edit, new_text, GTK_ICON_SIZE_DIALOG, NULL);
 	} else {
-	  icon = gtk_image_get_pixbuf((GtkImage *) MIME_ICON_create_pixmap(xffm_theme_maker,new_text ));
+	  icon = gtk_image_get_pixbuf((GtkImage *) MIME_ICON_create_pixmap(xfmime_edit,new_text ));
 	}
 //	icon = MIME_ICON_create_pixbuf(new_text);
 	gtk_tree_store_set(store, &iter, PIXBUF_COLUMN, icon,-1);
       	/*if (!icon){ 
- 		GtkWidget *dialog = gtk_message_dialog_new ((GtkWindow *)xffm_theme_maker,
+ 		GtkWidget *dialog = gtk_message_dialog_new ((GtkWindow *)xfmime_edit,
                                   GTK_DIALOG_DESTROY_WITH_PARENT,
                                   GTK_MESSAGE_ERROR,
                                   GTK_BUTTONS_CLOSE,"Cannot render icon from %s\n",new_text);
@@ -699,63 +794,16 @@ static gboolean icon_changed(GtkCellRendererText *cell,
     return FALSE;
 }
 
-
-int
-main (int argc, char *argv[])
-{
+void mk_treeview(){
   GtkCellRenderer *cell;
   GtkTreeViewColumn *column;
-  GHashTable *hash_table;
-  gtk_set_locale ();
-  gtk_init (&argc, &argv); 
-
-  
-  xffm_theme_maker = create_xffm_theme_maker ();
-
-  /* themes */
-  {
-    GDir *gdir;
-    gchar **theme_dirs,**p;
-    const char *file;
-    GtkMenu	*menu=GTK_MENU (gtk_menu_new ());
-    GtkOptionMenu *optionmenu=(GtkOptionMenu *)lookup_widget(xffm_theme_maker,"optionmenu2");
-    //theme_dir=g_strconcat(PACKAGE_DATA_DIR, G_DIR_SEPARATOR_S,"xfce4", G_DIR_SEPARATOR_S,"icons",G_DIR_SEPARATOR_S,theme,NULL);
-    
-
-    theme_dirs=MIME_ICON_find_themes(FALSE,TRUE);
-    for (p=theme_dirs;p && *p;p++){
-	GtkWidget *it;
-	it = gtk_menu_item_new_with_label (*p);
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), it);
-	gtk_widget_show (it);
-	g_free(*p);
-    }
-    g_free(theme_dirs);
-    gtk_option_menu_set_menu (optionmenu, GTK_WIDGET (menu));
-  
-    /* populate the model: */
-    {
-	GtkLabel		*label;
-	gchar			*txt;
-	label = GTK_LABEL (gtk_bin_get_child(GTK_BIN(optionmenu)));
-	theme_dir = txt = g_strdup (gtk_label_get_text (label));
-        create_icon_tree(txt);
-    }
-    g_signal_connect(G_OBJECT(optionmenu), "changed", G_CALLBACK(theme_changed), NULL);
-  }
-  
-
-  /* treeview */
-  
-  treeview =(GtkTreeView *)lookup_widget((GtkWidget *)xffm_theme_maker,"treeview1");
+  treeview =(GtkTreeView *)lookup_widget((GtkWidget *)xfmime_edit,"treeview1");
   gtk_tree_view_set_model (treeview,(GtkTreeModel *)store);
    
 
   gtk_drag_dest_set((GtkWidget *) treeview, GTK_DEST_DEFAULT_DROP | GTK_DEST_DEFAULT_HIGHLIGHT, target_table, NUM_TARGETS, GDK_ACTION_MOVE | GDK_ACTION_COPY | GDK_ACTION_LINK);
 
   gtk_drag_source_set((GtkWidget *) treeview, GDK_BUTTON1_MASK | GDK_BUTTON2_MASK, target_table, NUM_TARGETS, GDK_ACTION_MOVE | GDK_ACTION_COPY | GDK_ACTION_LINK);
-
-
 
     /* create the pixbuf column */
     column = gtk_tree_view_column_new();
@@ -773,7 +821,7 @@ main (int argc, char *argv[])
 		    NULL);
 
 
-     gtk_tree_view_append_column(GTK_TREE_VIEW(treeview), column);
+    gtk_tree_view_append_column(GTK_TREE_VIEW(treeview), column);
     gtk_tree_view_set_expander_column(treeview, column);
 
     /* group */ 
@@ -833,15 +881,121 @@ main (int argc, char *argv[])
 		    NULL);
      gtk_tree_view_append_column(GTK_TREE_VIEW(treeview), column);
 
-  gtk_widget_show (xffm_theme_maker);
-  g_signal_connect ((gpointer) xffm_theme_maker, "destroy",
+}
+
+void populate_treestore(GtkOptionMenu *optionmenu){
+    /* populate the model: */
+	GtkLabel		*label;
+	gchar			*txt;
+	label = GTK_LABEL (gtk_bin_get_child(GTK_BIN(optionmenu)));
+	theme_dir = txt = g_strdup (gtk_label_get_text (label));
+        create_icon_tree(txt);
+}
+void mk_treeview2(void){
+  GtkCellRenderer *cell;
+  GtkTreeViewColumn *column;
+  treeview2 =(GtkTreeView *)lookup_widget((GtkWidget *)xfmime_edit,"treeview2");
+  gtk_tree_view_set_model (treeview2,(GtkTreeModel *)store2);
+   
+
+  //gtk_drag_dest_set((GtkWidget *) treeview2, GTK_DEST_DEFAULT_DROP | GTK_DEST_DEFAULT_HIGHLIGHT, target_table, NUM_TARGETS, GDK_ACTION_MOVE | GDK_ACTION_COPY | GDK_ACTION_LINK);
+
+  gtk_drag_source_set((GtkWidget *) treeview2, GDK_BUTTON1_MASK | GDK_BUTTON2_MASK, target_table, NUM_TARGETS, GDK_ACTION_MOVE | GDK_ACTION_COPY | GDK_ACTION_LINK);
+
+    /* create the pixbuf column */
+    column = gtk_tree_view_column_new();
+    gtk_tree_view_column_set_sizing(column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+    gtk_tree_view_column_set_resizable(column, FALSE);
+    gtk_tree_view_column_set_reorderable(column, FALSE);
+    gtk_tree_view_column_set_spacing(column,2);
+
+    cell = gtk_cell_renderer_pixbuf_new();
+    gtk_tree_view_column_pack_start(column, cell, FALSE);
+    gtk_tree_view_column_set_attributes(column, cell, 
+		    "pixbuf", PIXBUF_COLUMN, 
+		    "pixbuf_expander_closed", PIXBUF_COLUMN, 
+		    "pixbuf_expander_open", PIXBUF_COLUMN, 
+		    NULL);
+
+
+    gtk_tree_view_append_column(GTK_TREE_VIEW(treeview2), column);
+    gtk_tree_view_set_expander_column(treeview2, column);
+
+
+     /* name */
+     column = gtk_tree_view_column_new();
+    gtk_tree_view_column_set_sizing(column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+    gtk_tree_view_column_set_resizable(column, FALSE);
+    gtk_tree_view_column_set_reorderable(column, FALSE);
+    gtk_tree_view_column_set_spacing(column,2);
+    cell = gtk_cell_renderer_text_new();
+    g_object_set(G_OBJECT(cell), "editable", FALSE, NULL);
+    //gtk_tree_view_column_set_title(column, "Name");
+    gtk_tree_view_column_set_clickable(column, TRUE);
+
+    gtk_tree_view_column_pack_start(column, cell, FALSE);
+    gtk_tree_view_column_set_attributes(column, cell, 
+		    "text", ICON_COLUMN, 
+		    NULL);
+     gtk_tree_view_append_column(GTK_TREE_VIEW(treeview2), column);
+}
+
+void populate_treestore2(GtkOptionMenu *optionmenu){
+    /* populate the model: */
+	GtkLabel		*label;
+	gchar			*txt;
+	label = GTK_LABEL (gtk_bin_get_child(GTK_BIN(optionmenu)));
+	txt = g_strdup (gtk_label_get_text (label));
+        create_icon_tree2(txt);
+	g_free(txt);
+}
+
+int
+main (int argc, char *argv[])
+{
+  GHashTable *hash_table;
+  gtk_set_locale ();
+  gtk_init (&argc, &argv); 
+
+  
+  xfmime_edit = create_xfmime_edit ();
+
+  /* themes */
+  {
+    GDir *gdir;
+    gchar **theme_dirs,**p;
+    const char *file;
+    GtkMenu	*menu=GTK_MENU (gtk_menu_new ());
+    GtkOptionMenu *optionmenu=(GtkOptionMenu *)lookup_widget(xfmime_edit,"optionmenu2");
+    //theme_dir=g_strconcat(PACKAGE_DATA_DIR, G_DIR_SEPARATOR_S,"xfce4", G_DIR_SEPARATOR_S,"icons",G_DIR_SEPARATOR_S,theme,NULL);
+    
+
+    theme_dirs=MIME_ICON_find_themes(FALSE,TRUE);
+    for (p=theme_dirs;p && *p;p++){
+	GtkWidget *it;
+	it = gtk_menu_item_new_with_label (*p);
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu), it);
+	gtk_widget_show (it);
+	g_free(*p);
+    }
+    g_free(theme_dirs);
+    gtk_option_menu_set_menu (optionmenu, GTK_WIDGET (menu));
+  
+    populate_treestore((GtkOptionMenu *)optionmenu);
+    populate_treestore2((GtkOptionMenu *)optionmenu);
+    g_signal_connect(G_OBJECT(optionmenu), "changed", G_CALLBACK(theme_changed), NULL);
+  }
+  
+
+  /* treeview */
+  mk_treeview();
+  mk_treeview2();
+  gtk_widget_show (xfmime_edit);
+  g_signal_connect ((gpointer) xfmime_edit, "destroy",
                     G_CALLBACK (on_quit_clicked),
                     NULL);
 
-
- // g_hash_table_foreach  (hash_table, func,(gpointer)store);
-
-
+  
   gtk_main ();
   return 0;
 }
