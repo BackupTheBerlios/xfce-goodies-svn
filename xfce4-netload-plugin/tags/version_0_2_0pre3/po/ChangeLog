@@ -1,0 +1,20 @@
+2003-08-25 Bernhard Walle
+    * Updated translation strings according to the new release.
+    * Updated German translation.
+
+2003-08-24 Bernhard Walle
+    * Updated German translation. Now there are more configuration options
+      available so there are also more translation strings.
+
+2003-08-17 Bernhard Walle
+    * Changed string from "bit/s" to "byte/s" and updated German translation.
+      (The value has always been "byte/s", only the string was wrong.)
+
+2003-08-15 Carles Muñoz Gorriz
+	* Added Catalan translation
+
+2003-08-15 Mantas
+	* Added Lithuanian translation
+
+2003-08-10 Bernhard Walle
+	* Initial German translation
