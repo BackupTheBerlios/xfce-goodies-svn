@@ -786,6 +786,9 @@ G_MODULE_EXPORT void xfce_control_class_init(ControlClass *cc)
 	/* although the function does nothing this still needs to be there for 
 	   some reason */	
 	cc->set_size		= xfcexmms_set_size;
+
+  /* make the plugin unique */
+  control_class_set_unique (cc, TRUE);
 }
 
 XFCE_PLUGIN_CHECK_INIT
