@@ -24,7 +24,7 @@
  */
 
 static char     _main_id[] =
-    "$Id: main.c,v 1.5 2003/11/04 10:26:13 rogerms Exp $";
+    "$Id: main.c,v 1.6 2003/11/11 12:40:34 rogerms Exp $";
 
 
 #define DEBUG	0
@@ -57,6 +57,18 @@ static char     _main_id[] =
 
 
 #define PLUGIN_NAME	"DiskPerf"
+
+
+ /* Some platforms do not provide busy times as separate read and write
+    data, but only a single value combining both */
+#if  defined(__NetBSD__)
+#define	SEPARATE_BUSY_TIMES	0
+#elif defined(__linux__)
+#define	SEPARATE_BUSY_TIMES	1
+#else
+#define	SEPARATE_BUSY_TIMES	1
+#endif
+
 
 typedef GtkWidget *Widget_t;
 
@@ -205,18 +217,19 @@ static int DisplayPerf (struct plugin_t *p_poPlugin)
 	     "  Write :%3u\n"
 	     "  Total :%3u\n"
 	     "Busy time (%c)\n"
-	     "  Read : %3u\n"
-	     "  Write : %3u\n"
-	     "  Total : %3u",
+	     "  Read : %3d\n"
+	     "  Write : %3d\n"
+	     "  Total : %3d",
 	     poConf->acTitle,
 	     (unsigned int) (arPerf[R_DATA] + 0.5),
 	     (unsigned int) (arPerf[W_DATA] + 0.5),
 	     (unsigned int) (arPerf[RW_DATA] + 0.5),
 	     '%',
-	     (unsigned int) (arBusy[R_DATA] + 0.5),
-	     (unsigned int) (arBusy[W_DATA] + 0.5),
-	     (unsigned int) (arBusy[RW_DATA] + 0.5)
-	);
+	     SEPARATE_BUSY_TIMES && (oPerf.qlen >= 0) ?
+	     (int) (arBusy[R_DATA] + 0.5) : -1,
+	     SEPARATE_BUSY_TIMES && (oPerf.qlen >= 0) ?
+	     (int) (arBusy[W_DATA] + 0.5) : -1,
+	     (oPerf.qlen >= 0) ? (int) (arBusy[RW_DATA] + 0.5) : -1);
     gtk_tooltips_set_tip (s_poToolTips, GTK_WIDGET (poMonitor->wEventBox),
 			  acToolTips, 0);
 
@@ -520,11 +533,11 @@ static void plugin_read_config (Control * p_poCtrl, xmlNodePtr p_poParent)
 	if ((pc = xmlGetProp (poNode, (CONF_USE_LABEL)))) {
 	    poConf->fTitleDisplayed = atoi (pc);
 	    xmlFree (pc);
-	    if (poConf->fTitleDisplayed)
-		gtk_widget_show (GTK_WIDGET (poMonitor->wTitle));
-	    else
-		gtk_widget_hide (GTK_WIDGET (poMonitor->wTitle));
 	}
+	if (poConf->fTitleDisplayed)
+	    gtk_widget_show (GTK_WIDGET (poMonitor->wTitle));
+	else
+	    gtk_widget_hide (GTK_WIDGET (poMonitor->wTitle));
 
 	if ((pc = xmlGetProp (poNode, (CONF_LABEL_TEXT)))) {
 	    memset (poConf->acTitle, 0, sizeof (poConf->acTitle));
@@ -552,11 +565,11 @@ static void plugin_read_config (Control * p_poCtrl, xmlNodePtr p_poParent)
 	if ((pc = xmlGetProp (poNode, (CONF_COMBINE_RW_DATA)))) {
 	    poConf->fRW_DataCombined = atoi (pc);
 	    xmlFree (pc);
-	    if (poConf->fRW_DataCombined)
-		gtk_widget_hide (GTK_WIDGET (*pw2ndBar));
-	    else
-		gtk_widget_show (GTK_WIDGET (*pw2ndBar));
 	}
+	if (poConf->fRW_DataCombined)
+	    gtk_widget_hide (GTK_WIDGET (*pw2ndBar));
+	else
+	    gtk_widget_show (GTK_WIDGET (*pw2ndBar));
 
 	if ((pc = xmlGetProp (poNode, (CONF_MONITOR_BAR_ORDER)))) {
 	    poConf->eMonitorBarOrder = atoi (pc);
@@ -674,7 +687,8 @@ static void ToggleTitle (Widget_t p_w, void *p_pvPlugin)
     struct gui_t   *poGUI = &(poPlugin->oConf.oGUI);
     struct monitor_t *poMonitor = &(poPlugin->oMonitor);
 
-    poConf->fTitleDisplayed = !(poConf->fTitleDisplayed);
+    poConf->fTitleDisplayed =
+	gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (p_w));
     gtk_widget_set_sensitive (GTK_WIDGET (poGUI->wTF_Title),
 			      poConf->fTitleDisplayed);
     if (poConf->fTitleDisplayed)
@@ -709,10 +723,23 @@ static void ToggleStatistics (Widget_t p_w, void *p_pvPlugin)
 
     poConf->eStatistics = !(poConf->eStatistics);
     TRACE ("ToggleStatistics(): %d\n", poConf->eStatistics);
-    if (poConf->eStatistics == IO_TRANSFER)
-	gtk_widget_show (GTK_WIDGET (poGUI->wHBox_MaxIO));
-    else
-	gtk_widget_hide (GTK_WIDGET (poGUI->wHBox_MaxIO));
+    switch (poConf->eStatistics) {
+	case BUSY_TIME:
+	    gtk_widget_hide (GTK_WIDGET (poGUI->wHBox_MaxIO));
+	    if (!SEPARATE_BUSY_TIMES) {
+		poConf->fRW_DataCombined = 1;
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON
+					      (poGUI->wTB_RWcombined),
+					      poConf->fRW_DataCombined);
+	    }
+	    break;
+	case IO_TRANSFER:
+	default:
+	    gtk_widget_show (GTK_WIDGET (poGUI->wHBox_MaxIO));
+    }
+    gtk_widget_set_sensitive (GTK_WIDGET (poGUI->wTB_RWcombined),
+			      (poConf->eStatistics != BUSY_TIME)
+			      || SEPARATE_BUSY_TIMES);
 }				/* ToggleStatistics() */
 
 	/**************************************************************/
@@ -727,7 +754,8 @@ static void ToggleRWintegration (Widget_t p_w, void *p_pvPlugin)
     struct gui_t   *poGUI = &(poPlugin->oConf.oGUI);
     Widget_t       *pw2ndBar = poPlugin->oMonitor.awProgressBar + 1;
 
-    poConf->fRW_DataCombined = !(poConf->fRW_DataCombined);
+    poConf->fRW_DataCombined =
+	gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (p_w));
     TRACE ("ToggleRWintegration(): %d\n", poConf->fRW_DataCombined);
     if (poConf->fRW_DataCombined) {
 	gtk_widget_hide (GTK_WIDGET (poGUI->wTa_DualBars));
@@ -930,14 +958,20 @@ static void plugin_create_options (Control * p_poCtrl,
 				  (poConf->eStatistics == BUSY_TIME));
     if (poConf->eStatistics == IO_TRANSFER)
 	gtk_widget_show (GTK_WIDGET (poGUI->wHBox_MaxIO));
-    else
+    else {
 	gtk_widget_hide (GTK_WIDGET (poGUI->wHBox_MaxIO));
+	if (!SEPARATE_BUSY_TIMES)
+	    poConf->fRW_DataCombined = 1;
+    }
     g_signal_connect (GTK_WIDGET (poGUI->wRB_IO), "toggled",
 		      G_CALLBACK (ToggleStatistics), poPlugin);
 
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON
 				  (poGUI->wTB_RWcombined),
 				  poConf->fRW_DataCombined);
+    gtk_widget_set_sensitive (GTK_WIDGET (poGUI->wTB_RWcombined),
+			      (poConf->eStatistics != BUSY_TIME)
+			      || SEPARATE_BUSY_TIMES);
     if (poConf->fRW_DataCombined) {
 	gtk_widget_hide (GTK_WIDGET (poGUI->wTa_DualBars));
 	gtk_widget_show (GTK_WIDGET (poGUI->wTa_SingleBar));
@@ -1078,6 +1112,12 @@ XFCE_PLUGIN_CHECK_INIT
 	/**************************************************************/
 /*
 $Log: main.c,v $
+Revision 1.6  2003/11/11 12:40:34  rogerms
+Release 1.4
+
+Revision 1.13  2003/11/11 12:12:42  RogerSeguin
+Force to single "total busy time" monitor when platform doesn't provide separate read and write data (e.g. NetBSD)
+
 Revision 1.5  2003/11/04 10:26:13  rogerms
 DiskPerf 1.3
 

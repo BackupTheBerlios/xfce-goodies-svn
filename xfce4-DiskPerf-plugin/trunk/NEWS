@@ -30,3 +30,9 @@
 	* NetBSD port now supports busy time stats as well, though currently
 	  theres no way to gather separate read/write stats, therefore 
 	  read and write stats are just total/2 for now.
+
+20031111:
+---------
+	* Released 1.4 with Benedikt's support for "busy time" on NetBSD
+	* Force to single "total busy time" monitor when platform doesn't
+	  provide separate read and write data (NetBSD)

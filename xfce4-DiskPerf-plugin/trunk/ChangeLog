@@ -15,3 +15,8 @@
 	* Release 1.3
 	* Added option for monitoring disk busy time statistics on Linux
 	  instead of I/O transfers
+
+2003-11-11 Roger Seguin & Benedikt Meurer
+	* Release 1.4
+	* Benedikt Meurer added support for disk busy time statistics on NetBSD
+	* General processing (slight) improvement
