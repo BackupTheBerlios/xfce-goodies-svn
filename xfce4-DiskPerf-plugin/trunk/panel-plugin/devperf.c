@@ -25,7 +25,7 @@
  */
 
 static char     _devperf_id[] =
-    "$Id: devperf.c,v 1.6 2003/11/10 23:00:41 benny Exp $";
+    "$Id: devperf.c,v 1.7 2003/11/17 09:24:14 benny Exp $";
 
 
 #define DEBUG	0
@@ -292,8 +292,15 @@ int DevGetPerfData (const void *p_pvDevice, struct devperf_t *perf)
 	gettimeofday (&tv, 0);
 	perf->timestamp_ns = (uint64_t)1000ull * 1000ull * 1000ull *
 		tv.tv_sec + 1000ull * tv.tv_usec;
+#if defined(__NetBSD_Version__) && (__NetBSD_Version__ < 106110000)
+  /* NetBSD < 1.6K does not have separate read/write statistics. */
+	perf->rbytes = drive.dk_bytes;
+	perf->wbytes = drive.dk_bytes;
+#else
 	perf->rbytes = drive.dk_rbytes;
 	perf->wbytes = drive.dk_wbytes;
+#endif
+
   /*
    * XXX - Currently, I don't know of any way to determine write/read busy
    * time separatly.
@@ -322,6 +329,9 @@ int DevGetPerfData (const void *p_pvDevice, struct devperf_t *perf)
 
 /*
 $Log: devperf.c,v $
+Revision 1.7  2003/11/17 09:24:14  benny
+NetBSD < 1.6K does not have separate read/write statistics. Thanks to martti.
+
 Revision 1.6  2003/11/10 23:00:41  benny
 Added "busy time" support for NetBSD.
 
