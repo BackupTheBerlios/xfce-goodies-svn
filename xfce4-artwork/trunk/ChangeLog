@@ -1,0 +1,23 @@
+2003-07-17 21:28  benny
+
+	* Makefile.in, NEWS: Added NEWS file.
+
+2003-07-17 21:24  benny
+
+	* AUTHORS, COPYING, ChangeLog, INSTALL, Makefile.am, Makefile.in,
+	README, aclocal.m4, autogen.sh, compile, config.guess, config.h.in,
+	config.sub, configure, configure.ac, depcomp, install-sh,
+	ltmain.sh, missing, mkinstalldirs, backdrops/Makefile.am,
+	backdrops/Makefile.in, m4/debug.m4, m4/depends.m4, m4/i18n.m4,
+	backdrops/xfce-gradiented.png: Initial revision
+
+2003-07-17 21:24  benny
+
+	* AUTHORS, COPYING, ChangeLog, INSTALL, Makefile.am, Makefile.in,
+	README, aclocal.m4, autogen.sh, compile, config.guess, config.h.in,
+	config.sub, configure, configure.ac, depcomp, install-sh,
+	ltmain.sh, missing, mkinstalldirs, backdrops/Makefile.am,
+	backdrops/Makefile.in, m4/debug.m4, m4/depends.m4, m4/i18n.m4,
+	backdrops/xfce-gradiented.png: Initial import of the artwork
+	module.
+
