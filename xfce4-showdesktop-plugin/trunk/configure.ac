@@ -1,15 +1,15 @@
 dnl configure.ac
 dnl
-dnl xfce4-sample-plugin - Sample plugin for xfce4-panel
+dnl xfce4-showdesktop-plugin - <no description>
 dnl
 dnl 2003 Benedikt Meurer <benedikt.meurer@unix-ag.uni-siegen.de>
 dnl
 
-AC_INIT([panel-plugin/sample.c])
+AC_INIT([configure])
 
 AM_CONFIG_HEADER([config.h])
 
-AM_INIT_AUTOMAKE([xfce4-sample-plugin], [0.1.0])
+AM_INIT_AUTOMAKE([xfce4-showdesktop-plugin], [0.1.1])
 
 AM_MAINTAINER_MODE
 

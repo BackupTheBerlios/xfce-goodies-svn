@@ -3,6 +3,10 @@
 SUBDIRS = panel-plugin
 
 EXTRA_DIST =								\
+	ChangeLog							\
+	ChangeLog.pre_xfce-goodies					\
+	INSTALL								\
+	NEWS								\
 	README
 
 distclean-local:

@@ -1,9 +1,22 @@
-2003-07-31 22:48 papermoon
+2003-08-03 18:09  papermoon
 
-        * panel-plugin/showdesktop.c: Some minor changes and a new option
-	to swap the button pixmaps for panels located on the top or right
-	on the screen.
+	* stamp-h1, config.status, libtool, mkinstalldirs, missing,
+	ltmain.sh, install-sh, ltcf-c.sh, configure.ac, depcomp, configure,
+	config.h.in, config.sub, autogen.sh, compile, config.guess, README,
+	aclocal.m4, AUTHORS, COPYING, ChangeLog, INSTALL, Makefile.am,
+	Makefile.in, panel-plugin/Makefile.am, panel-plugin/Makefile.in,
+	panel-plugin/showdesktop.c, m4/debug.m4, m4/depends.m4, m4/i18n.m4,
+	panel-plugin/.deps/libshowdesktop_la-showdesktop.Plo: New XFCE4
+	plugin: showdesktop
 
-2003-07-30 16:12 papermoon
+2003-08-03 18:09  papermoon
 
-        * initial release
+	* stamp-h1, config.status, libtool, mkinstalldirs, missing,
+	ltmain.sh, install-sh, ltcf-c.sh, configure.ac, depcomp, configure,
+	config.h.in, config.sub, autogen.sh, compile, config.guess, README,
+	aclocal.m4, AUTHORS, COPYING, ChangeLog, INSTALL, Makefile.am,
+	Makefile.in, panel-plugin/Makefile.am, panel-plugin/Makefile.in,
+	panel-plugin/showdesktop.c, m4/debug.m4, m4/depends.m4, m4/i18n.m4,
+	panel-plugin/.deps/libshowdesktop_la-showdesktop.Plo: Initial
+	revision
+
