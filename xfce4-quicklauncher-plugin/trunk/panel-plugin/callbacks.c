@@ -1,3 +1,11 @@
+/***************************************************************************
+ *            callbacks.c
+ *
+ *  Thu Jul 15 06:01:04 2004
+ *  Last Update: 18/03/2005
+ *  Copyright  2004 - 2005  bountykiller
+ *  Email: masse_nicolas@yahoo.fr
+ ****************************************************************************/
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -24,6 +32,7 @@
 t_qck_launcher_opt_dlg *_dlg;
 GtkWidget  *_icon_window;
 
+void on_spin_value_changed(GtkSpinButton *spinbutton, gpointer user_data);
 void on_btn_new_clicked(GtkButton *button, gpointer user_data);
 void on_btn_remove_clicked(GtkButton *button, gpointer user_data);
 void on_btn_edit_clicked(GtkButton *button, gpointer user_data);
@@ -38,14 +47,36 @@ t_qck_launcher_opt_dlg* create_qck_launcher_dlg()
   GtkAdjustment *adjust;
   _dlg = (t_qck_launcher_opt_dlg *) g_new0(t_qck_launcher_opt_dlg, 1);
 
-  _dlg->hbox1 = gtk_hbox_new (FALSE, 0);
-  SetGtkName(_dlg->hbox1, "hbox1");
-  gtk_widget_show (_dlg->hbox1);
+  _dlg->vbox = gtk_vbox_new(FALSE, 0);
+  SetGtkName(_dlg->vbox, "vbox");
+  gtk_widget_show (_dlg->vbox);
 
+  _dlg->linebox = gtk_hbox_new (FALSE, 0);
+  SetGtkName(_dlg->linebox, "linebox");
+  gtk_widget_show (_dlg->linebox);
+  gtk_box_pack_start (GTK_BOX (_dlg->vbox), _dlg->linebox, FALSE, FALSE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (_dlg->linebox), 5);
+
+  _dlg->label = gtk_label_new_with_mnemonic("Lines: ");
+  SetGtkName(_dlg->label, "label");
+  gtk_widget_show (_dlg->label);
+  gtk_box_pack_start (GTK_BOX (_dlg->linebox), _dlg->label, FALSE, FALSE, 0);
+
+  _dlg->spin1 = gtk_spin_button_new_with_range(1, 5, 1);
+  SetGtkName(_dlg->spin1, "spin1");
+  gtk_widget_show (_dlg->spin1);
+  gtk_box_pack_start (GTK_BOX (_dlg->linebox), _dlg->spin1, FALSE, FALSE, 0);
+  
+  _dlg->configbox = gtk_hbox_new (FALSE, 0);
+  SetGtkName(_dlg->configbox, "configbox");
+  gtk_widget_show (_dlg->configbox);
+  gtk_box_pack_start (GTK_BOX (_dlg->vbox), _dlg->configbox, TRUE, TRUE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (_dlg->configbox), 5);
+  
   _dlg->scrolledwindow1 = gtk_scrolled_window_new (NULL, NULL);
   SetGtkName(_dlg->scrolledwindow1, "scrolledwindow1");
   gtk_widget_show (_dlg->scrolledwindow1);
-  gtk_box_pack_start (GTK_BOX (_dlg->hbox1), _dlg->scrolledwindow1, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (_dlg->configbox), _dlg->scrolledwindow1, TRUE, TRUE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (_dlg->scrolledwindow1), 5);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (_dlg->scrolledwindow1), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (_dlg->scrolledwindow1), GTK_SHADOW_ETCHED_OUT);
@@ -60,7 +91,7 @@ t_qck_launcher_opt_dlg* create_qck_launcher_dlg()
   _dlg->vbuttonbox1 = gtk_vbutton_box_new ();
   SetGtkName(_dlg->vbuttonbox1, "vbuttonbox1");
   gtk_widget_show (_dlg->vbuttonbox1);
-  gtk_box_pack_start (GTK_BOX (_dlg->hbox1), _dlg->vbuttonbox1, FALSE, TRUE, 5);
+  gtk_box_pack_start (GTK_BOX (_dlg->configbox), _dlg->vbuttonbox1, FALSE, TRUE, 5);
   gtk_button_box_set_layout (GTK_BUTTON_BOX (_dlg->vbuttonbox1), GTK_BUTTONBOX_SPREAD);
 
   _dlg->btn_new = gtk_button_new_from_stock ("gtk-new");
@@ -235,6 +266,8 @@ fill_qck_launcher_dlg()
 	treemodel  = GTK_TREE_MODEL(gtk_list_store_new(3, GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_POINTER));
 	gtk_tree_view_set_model(GTK_TREE_VIEW(_dlg->treeview1), treemodel);	
 	
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(_dlg->spin1), (gdouble)_quicklauncher->nb_lines);
+	
 	render = gtk_cell_renderer_pixbuf_new();
 	//render = gtk_cell_renderer_combo_new();
 	//configure_combo(render); if I one day can use combo with pixbuf... 
@@ -261,6 +294,8 @@ fill_qck_launcher_dlg()
 		UNREF(pixbuf);
 	}	
 	
+	g_signal_connect((gpointer)_dlg->spin1, "value-changed",
+								G_CALLBACK (on_spin_value_changed), NULL);
 	g_signal_connect ((gpointer) _dlg->btn_new, "clicked",
 								G_CALLBACK (on_btn_new_clicked), NULL);
 	g_signal_connect ((gpointer) _dlg->btn_remove, "clicked",
@@ -269,7 +304,7 @@ fill_qck_launcher_dlg()
 								G_CALLBACK (on_btn_up_clicked), NULL);
 	g_signal_connect ((gpointer) _dlg->btn_down, "clicked",
 								G_CALLBACK (on_btn_down_clicked), NULL);
-	
+
 }
 
 
@@ -279,6 +314,12 @@ free_qck_launcher_dlg(GtkButton *button, gpointer user_data)
 	gtk_widget_destroy(_icon_window);
 }
 
+
+
+void on_spin_value_changed(GtkSpinButton *spinbutton, gpointer user_data)
+{
+	quicklauncher_set_nblines(gtk_spin_button_get_value_as_int(spinbutton));
+}
 
 void
 on_btn_new_clicked (GtkButton *button, gpointer user_data)

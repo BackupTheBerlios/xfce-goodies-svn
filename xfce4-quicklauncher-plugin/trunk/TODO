@@ -1,6 +1,7 @@
 For Version 1.0:
 ***************
--allow manually config of nblines
+-allow manually config of nblines ==> done
+-readd autosetting of nblines??
 -translations (at least in french)
 -any idea?
 
@@ -12,3 +13,4 @@ other possible feature
 *********************
 -make icons growing when the mouse is on 
 -drag 'n drop support
+-use all possible themed icons

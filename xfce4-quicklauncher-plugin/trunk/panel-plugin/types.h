@@ -2,7 +2,7 @@
  *            types.h
  *
  *  Thu Jul 15 06:01:04 2004
- *  Last Update: 07/02/2005
+ *  Last Update: 17/03/2005
  *  Copyright  2004 - 2005  bountykiller
  *  Email: masse_nicolas@yahoo.fr
  ****************************************************************************/
@@ -43,9 +43,6 @@
 //own declaration, wich is a bit confusing. (Moreover, they are not sync 
 //with these from xfce_icontheme.h)
 
-#define DEFAULT_ICON_THEME		(xfce_icon_theme_get_for_screen(NULL))
-#define UNREF(x)							if((x)) {g_object_unref((x));}
-
 // It would be great to define this somewhere .I don't think it is the case
 // just send me a mail if i'm wrong  :-)
 static char *icons_categories_names[XFCE_N_BUILTIN_ICON_CATEGORIES+2] = 
@@ -53,11 +50,18 @@ static char *icons_categories_names[XFCE_N_BUILTIN_ICON_CATEGORIES+2] =
 	 "Printer", "Productivity", "Sound", "Terminal", "Development", "Settings", "System", "Wine", "Stock", "Extern"};
 
 
+#define DEFAULT_ICON_THEME		(xfce_icon_theme_get_for_screen(NULL))
+#define UNREF(x)							if((x)) {g_object_unref((x));}
+
+
+
 typedef struct
 {
-	GtkWidget *hbox1;
-	GtkWidget *label1;
-	GtkWidget *spinbtn1;
+	GtkWidget *vbox;
+	GtkWidget *linebox;
+	GtkWidget *label;  //nb_lines
+	GtkWidget *spin1;   //nb_lines
+	GtkWidget *configbox;
 	GtkWidget *scrolledwindow1;
 	GtkWidget *treeview1;
 	GtkWidget *vbuttonbox1;
@@ -94,6 +98,7 @@ typedef struct
 	gint orientation;
 	gint nb_lines;
 	gint nb_launcher;
+	gint panel_size; //can't get it another way
 }
 t_quicklauncher;
 
@@ -128,5 +133,7 @@ t_launcher* quicklauncher_remove_element(gint num);
 void quicklauncher_organize();
 
 void quicklauncher_empty_widgets();
+
+void quicklauncher_set_nblines(gint nb_lines);
 
 #endif

@@ -1,4 +1,6 @@
-+fixes some possible memory leaks
++Add: number of lines is now configurable
++FIX: Size of the icons are now better handled
++FIX: some possible memory leaks
 +some internal changes.
 
 Version 0.5:

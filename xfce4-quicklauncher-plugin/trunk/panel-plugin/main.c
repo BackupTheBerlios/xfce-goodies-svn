@@ -2,7 +2,7 @@
  *            main.c
  *
  *  Thu Jul 15 06:01:04 2004
- *  Last Update: 08/03/2005
+ *  Last Update: 18/03/2005
  *  Copyright  2004 - 2005  bountykiller
  *  Email: masse_nicolas@yahoo.fr
  ****************************************************************************/
@@ -66,6 +66,7 @@ launcher_update_icon(t_launcher *launcher)
 		xfce_iconbutton_set_pixbuf (XFCE_ICONBUTTON (launcher->widget), pixbuf);
 		g_object_unref (pixbuf);
 	}
+	gtk_widget_set_size_request(launcher->widget, _quicklauncher->icon_size, _quicklauncher->icon_size);
 }
 
 void 
@@ -270,16 +271,18 @@ quicklauncher_new (GtkWidget *base)
 	t_launcher *new_launcher;//temporaire
 	_quicklauncher = g_new0(t_quicklauncher, 1);
 	//appel temporaire
-	_quicklauncher->nb_lines = 1;
+	_quicklauncher->nb_lines = 2;
 	new_launcher = launcher_new("xflock4", XFCE_ICON_CATEGORY_SYSTEM, NULL);
 	quicklauncher_add_element(new_launcher);
 	new_launcher = launcher_new("xfce-setting-show", XFCE_ICON_CATEGORY_SETTINGS, NULL);
 	quicklauncher_add_element(new_launcher);
-	new_launcher = launcher_new("xmms", XFCE_ICON_CATEGORY_SOUND, NULL);
+	new_launcher = launcher_new("xfce4-appfinder", XFCE_ICON_CATEGORY_UTILITY, NULL);
+	quicklauncher_add_element(new_launcher);
+	new_launcher = launcher_new("xfhelp4", XFCE_ICON_CATEGORY_HELP, NULL);
 	quicklauncher_add_element(new_launcher);
 	_quicklauncher->icon_size = 16;
 	_quicklauncher->orientation = HORIZONTAL;
-	g_assert(_quicklauncher->nb_launcher == 3);
+	g_assert(_quicklauncher->nb_launcher == 4);
 	//fin temporaire
 	_quicklauncher->base = base;
 	quicklauncher_organize();
@@ -342,7 +345,7 @@ quicklauncher_load_config(xmlNodePtr node)
 	value =  xmlGetProp (node, (const xmlChar *) "lines");
 	if (value)
 	{
-		_quicklauncher->nb_lines = MAX(atoi(value), 2);
+		_quicklauncher->nb_lines = atoi(value);
 		xmlFree(value);
 	}
 	for (node = node->children; node; node = node->next)
@@ -380,25 +383,37 @@ quicklauncher_configure(GtkContainer *container, GtkWidget *done)
 {
 	create_qck_launcher_dlg();
 	fill_qck_launcher_dlg();
-	gtk_container_add (container, _dlg->hbox1);
+	gtk_container_add (container, _dlg->vbox);
 	//g_signal_connect(done, "clicked", G_CALLBACK (apply_config), (gpointer)quicklauncher);
 	//g_signal_connect_swapped(done, "destroy", G_CALLBACK (g_free), (gpointer)dlg);
 	g_signal_connect_swapped(done, "destroy", G_CALLBACK (free_qck_launcher_dlg), NULL);
 }
 
-
 static void
 quicklauncher_set_size(gint size)
 {
-	if (size > SMALL) 
+	GList *liste;
+	_quicklauncher->panel_size = size;
+	if (size >= LARGE)
+		_quicklauncher->icon_size = (gint) (icon_size[size] / _quicklauncher->nb_lines) *1.25;
+	else
+		_quicklauncher->icon_size = (gint) (icon_size[size] / _quicklauncher->nb_lines) *1.5;
+	for(liste = _quicklauncher->launchers;
+		  liste ; liste = g_list_next(liste) )
 	{
-		_quicklauncher->nb_lines = 3;
-		_quicklauncher->icon_size = (gint)icon_size[size] / 2.5;
+		launcher_update_icon((t_launcher*)liste->data);		
 	}
-	else 
+}
+
+void 
+quicklauncher_set_nblines(gint nb_lines)
+{
+	if (nb_lines != _quicklauncher->nb_lines)
 	{
-		_quicklauncher->nb_lines = 2;
-		_quicklauncher->icon_size = (gint)icon_size[size] / 1.5;
+		quicklauncher_empty_widgets();
+		_quicklauncher->nb_lines = nb_lines;
+		quicklauncher_set_size(_quicklauncher->panel_size);
+		quicklauncher_organize();
 	}
 }
 
@@ -462,9 +477,11 @@ plugin_set_size (Control * control, int size)
 {
 	g_assert(_quicklauncher  == control->data);
 	quicklauncher_set_size(size);
-	gtk_widget_set_size_request (_quicklauncher->table, -1, -1);
+	/*
 	quicklauncher_empty_widgets();
 	quicklauncher_organize();
+	gtk_widget_set_size_request (_quicklauncher->table, -1, -1);
+	*/
 }
 
 
@@ -501,7 +518,7 @@ xfce_control_class_init (ControlClass * cc)
 	cc->set_orientation = plugin_set_orientation;
     cc->set_theme = plugin_set_theme;
 	
-	control_class_set_unique (cc, TRUE);
+	control_class_set_unique (cc, FALSE); //no reason
 }
 
 /* Macro that checks panel API version */
