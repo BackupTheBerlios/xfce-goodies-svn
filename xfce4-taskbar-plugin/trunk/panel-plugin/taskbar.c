@@ -76,7 +76,7 @@ typedef struct
 
 // all functions {{{
 static void plugin_recreate_gui (gpointer data);
-static void plugin_panel_resize_callback (GtkWidget *widget, GtkAllocation *allocation, gpointer data);
+static gboolean plugin_panel_resize_callback (GtkWidget *widget, GtkAllocation *allocation, gpointer data);
 static void plugin_determine_expand_width (gpointer data);
 
 static void
@@ -127,7 +127,7 @@ gui_new ()
     return(plugin);
 }
 
-static void
+static gboolean
 plugin_panel_resize_callback (GtkWidget *widget, GtkAllocation *allocation, gpointer data)
 {
     gui *plugin = data;
@@ -139,6 +139,7 @@ plugin_panel_resize_callback (GtkWidget *widget, GtkAllocation *allocation, gpoi
             plugin_recreate_gui (plugin);
         }
     }
+    return True;
 }
 
 static void
@@ -181,6 +182,9 @@ plugin_recreate_gui (gpointer data)
     NetkScreen *s;
     NetkWorkspace *ws;
     int width;
+
+    if (!GDK_IS_WINDOW(panel.toplevel->window))
+        return;
     
     if (plugin->expand == TRUE) {
         plugin_determine_expand_width (plugin);

@@ -1,3 +1,7 @@
+2004-10-16 20:30 papermoon:
+	* panel-plugin/taskbar.c:
+	small fix, cause the right panel handle was sometimes not visible
+
 2004-10-16 17:30 papermoon:
 	* panel-plugin/taskbar.c:
 	Xinerama fixes, preparation for the new relase
