@@ -41,8 +41,8 @@
 #include <panel/xfce.h>
 #include <libxfcegui4/netk-screen.h>
 
-#define HORIZONTAL 1 
-#define VERTICAL 0 
+#define HORIZONTAL 0
+#define VERTICAL 1
 
 // }}}
 
@@ -65,8 +65,9 @@ typedef struct
     GtkWidget   *box;
     GtkWidget	*ebox;
     int         orientation;
-    gboolean    swapPixmaps;
+    gboolean    swapCommands;
     gboolean    showTooltips;
+    gboolean    lessSpace;
     SignalCallback *cb;
 } gui;
 
@@ -143,12 +144,14 @@ static gui *
 gui_new (void)
 {
     plugin_gui = g_new(gui, 1);
-    plugin_gui->swapPixmaps = FALSE;
+    plugin_gui->swapCommands = FALSE;
     plugin_gui->showTooltips = TRUE;
+    plugin_gui->lessSpace = FALSE;
     plugin_gui->ebox = gtk_event_box_new();
     gtk_widget_show (plugin_gui->ebox);
  
     plugin_gui->box = gtk_hbox_new(0, 0);
+
     gtk_widget_show (plugin_gui->box);
         
     plugin_gui->show_all = gtk_button_new ();
@@ -199,99 +202,68 @@ plugin_attach_callback (Control *ctrl, const gchar *signal, GCallback cb, gpoint
     g_signal_connect (plugin->hide_all, signal, cb, data);
     track_callback (signal, cb, data, plugin);
 }
-/*
+
 static void
 plugin_set_size (Control *ctrl, int size)
 {
-    
-    // size: 0 tiny ... 3 large
-    if (plugin_gui->orientation == VERTICAL) {
-        if (size == 0) {
-	
-	} else if (size == 1) {
-
-	} else if (size == 2) {
-
-	} else if (size == 3) {
-
-	}
-    } else {
-        if (size == 0) {
-	
-	} else if (size == 1) {
-	
-	} else if (size == 2) {
-
-	} else if (size == 3) {
-
-	}
-    }
-    
+    // do nothing, cause it's only called once during plugin initialization,
+    // instead do resizing during plugin_recreate_gui
 }
-*/
- 
+
 static void
 plugin_recreate_tooltips ()
 {
     if (plugin_gui->showTooltips) {
         tooltips = gtk_tooltips_new ();
-        gtk_tooltips_set_tip (tooltips, plugin_gui->show_all, "Show all windows", NULL);
-        gtk_tooltips_set_tip (tooltips, plugin_gui->hide_all, "Show desktop", NULL);
+	if (plugin_gui->swapCommands) {
+	    gtk_tooltips_set_tip (tooltips, plugin_gui->hide_all, "Show all windows", NULL);
+            gtk_tooltips_set_tip (tooltips, plugin_gui->show_all, "Show desktop", NULL);
+        } else {
+            gtk_tooltips_set_tip (tooltips, plugin_gui->show_all, "Show all windows", NULL);
+            gtk_tooltips_set_tip (tooltips, plugin_gui->hide_all, "Show desktop", NULL);
+        }
     }
 }
 
-
 static void
-plugin_recreate_gui (int orientation, gboolean swapPixmaps)
+plugin_recreate_gui (void)
 {
     SignalCallback *sc;
     
-    plugin_gui->orientation = orientation;
-    plugin_gui->swapPixmaps = swapPixmaps;
-
     gtk_widget_destroy (plugin_gui->box);
+
     plugin_gui->show_all = gtk_button_new ();
     plugin_gui->hide_all = gtk_button_new ();
-    
-    if (swapPixmaps) {
-        if (orientation == HORIZONTAL) {
-            plugin_gui->box = gtk_vbox_new(0, 0);
-         
-            plugin_gui->show_image = gtk_image_new_from_stock ("gtk-go-back", 1);
-            gtk_widget_set_size_request (plugin_gui->show_all, 30, 20);
-	
-            plugin_gui->hide_image = gtk_image_new_from_stock ("gtk-go-forward", 1);
-            gtk_widget_set_size_request (plugin_gui->hide_all, 30, 20);
-	
-        } else if (orientation == VERTICAL) {
-            plugin_gui->box = gtk_hbox_new(0, 0);
-         
-            plugin_gui->show_image = gtk_image_new_from_stock ("gtk-go-down", 1);
-            gtk_widget_set_size_request (plugin_gui->show_all, 15, 10);
-	
-            plugin_gui->hide_image = gtk_image_new_from_stock ("gtk-go-up", 1);
-            gtk_widget_set_size_request (plugin_gui->hide_all, 15, 10);
+
+    if (plugin_gui->orientation == HORIZONTAL) {
+        if (plugin_gui->lessSpace) {
+	    plugin_gui->box = gtk_vbox_new (0, 0);
+	    gtk_widget_set_size_request (plugin_gui->ebox, 15, -1);
+	} else {
+	    plugin_gui->box = gtk_hbox_new (0, 0);
+	    gtk_widget_set_size_request (plugin_gui->ebox, 30, -1);
 	}
+	plugin_gui->show_image = gtk_image_new_from_stock ("gtk-go-up", GTK_ICON_SIZE_MENU);
+	gtk_widget_set_size_request (plugin_gui->show_all, 5, 5);
+	plugin_gui->hide_image = gtk_image_new_from_stock ("gtk-go-down", GTK_ICON_SIZE_MENU);
+	gtk_widget_set_size_request (plugin_gui->hide_all, 5, 5);
+        gtk_container_add (GTK_CONTAINER(plugin_gui->box), plugin_gui->show_all);
+        gtk_container_add (GTK_CONTAINER(plugin_gui->box), plugin_gui->hide_all);
     } else {
-        if (orientation == HORIZONTAL) {
-            plugin_gui->box = gtk_vbox_new(0, 0);
-         
-            plugin_gui->show_image = gtk_image_new_from_stock ("gtk-go-forward", 1);
-            gtk_widget_set_size_request (plugin_gui->show_all, 30, 20);
-	
-            plugin_gui->hide_image = gtk_image_new_from_stock ("gtk-go-back", 1);
-            gtk_widget_set_size_request (plugin_gui->hide_all, 30, 20);
-	
-        } else if (orientation == VERTICAL) {
-            plugin_gui->box = gtk_hbox_new(0, 0);
-         
-            plugin_gui->show_image = gtk_image_new_from_stock ("gtk-go-up", 1);
-            gtk_widget_set_size_request (plugin_gui->show_all, 15, 10);
-	
-            plugin_gui->hide_image = gtk_image_new_from_stock ("gtk-go-down", 1);
-            gtk_widget_set_size_request (plugin_gui->hide_all, 15, 10);
+        if (plugin_gui->lessSpace) {
+	    plugin_gui->box = gtk_hbox_new (0, 0);
+	    gtk_widget_set_size_request (plugin_gui->ebox, -1, 15);
+	} else {
+	    plugin_gui->box = gtk_vbox_new (0, 0);
+	    gtk_widget_set_size_request (plugin_gui->ebox, -1, 30);
 	}
-    }
+	plugin_gui->show_image = gtk_image_new_from_stock ("gtk-go-forward", GTK_ICON_SIZE_MENU);
+	gtk_widget_set_size_request (plugin_gui->show_all, 5, 5);
+	plugin_gui->hide_image = gtk_image_new_from_stock ("gtk-go-back", GTK_ICON_SIZE_MENU);
+	gtk_widget_set_size_request (plugin_gui->hide_all, 5, 5);
+        gtk_container_add (GTK_CONTAINER(plugin_gui->box), plugin_gui->hide_all);
+        gtk_container_add (GTK_CONTAINER(plugin_gui->box), plugin_gui->show_all);
+    }		
     
     gtk_widget_show (plugin_gui->box);
     gtk_widget_show (plugin_gui->hide_image);
@@ -303,18 +275,21 @@ plugin_recreate_gui (int orientation, gboolean swapPixmaps)
     gtk_button_set_relief (GTK_BUTTON (plugin_gui->show_all), GTK_RELIEF_NONE);
     gtk_container_add (GTK_CONTAINER(plugin_gui->hide_all), plugin_gui->hide_image);
     gtk_button_set_relief (GTK_BUTTON (plugin_gui->hide_all), GTK_RELIEF_NONE);
-    gtk_container_add (GTK_CONTAINER(plugin_gui->box), plugin_gui->show_all);
-    gtk_container_add (GTK_CONTAINER(plugin_gui->box), plugin_gui->hide_all);
     gtk_container_add (GTK_CONTAINER(plugin_gui->ebox), plugin_gui->box);
+
+    if (plugin_gui->swapCommands) {
+        g_signal_connect (plugin_gui->show_all, "clicked", G_CALLBACK(hide_all_clicked), plugin_gui);
+        g_signal_connect (plugin_gui->hide_all, "clicked", G_CALLBACK(show_all_clicked), plugin_gui);
+    } else {
+        g_signal_connect (plugin_gui->show_all, "clicked", G_CALLBACK(show_all_clicked), plugin_gui);
+        g_signal_connect (plugin_gui->hide_all, "clicked", G_CALLBACK(hide_all_clicked), plugin_gui);
+    }
 
     plugin_recreate_tooltips ();
 
     sc = plugin_gui->cb;
     g_signal_connect (plugin_gui->show_all, sc->signal, sc->callback, sc->data);
     g_signal_connect (plugin_gui->hide_all, sc->signal, sc->callback, sc->data);
-    g_signal_connect (plugin_gui->show_all, "clicked", G_CALLBACK(show_all_clicked), plugin_gui);
-    g_signal_connect (plugin_gui->hide_all, "clicked", G_CALLBACK(hide_all_clicked), plugin_gui);
-
 }
 
 static void
@@ -322,6 +297,7 @@ plugin_read_config (Control *ctrl, xmlNodePtr parent)
 {   
     xmlChar *swap;
     xmlChar *tool;
+    xmlChar *space;
 
     tool = xmlGetProp (parent, (const xmlChar *) "showTooltips");
 
@@ -332,19 +308,36 @@ plugin_read_config (Control *ctrl, xmlNodePtr parent)
     } else {
             plugin_gui->showTooltips = TRUE;
     }
-
-    swap = xmlGetProp (parent, (const xmlChar *) "swapPixmaps");
+     
+    // to be backward compatible 
+    if (xmlHasProp (parent, (const xmlChar *) "swapPixmaps") != NULL) {
+        swap = xmlGetProp (parent, (const xmlChar *) "swapPixmaps");
+    } else {
+        swap = xmlGetProp (parent, (const xmlChar *) "swapCommands");
+    }
 
     if (swap) {
         if (!strcmp (swap, "0")) {
-            plugin_gui->swapPixmaps = TRUE;
+            plugin_gui->swapCommands = TRUE;
         }
     } else {
-            plugin_gui->swapPixmaps = FALSE;
+            plugin_gui->swapCommands = FALSE;
     }
+
+    space = xmlGetProp (parent, (const xmlChar *) "lessSpace");
+    
+    if (space) {
+        if (!strcmp (space, "0")) {
+            plugin_gui->lessSpace = TRUE;
+        }
+    } else {
+            plugin_gui->lessSpace = FALSE;
+    }
+
     g_free (swap);
     g_free (tool);
-    plugin_recreate_gui (plugin_gui->orientation, plugin_gui->swapPixmaps);
+    g_free (space);
+    plugin_recreate_gui ();
 }
 
 static void
@@ -352,8 +345,9 @@ plugin_write_config (Control *ctrl, xmlNodePtr parent)
 {   
     char swap[2];
     char tool[2];
+    char size[2];
     
-    if (plugin_gui->swapPixmaps) {
+    if (plugin_gui->swapCommands) {
         g_snprintf (swap, 2, "%i", 0);
     } else {
         g_snprintf (swap, 2, "%i", 1);
@@ -364,50 +358,54 @@ plugin_write_config (Control *ctrl, xmlNodePtr parent)
     } else {
         g_snprintf (tool, 2, "%i", 1);
     }
-    xmlSetProp (parent, (const xmlChar *) "swapPixmaps", swap);
+    
+    if (plugin_gui->lessSpace) {
+        g_snprintf (size, 2, "%i", 0);
+    } else {
+        g_snprintf (size, 2, "%i", 1);
+    }
+ 
+    xmlSetProp (parent, (const xmlChar *) "swapCommands", swap);
     xmlSetProp (parent, (const xmlChar *) "showTooltips", tool);
+    xmlSetProp (parent, (const xmlChar *) "lessSpace", size);
 }
 
 static void
 plugin_set_orientation (Control *ctrl, int orientation)
 {
-    if (plugin_gui->swapPixmaps) {
+    if (plugin_gui->swapCommands) {
         if (orientation == HORIZONTAL) {
-            plugin_recreate_gui (HORIZONTAL, TRUE);
+	    plugin_gui->orientation = HORIZONTAL;
+	    plugin_gui->swapCommands = TRUE;
 	} else if (orientation == VERTICAL) {
-	    plugin_recreate_gui (VERTICAL, TRUE);
+	    plugin_gui->orientation = VERTICAL;
+	    plugin_gui->swapCommands = TRUE;
 	}
     } else {
         if (orientation == HORIZONTAL) {
-            plugin_recreate_gui (HORIZONTAL, FALSE);
+	    plugin_gui->orientation = HORIZONTAL;
+	    plugin_gui->swapCommands = FALSE;
 	} else if (orientation == VERTICAL) {
-	    plugin_recreate_gui (VERTICAL, FALSE);
+	    plugin_gui->orientation = VERTICAL;
+	    plugin_gui->swapCommands = FALSE;
 	}
     }
+    plugin_recreate_gui ();
 }
 
 static void
 plugin_cb1_changed (GtkToggleButton *cb)
 {
-    gboolean swapPixmaps;
-    int orientation;
+    gboolean swapCommands;
 
-    orientation = plugin_gui->orientation;
-    swapPixmaps = gtk_toggle_button_get_active (cb);
+    swapCommands = gtk_toggle_button_get_active (cb);
 
-    if (swapPixmaps) {
-        if (orientation == HORIZONTAL) {
-	    plugin_recreate_gui (HORIZONTAL, TRUE);
-        } else if (orientation == VERTICAL) {
-	    plugin_recreate_gui (VERTICAL, TRUE);
-	}
+    if (swapCommands) {
+        plugin_gui->swapCommands = TRUE;
     } else {
-        if (orientation == HORIZONTAL) {
-	    plugin_recreate_gui (HORIZONTAL, FALSE);
-        } else if (orientation == VERTICAL) {
-	    plugin_recreate_gui (VERTICAL, FALSE);
-	}
+	plugin_gui->swapCommands = FALSE;
     }
+    plugin_recreate_gui ();
 }
 
 static void
@@ -427,26 +425,48 @@ plugin_cb2_changed (GtkToggleButton *cb)
 }
 
 static void
+plugin_cb3_changed (GtkToggleButton *cb)
+{
+    gboolean lessSpace;
+
+    lessSpace = gtk_toggle_button_get_active (cb);
+
+    if (lessSpace) {
+	plugin_gui->lessSpace = TRUE;
+    } else {
+        plugin_gui->lessSpace = FALSE;
+    }
+    plugin_recreate_gui ();
+}
+
+
+static void
 plugin_create_options (Control *ctrl, GtkContainer *con, GtkWidget *done)
 {
-    GtkWidget *vbox, *label, *cb1, *cb2;
+    GtkWidget *vbox, *label, *cb1, *cb2, *cb3;
 
     vbox = gtk_vbox_new (1, 1);
     gtk_widget_show (vbox);
 
-    cb1 = gtk_check_button_new_with_label ("Swap pixmaps");
-    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (cb1), plugin_gui->swapPixmaps);
+    cb1 = gtk_check_button_new_with_label ("swap commands");
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (cb1), plugin_gui->swapCommands);
     g_signal_connect (cb1, "toggled", G_CALLBACK (plugin_cb1_changed), NULL);
     gtk_widget_show (cb1);
     
-    cb2 = gtk_check_button_new_with_label ("Show tooltips");
+    cb2 = gtk_check_button_new_with_label ("show tooltips");
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (cb2), plugin_gui->showTooltips);
     g_signal_connect (cb2, "toggled", G_CALLBACK (plugin_cb2_changed), NULL);
     gtk_widget_show (cb2);
+    
+    cb3 = gtk_check_button_new_with_label ("use less space");
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (cb3), plugin_gui->lessSpace);
+    g_signal_connect (cb3, "toggled", G_CALLBACK (plugin_cb3_changed), NULL);
+    gtk_widget_show (cb3);
 
     gtk_container_add (con, vbox);
     gtk_container_add (GTK_CONTAINER(vbox), cb1);
     gtk_container_add (GTK_CONTAINER(vbox), cb2);
+    gtk_container_add (GTK_CONTAINER(vbox), cb3);
 }
 
 // }}}
@@ -473,7 +493,7 @@ xfce_control_class_init(ControlClass *cc)
      * Just define the set_size function to NULL, or rather, don't 
      * set it to something else.
     */
- // cc->set_size		= plugin_set_size;
+    cc->set_size		= plugin_set_size;
     cc->create_options          = plugin_create_options;
     cc->set_orientation		= plugin_set_orientation;
 }
