@@ -1470,7 +1470,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=xfce4-artwork
- VERSION=0.0.1
+ VERSION=0.0.2
 
 
 cat >>confdefs.h <<_ACEOF
