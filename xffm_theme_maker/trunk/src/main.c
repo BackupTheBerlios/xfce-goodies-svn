@@ -506,7 +506,7 @@ static gboolean create_icon_tree(const gchar *in_theme){
    
     mimefile=g_strconcat(PACKAGE_DATA_DIR,
 		    G_DIR_SEPARATOR_S,"xfce4",
-		    G_DIR_SEPARATOR_S,"themes",
+		    G_DIR_SEPARATOR_S,"icons",
 		    G_DIR_SEPARATOR_S,theme,
 		    G_DIR_SEPARATOR_S,"mime.xml",NULL);
 
@@ -519,7 +519,7 @@ static gboolean create_icon_tree(const gchar *in_theme){
 	g_free(mimefile);
     	mimefile=g_strconcat(PACKAGE_DATA_DIR,
 		    G_DIR_SEPARATOR_S,"xfce4",
-		    G_DIR_SEPARATOR_S,"themes",
+		    G_DIR_SEPARATOR_S,"icons",
 		    G_DIR_SEPARATOR_S,"Plain",
 		    G_DIR_SEPARATOR_S,"mime.xml",NULL);	    
     } 
