@@ -500,9 +500,9 @@ static gboolean create_icon_tree(const gchar *in_theme){
     } else store=create_treestore();
 
  
-    if (!theme) theme="Gnome";	    
+    if (!theme) theme="gnome";	    
 
-    printf("DBG: creating icons for theme=%s\n",theme);
+    /*printf("DBG: creating icons for theme=%s\n",theme);*/
    
     mimefile=g_strconcat(PACKAGE_DATA_DIR,
 		    G_DIR_SEPARATOR_S,"xfce4",
@@ -718,7 +718,7 @@ main (int argc, char *argv[])
     GDir *gdir;
     const char *file;
     GtkOptionMenu *optionmenu=(GtkOptionMenu *)lookup_widget(xffm_theme_maker,"optionmenu2");
-    gchar *theme_dir=g_strconcat(PACKAGE_DATA_DIR, G_DIR_SEPARATOR_S,"xfce4", G_DIR_SEPARATOR_S,"themes",G_DIR_SEPARATOR_S,theme,NULL);
+    gchar *theme_dir=g_strconcat(PACKAGE_DATA_DIR, G_DIR_SEPARATOR_S,"xfce4", G_DIR_SEPARATOR_S,"icons",G_DIR_SEPARATOR_S,theme,NULL);
     
 
     {
