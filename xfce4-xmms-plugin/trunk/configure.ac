@@ -27,7 +27,7 @@ dnl Check for standard header files
 AC_HEADER_STDC
 
 dnl configure the panel plugin
-XFCE_PANEL_PLUGIN([XFCE4_PANEL], [3.99.1])
+XFCE_PANEL_PLUGIN([XFCE4_PANEL], [4.0.0])
 
 dnl check for player
 AC_MSG_CHECKING([what player to link with])
@@ -58,6 +58,9 @@ fi
 AC_SUBST([PLAYER_CFLAGS])
 AC_SUBST([PLAYER_LIBS])
 
+dnl Check for i18n support
+BM_I18N([xfce4-xmms-plugin], [de])
+
 dnl Check for debugging support
 BM_DEBUG_SUPPORT
 
@@ -65,4 +68,6 @@ AC_OUTPUT([
 Makefile
 panel-plugin/Makefile
 pixmaps/Makefile
+po/Makefile.in
+xfce4-xmms-plugin.spec
 ])

@@ -1,3 +1,6 @@
+INCLUDES =								\
+	-DPACKAGE_LOCALE_DIR=\"$(localedir)\"
+
 plugindir = @XFCE4_PANEL_PLUGINSDIR@
 
 plugin_LTLIBRARIES =							\

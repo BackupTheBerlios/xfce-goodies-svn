@@ -1,6 +1,6 @@
 Summary: A xmms plugin for xfce4
 Name: 	 xfce4-xmms-plugin
-Version: 0.1.1
+Version: @VERSION@
 Release: 1
 Group: 	 User Interface/Desktops
 License: GPL
@@ -33,6 +33,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/xfce4/panel-plugins/*.la
 %{_libdir}/xfce4/panel-plugins/*.so
 %{_datadir}/xfce4/xmms-plugin/*.png
+%{_datadir}/locale/
 
 %changelog
 * Mon Nov 19 2003 Che

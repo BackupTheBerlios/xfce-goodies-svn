@@ -18,7 +18,9 @@
 
 #include <gtk/gtk.h>
 
-#include <libxfce4util/libxfce4util.h>
+#include <libxfce4util/i18n.h>
+#include <libxfce4util/util.h>
+#include <libxfce4util/debug.h>
 #include <libxfcegui4/libxfcegui4.h>
 
 #include <panel/plugins.h>
@@ -47,8 +49,8 @@ static gint _timeout;
 /* OPTIONS */ 
 static gint remaining = 1; /* defaults to show time remaining in song ; changeable in the options dialog */
 static gint volume_adjust = 3; /* adjusts the volume by three ; changeable in the options dialog */
-static gchar paused_text[20] = "(Paused)"; /* what string displays when play is paused ; changeable in options dialog */
-static gchar stopped_text[20] = "(Stopped)"; /* what string displays when play is stoped ; changeable in options dialog */
+static gchar paused_text[20] = N_("(Paused)"); /* what string displays when play is paused ; changeable in options dialog */
+static gchar stopped_text[20] = N_("(Stopped)"); /* what string displays when play is stoped ; changeable in options dialog */
 static gint show_volume = 1;
 static gint show_volume_perm = 0;
 
@@ -221,7 +223,7 @@ static gint button_pressed(GtkWidget *widget, GdkEvent *event)
 				len = xmms_remote_get_playlist_length(0);
 				pos = xmms_remote_get_playlist_pos(0);
 				
-				item = build_menu_item(GTK_STOCK_CLEAR, "Clear Playlist", 1);
+				item = build_menu_item(GTK_STOCK_CLEAR, _("Clear Playlist"), 1);
 				g_signal_connect(item, "activate", G_CALLBACK(clear_playlist_clicked), NULL);
 				gtk_menu_shell_append(GTK_MENU_SHELL(pl_menu), item);
 				
@@ -324,10 +326,10 @@ static gboolean update_tooltip(gpointer data)
 		/* build the tip */
 		pos = xmms_remote_get_playlist_pos(0);
 		time = format_time(xmms_remote_get_output_time(0), xmms_remote_get_playlist_time(0, pos));
-		paused = (xmms_remote_is_paused(0) == TRUE) ? paused_text : "";
-		stopped = ((xmms_remote_is_paused(0) == FALSE) && (xmms_remote_is_playing(0) == FALSE)) ? stopped_text : "";
+		paused = (xmms_remote_is_paused(0) == TRUE) ? _(paused_text) : "";
+		stopped = ((xmms_remote_is_paused(0) == FALSE) && (xmms_remote_is_playing(0) == FALSE)) ? _(stopped_text) : "";
 		if (show_volume && _timeout != 0) {
-			volume = g_strdup_printf("(Vol: %d)", xmms_remote_get_main_volume(0));
+		  volume = g_strdup_printf(_("(Vol: %d)"), xmms_remote_get_main_volume(0));
 			_timeout = (show_volume_perm) ? _timeout : _timeout - 1;
 		} else
 			volume = g_strdup("");
@@ -336,7 +338,7 @@ static gboolean update_tooltip(gpointer data)
 		g_free(volume);
 	} else {
 		/* client isnt even on! */
-		text = g_strdup("XMMS NOT RUNNING\n(Middle click to launch)");
+	  text = g_strdup(_("XMMS NOT RUNNING\n(Middle click to launch)"));
 	}
 	
 	gtk_tooltips_set_tip(GTK_TOOLTIPS(xfcexmms->tips), xfcexmms->ebox, text, NULL);
@@ -436,27 +438,27 @@ static gui_t* xfcexmms_new(void)
 	/* build our menu */
 	gui->menu = gtk_menu_new();
 	
-	gui->eject = build_menu_item("xmms-plugin-menu-eject.png", "Eject", 0);
+	gui->eject = build_menu_item("xmms-plugin-menu-eject.png", _("Eject"), 0);
 	g_signal_connect(gui->eject, "activate", G_CALLBACK(eject_clicked), NULL);
 	gtk_menu_shell_append(GTK_MENU_SHELL(gui->menu), gui->eject);
 	
-	gui->prev = build_menu_item("xmms-plugin-menu-prev.png", "Backward", 0);
+	gui->prev = build_menu_item("xmms-plugin-menu-prev.png", _("Backward"), 0);
 	g_signal_connect(gui->prev, "activate", G_CALLBACK(prev_clicked), NULL);
 	gtk_menu_shell_append(GTK_MENU_SHELL(gui->menu), gui->prev);
 	
-	gui->stop = build_menu_item("xmms-plugin-menu-stop.png", "Stop", 0);
+	gui->stop = build_menu_item("xmms-plugin-menu-stop.png", _("Stop"), 0);
 	g_signal_connect(gui->stop, "activate", G_CALLBACK(stop_clicked), NULL);
 	gtk_menu_shell_append(GTK_MENU_SHELL(gui->menu), gui->stop);
 	
-	gui->pause = build_menu_item("xmms-plugin-menu-pause.png", "Pause", 0);
+	gui->pause = build_menu_item("xmms-plugin-menu-pause.png", _("Pause"), 0);
 	g_signal_connect(gui->pause, "activate", G_CALLBACK(pause_clicked), NULL);
 	gtk_menu_shell_append(GTK_MENU_SHELL(gui->menu), gui->pause);
 	
-	gui->play = build_menu_item("xmms-plugin-menu-play.png", "Play", 0);
+	gui->play = build_menu_item("xmms-plugin-menu-play.png", _("Play"), 0);
 	g_signal_connect(gui->play, "activate", G_CALLBACK(play_clicked), NULL);
 	gtk_menu_shell_append(GTK_MENU_SHELL(gui->menu), gui->play);
 	
-	gui->next = build_menu_item("xmms-plugin-menu-next.png", "Forward", 0);
+	gui->next = build_menu_item("xmms-plugin-menu-next.png", _("Forward"), 0);
 	g_signal_connect(gui->next, "activate", G_CALLBACK(next_clicked), NULL);
 	gtk_menu_shell_append(GTK_MENU_SHELL(gui->menu), gui->next);
 	
@@ -464,18 +466,18 @@ static gui_t* xfcexmms_new(void)
 	gtk_widget_show_all(gui->separator);
 	gtk_menu_shell_prepend(GTK_MENU_SHELL(gui->menu), gui->separator);
 	
-	list = build_menu_item(GTK_STOCK_INDEX, "Playlist", 1);
+	list = build_menu_item(GTK_STOCK_INDEX, _("Playlist"), 1);
 	gtk_menu_shell_prepend(GTK_MENU_SHELL(gui->menu), list);
 	
 	gui->separator = gtk_separator_menu_item_new();
 	gtk_widget_show_all(gui->separator);
 	gtk_menu_shell_prepend(GTK_MENU_SHELL(gui->menu), gui->separator);
 	
-	gui->prefs = build_menu_item(GTK_STOCK_PREFERENCES, "Preferences", 1);
+	gui->prefs = build_menu_item(GTK_STOCK_PREFERENCES, _("Preferences"), 1);
 	g_signal_connect(gui->prefs, "activate", G_CALLBACK(prefs_clicked), NULL);
 	gtk_menu_shell_prepend(GTK_MENU_SHELL(gui->menu), gui->prefs);
 	
-	gui->quit = build_menu_item(GTK_STOCK_QUIT, "Quit", 1);
+	gui->quit = build_menu_item(GTK_STOCK_QUIT, _("Quit"), 1);
 	g_signal_connect(gui->quit, "activate", G_CALLBACK(quit_clicked), NULL);
 	gtk_menu_shell_prepend(GTK_MENU_SHELL(gui->menu), gui->quit);
 		
@@ -583,12 +585,12 @@ static void xfcexmms_create_options (Control *ctrl, GtkContainer *con, GtkWidget
 	gtk_container_add(GTK_CONTAINER(con), vbox);
 	
 	/* TIME CONFIG */
-	label = gtk_label_new("Display time as:");
+	label = gtk_label_new(_("Display time as:"));
 	gtk_box_pack_start(GTK_BOX(vbox), label, TRUE, FALSE, 1);
 	
 	hbox = gtk_hbox_new(TRUE, 2);
-	remain = gtk_radio_button_new_with_label(NULL, "Remaining");
-	elapsed = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(remain), "Elapsed");
+	remain = gtk_radio_button_new_with_label(NULL, _("Remaining"));
+	elapsed = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(remain), _("Elapsed"));
 	
 	gtk_box_pack_start(GTK_BOX(hbox), remain, TRUE, TRUE, 1);
 	gtk_box_pack_start(GTK_BOX(hbox), elapsed, TRUE, TRUE, 1);
@@ -602,7 +604,7 @@ static void xfcexmms_create_options (Control *ctrl, GtkContainer *con, GtkWidget
 	
 	hbox = gtk_hbox_new(FALSE, 2);
 	
-	label = gtk_label_new("Increase Volume By:");
+	label = gtk_label_new(_("Increase Volume By:"));
 	gtk_box_pack_start(GTK_BOX(hbox), label, TRUE, TRUE, 1);
 	
 	spin_adj = (GtkAdjustment*)gtk_adjustment_new((gdouble)volume_adjust, 0.0, 100.0, 1.0, 5.0, 5.0);
@@ -613,17 +615,17 @@ static void xfcexmms_create_options (Control *ctrl, GtkContainer *con, GtkWidget
 
 	gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 1);
 	
-	show_vol = gtk_check_button_new_with_label("Display Volume");
+	show_vol = gtk_check_button_new_with_label(_("Display Volume"));
 	
 	gtk_box_pack_start(GTK_BOX(vbox), show_vol, TRUE, TRUE, 1);
 	
-	show_vol_perm = gtk_check_button_new_with_label("Always Display");
+	show_vol_perm = gtk_check_button_new_with_label(_("Always Display"));
 	
 	gtk_box_pack_start(GTK_BOX(vbox), show_vol_perm, TRUE, TRUE, 1);
 	
 	hbox = gtk_hbox_new(FALSE, 2);
 	
-	label = gtk_label_new("Volume Display Timeout:");
+	label = gtk_label_new(_("Volume Display Timeout:"));
 	gtk_box_pack_start(GTK_BOX(hbox), label, TRUE, TRUE, 1);
 	
 	spin_adj = (GtkAdjustment*)gtk_adjustment_new((gdouble)show_volume_timeout, 0.0, 100.0, 1.0, 5.0, 5.0);
@@ -640,7 +642,7 @@ static void xfcexmms_create_options (Control *ctrl, GtkContainer *con, GtkWidget
 	hbar = gtk_hseparator_new();
 	gtk_box_pack_start(GTK_BOX(vbox), hbar, TRUE, TRUE, 1);
 	
-	label = gtk_label_new("Paused Text:");
+	label = gtk_label_new(_("Paused Text:"));
 	gtk_box_pack_start(GTK_BOX(vbox), label, TRUE, FALSE, 1);
 	
 	pentry = gtk_entry_new();
@@ -648,7 +650,7 @@ static void xfcexmms_create_options (Control *ctrl, GtkContainer *con, GtkWidget
 	gtk_entry_set_text(GTK_ENTRY(pentry), paused_text);
 	gtk_box_pack_start(GTK_BOX(vbox), pentry, TRUE, TRUE, 1);
 	
-	label = gtk_label_new("Stopped Text:");
+	label = gtk_label_new(_("Stopped Text:"));
 	gtk_box_pack_start(GTK_BOX(vbox), label, TRUE, FALSE, 1);
 	
 	sentry = gtk_entry_new();
@@ -768,6 +770,8 @@ static void xfcexmms_write_config(Control *control, xmlNodePtr parent)
 /* initialization */
 G_MODULE_EXPORT void xfce_control_class_init(ControlClass *cc)
 {
+        xfce_textdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR, "UTF-8");
+
 	cc->name		= "xmms_plugin";
 	cc->caption		= _("XMMS Control");
 	cc->create_control	= (CreateControlFunc)xfcexmms_control_new;

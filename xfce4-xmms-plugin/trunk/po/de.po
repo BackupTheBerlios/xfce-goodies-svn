@@ -1,0 +1,101 @@
+#. OPTIONS
+#. defaults to show time remaining in song ; changeable in the options dialog
+#. adjusts the volume by three ; changeable in the options dialog
+#: panel-plugin/xmms_plugin.c:52
+msgid "(Paused)"
+msgstr "(Pausiert)"
+
+#: panel-plugin/xmms_plugin.c:226
+msgid "Clear Playlist"
+msgstr "Playliste löschen"
+
+#: panel-plugin/xmms_plugin.c:332
+#, c-format
+msgid "(Vol: %d)"
+msgstr "(Lautstärke: %d)"
+
+#. client isnt even on!
+#: panel-plugin/xmms_plugin.c:341
+msgid ""
+"XMMS NOT RUNNING\n"
+"(Middle click to launch)"
+msgstr ""
+"XMMS LÄUFT NICHT\n"
+"(Mittle Maustaste drücken, zum starten)"
+
+#: panel-plugin/xmms_plugin.c:441
+msgid "Eject"
+msgstr "Auswerfen"
+
+#: panel-plugin/xmms_plugin.c:445
+msgid "Backward"
+msgstr "Vorheriges"
+
+#: panel-plugin/xmms_plugin.c:449
+msgid "Stop"
+msgstr "Stoppen"
+
+#: panel-plugin/xmms_plugin.c:453
+msgid "Pause"
+msgstr "Pausieren"
+
+#: panel-plugin/xmms_plugin.c:457
+msgid "Play"
+msgstr "Abspielen"
+
+#: panel-plugin/xmms_plugin.c:461
+msgid "Forward"
+msgstr "Nächstes"
+
+#: panel-plugin/xmms_plugin.c:469
+msgid "Playlist"
+msgstr "Playliste"
+
+#: panel-plugin/xmms_plugin.c:476
+msgid "Preferences"
+msgstr "Einstellungen"
+
+#: panel-plugin/xmms_plugin.c:480
+msgid "Quit"
+msgstr "Beenden"
+
+#. TIME CONFIG
+#: panel-plugin/xmms_plugin.c:588
+msgid "Display time as:"
+msgstr "Zeit anzeigen als:"
+
+#: panel-plugin/xmms_plugin.c:592
+msgid "Remaining"
+msgstr "Verbleibend"
+
+#: panel-plugin/xmms_plugin.c:593
+msgid "Elapsed"
+msgstr "Verstrichen"
+
+#: panel-plugin/xmms_plugin.c:607
+msgid "Increase Volume By:"
+msgstr "Lautstärke erhöhen um"
+
+#: panel-plugin/xmms_plugin.c:618
+msgid "Display Volume"
+msgstr "Lautstärke anzeigen"
+
+#: panel-plugin/xmms_plugin.c:622
+msgid "Always Display"
+msgstr "Immer anzeigen"
+
+#: panel-plugin/xmms_plugin.c:628
+msgid "Volume Display Timeout:"
+msgstr ""
+
+#: panel-plugin/xmms_plugin.c:645
+msgid "Paused Text:"
+msgstr "Anzeige bei pausiert:"
+
+#: panel-plugin/xmms_plugin.c:653
+msgid "Stopped Text:"
+msgstr "Anzeige bei gestoppt:"
+
+#: panel-plugin/xmms_plugin.c:776
+msgid "XMMS Control"
+msgstr "XMMS Fernsteuerung"
