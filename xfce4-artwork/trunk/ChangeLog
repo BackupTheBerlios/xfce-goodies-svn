@@ -1,3 +1,7 @@
+2003-07-18 00:42  benny
+
+	* AUTHORS, ChangeLog: Forgot to add Francois to AUTHORS.
+
 2003-07-18 00:38  benny
 
 	* README, configure, configure.ac, backdrops/Makefile.am,
