@@ -36,3 +36,8 @@
 	* Released 1.4 with Benedikt's support for "busy time" on NetBSD
 	* Force to single "total busy time" monitor when platform doesn't
 	  provide separate read and write data (NetBSD)
+
+20031130:
+---------
+	* Released 1.4.1 - Just a bug fix for Linux-2.6 systems
+	* Thanks to Ivan Todoroski who found a bug introduced with release 1.3

@@ -25,7 +25,7 @@
  */
 
 static char     _devperf_id[] =
-    "$Id: devperf.c,v 1.7 2003/11/17 09:24:14 benny Exp $";
+    "$Id: devperf.c,v 1.8 2003/11/30 10:58:54 rogerms Exp $";
 
 
 #define DEBUG	0
@@ -101,7 +101,7 @@ static int DevGetPerfData1 (dev_t p_iDevice, struct devperf_t *p_poPerf)
 	n = sscanf (acStats,
 		    "%*u %*u %u %u %*u %*u %u %u %d %u %*u",
 		    &rsect, &ruse, &wsect, &wuse, &running, &use);
-	if (n != 5) {
+	if (n != 6) {
 	    /* Not a full-statistics line */
 	    n = sscanf (acStats, "%*u %u %*u %u", &rsect, &wsect);
 	    if (n != 2)
@@ -329,6 +329,10 @@ int DevGetPerfData (const void *p_pvDevice, struct devperf_t *perf)
 
 /*
 $Log: devperf.c,v $
+Revision 1.8  2003/11/30 10:58:54  rogerms
+Release DiskPerf 1.4.1 - Just a bug fix for Linux-2.6 systems
+Thanks to Ivan Todoroski who found a bug introduced with release 1.3
+
 Revision 1.7  2003/11/17 09:24:14  benny
 NetBSD < 1.6K does not have separate read/write statistics. Thanks to martti.
 

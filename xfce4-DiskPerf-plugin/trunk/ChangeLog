@@ -20,3 +20,7 @@
 	* Release 1.4
 	* Benedikt Meurer added support for disk busy time statistics on NetBSD
 	* General processing (slight) improvement
+
+2003-11-30
+	* Release 1.4.1 - Just a bug fix for Linux-2.6 systems
+	  Thanks to Ivan Todoroski who found a bug introduced with release 1.3
