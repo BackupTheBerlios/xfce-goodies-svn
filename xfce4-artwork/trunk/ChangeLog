@@ -1,3 +1,16 @@
+2003-07-26 09:29  huysmans
+
+	* AUTHORS, configure, configure.ac, backdrops/Makefile.am,
+	backdrops/Makefile.in, backdrops/xfce-rio.png: Add new backdrop
+
+2003-07-20 08:56  benny
+
+	* README: Name correction
+
+2003-07-18 12:56  benny
+
+	* ChangeLog, backdrops/xfce-evil.jpg: Forgot the actual backdrop :)
+
 2003-07-18 12:55  benny
 
 	* ChangeLog, README, configure, configure.ac,
