@@ -5,18 +5,17 @@ For Version 1.0:
 -translations (at least in french)
 -use eventboxes and gdk_pixbuf instead of buttons ==> done
 -make icons growing when the mouse is on ==>done
+-add an icon for this plugin
+-add tooltips
 -any idea?
 
-For Vesrion 2.0
+For Vesrion 2.0==>will be done for the next panel
 **************
--Implent it as a widget ==>will be done for the next panel
+-Implent it as a widget 
+-add the possibility to display names
 
 other possible feature
 *********************
 -drag 'n drop support
 -use more themed icons
 -allow multiple instances
-
-BUGS
-*******
-+size problem when loading panel

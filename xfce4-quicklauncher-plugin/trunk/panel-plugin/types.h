@@ -80,6 +80,7 @@ typedef struct
 	GdkPixbuf  *def_img;
 	GdkPixbuf  *zoomed_img;
 	GdkPixbuf  *clicked_img;
+	GtkTooltips *tooltip;
 	gchar *command;
 	gchar *icon_name;
 	gint icon_id;

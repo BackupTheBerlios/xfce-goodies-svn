@@ -1,3 +1,9 @@
++some little changes
++FIX: some images wasn't unloaded when destroying a launcher.
++add tooltip
+Version 0.7:
+************
++FIX: a problem with icon size when loading
 +FIX: there was a crash sometimes when clicking on an icon.
 +some internal changes
 +make icons bigger when passing throught
