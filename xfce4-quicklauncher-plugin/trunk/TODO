@@ -6,7 +6,8 @@ For Version 1.0:
 -use eventboxes and gdk_pixbuf instead of buttons ==> done
 -make icons growing when the mouse is on ==>done
 -add an icon for this plugin
--add tooltips
+-add tooltips ==>partially done
+-add separators
 -any idea?
 
 For Vesrion 2.0==>will be done for the next panel

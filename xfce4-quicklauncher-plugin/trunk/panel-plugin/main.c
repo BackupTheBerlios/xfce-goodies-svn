@@ -53,7 +53,7 @@ _create_pixbuf(gint id, const gchar* name, gint size)
 gboolean
 launcher_clicked (GtkWidget *event_box, GdkEventButton *event, t_launcher *launcher)
 {
-	int size =_quicklauncher->icon_size +2 * _quicklauncher->panel_size;
+	int size = 1.25 * _quicklauncher->icon_size;
 	if (event->button != 1) 
 		return FALSE;
 	if (event->type == GDK_BUTTON_PRESS) 
@@ -74,6 +74,7 @@ launcher_clicked (GtkWidget *event_box, GdkEventButton *event, t_launcher *launc
 		if (event->x > 0 && event->x < size && event->y > 0 && event->y < size)
 			xfce_exec(launcher->command, FALSE, FALSE, NULL);
 		gtk_image_set_from_pixbuf (GTK_IMAGE(launcher->image), launcher->def_img);
+		gtk_widget_set_size_request(launcher->image, _quicklauncher->icon_size, _quicklauncher->icon_size);
 	}
 	return TRUE;
 }
@@ -83,19 +84,16 @@ launcher_passthrought(GtkWidget *widget, GdkEventCrossing *event, t_launcher *la
 {
 	if (event->type == GDK_ENTER_NOTIFY)
 	{
+		int size = 1.25 * _quicklauncher->icon_size;
 		if (!launcher->zoomed_img)
-		{
-			int size;
-			size = _quicklauncher->icon_size +3*_quicklauncher->panel_size;
 			launcher->zoomed_img = gdk_pixbuf_scale_simple(launcher->def_img, size, size, GDK_INTERP_BILINEAR);
-		}
 		gtk_container_set_border_width(GTK_CONTAINER (widget), 0);
 		gtk_image_set_from_pixbuf (GTK_IMAGE(launcher->image), launcher->zoomed_img);
 	}
 	else 
 	{
 		gtk_image_set_from_pixbuf (GTK_IMAGE(launcher->image), launcher->def_img);
-		gtk_container_set_border_width(GTK_CONTAINER (widget), 2*_quicklauncher->panel_size);
+		gtk_container_set_border_width(GTK_CONTAINER (widget), (int)(_quicklauncher->icon_size/8));
 	}
 	return TRUE;
 }
@@ -456,7 +454,7 @@ quicklauncher_set_size(gint size)
 		  liste ; liste = g_list_next(liste) )
 	{
 		launcher_update_icon((t_launcher*)liste->data);		
-		gtk_container_set_border_width(GTK_CONTAINER (((t_launcher*)liste->data)->widget), 2*_quicklauncher->panel_size);
+		gtk_container_set_border_width(GTK_CONTAINER (((t_launcher*)liste->data)->widget), (gint)_quicklauncher->icon_size/8);
 	}
 }
 

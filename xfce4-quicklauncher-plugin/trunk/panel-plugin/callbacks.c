@@ -44,8 +44,10 @@ void on_btn_up_clicked(GtkButton *button, gpointer user_data);
 void on_btn_down_clicked(GtkButton *button, gpointer user_data);
 void cmd_changed(GtkCellRendererText *cellrenderertext, gchar *arg1, 
 								gchar *arg2, gpointer user_data);
-void on_tree_reorder(GtkTreeModel *treemodel, GtkTreePath *arg1, GtkTreeIter *arg2,
-                                	gpointer arg3, gpointer user_data);
+//void on_tree_reorder(GtkTreeModel *treemodel, GtkTreePath *arg1, GtkTreeIter *arg2,
+//                                	gpointer arg3, gpointer user_data);
+void  file_chooser_preview_img (XfceFileChooser *chooser, gpointer user_data);
+
 
 GtkWindow*
 _gtk_widget_get_parent_gtk_window(GtkWidget* widget)	
@@ -97,7 +99,6 @@ t_qck_launcher_opt_dlg* create_qck_launcher_dlg()
   gtk_widget_show (_dlg->treeview1);
   gtk_container_add (GTK_CONTAINER (_dlg->scrolledwindow1), _dlg->treeview1);
   gtk_container_set_border_width (GTK_CONTAINER (_dlg->treeview1), 3);
-  gtk_tree_view_set_reorderable (GTK_TREE_VIEW (_dlg->treeview1), TRUE);//==>besoin de gérer le reorder
   gtk_widget_set_size_request(_dlg->treeview1, 200, 25*_quicklauncher->nb_launcher);
 
   _dlg->vbuttonbox1 = gtk_vbutton_box_new ();
@@ -163,6 +164,7 @@ fill_qck_launcher_dlg()
 	_icon_window = create_icon_window();
 	treemodel  = GTK_TREE_MODEL(gtk_list_store_new(3, GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_POINTER));
 	gtk_tree_view_set_model(GTK_TREE_VIEW(_dlg->treeview1), treemodel);	
+	gtk_tree_view_set_reorderable (GTK_TREE_VIEW (_dlg->treeview1), FALSE);//==>besoin de gérer le reorder
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(_dlg->spin1), (gdouble)_quicklauncher->nb_lines);
 	
 	render = gtk_cell_renderer_pixbuf_new();
@@ -200,8 +202,8 @@ fill_qck_launcher_dlg()
 								G_CALLBACK (on_btn_up_clicked), NULL);
 	g_signal_connect ((gpointer) _dlg->btn_down, "clicked",
 								G_CALLBACK (on_btn_down_clicked), NULL);
-	g_signal_connect((gpointer) treemodel, "rows-reordered",
-								G_CALLBACK (on_tree_reorder), NULL);
+//	g_signal_connect((gpointer) treemodel, "rows-reordered",
+//								G_CALLBACK (on_tree_reorder), NULL);
 }
 
 
@@ -262,12 +264,20 @@ show_icon_window( GtkTreeView *treeview, GtkTreePath *arg1,
 gchar* get_icon_file()
 {
 	//TO DO: add a preview window
-	GtkWidget *xfc;
+	GtkWidget *xfc, *img;
 	XfceFileFilter *filter;
 	gchar *result = NULL;
 	xfc = xfce_file_chooser_new("Open icon", GTK_WINDOW(_icon_window), XFCE_FILE_CHOOSER_ACTION_OPEN,
 												  GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 		      									  GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT, NULL);
+	/*Preview widget*/
+	img =gtk_image_new();
+	gtk_widget_set_size_request(img, 32, 32);
+	xfce_file_chooser_set_preview_widget(XFCE_FILE_CHOOSER(xfc), img);
+	xfce_file_chooser_set_preview_widget_active(XFCE_FILE_CHOOSER(xfc), TRUE);
+	xfce_file_chooser_set_preview_callback(XFCE_FILE_CHOOSER(xfc), 
+																	file_chooser_preview_img, (gpointer)img);
+	
 	xfce_file_chooser_get_local_only(XFCE_FILE_CHOOSER(xfc));
 	xfce_file_chooser_set_select_multiple(XFCE_FILE_CHOOSER(xfc), FALSE);
 	filter = xfce_file_filter_new();
@@ -455,8 +465,21 @@ void cmd_changed(GtkCellRendererText *cellrenderertext, gchar *arg1, gchar *arg2
 		gtk_tree_path_free(path);
 	}
 }
+
+/* 
 void on_tree_reorder(GtkTreeModel *treemodel, GtkTreePath *arg1, GtkTreeIter *arg2,
                                 	gpointer arg3, gpointer user_data)
 {
-	g_warning("unimplemented! \n");
+	g_print("unimplemented! \n");
+}
+*/
+
+void  file_chooser_preview_img (XfceFileChooser *chooser, gpointer user_data)
+{
+	g_assert(GTK_IS_IMAGE(user_data));
+	if(g_file_test(xfce_file_chooser_get_filename(chooser), G_FILE_TEST_IS_REGULAR))
+	{
+		xfce_file_chooser_set_preview_widget_active(chooser, TRUE);
+		gtk_image_set_from_file( GTK_IMAGE(user_data), xfce_file_chooser_get_filename(chooser) );
+	}
 }
