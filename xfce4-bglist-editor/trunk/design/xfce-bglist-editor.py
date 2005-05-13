@@ -765,6 +765,8 @@ class BgListEditor(gtk.Dialog):
 		if line.endswith("\n"): line = line[:-1]
 		if line.endswith("\r"): line = line[:-1]
 
+		line = os.path.realpath(line)
+		
 		selitem = line
 		
 		try:
@@ -780,10 +782,13 @@ class BgListEditor(gtk.Dialog):
 
 				iter = self.addImage(line, False)
 				
+				line = os.path.realpath(line)
+				
 				if selitem == line:
-					self.listTV.get_selection().unselect_all()
-					self.listTV.get_selection().select_iter(iter)
 					path = self.listM.get_path(iter)
+					self.listTV.get_selection().unselect_all()
+					self.listTV.set_cursor(path, None, False)
+					self.listTV.get_selection().select_iter(iter)
 					self.listTV.scroll_to_cell(path, None, True, 0.5, 0)
 		except:
 			pass
