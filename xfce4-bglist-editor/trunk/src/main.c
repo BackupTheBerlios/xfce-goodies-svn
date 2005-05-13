@@ -6,7 +6,7 @@
 static void
 usage()
 {
-	fprintf(stderr, "Usage: xfce4-bglist-editor [<file.imglist>]\n");
+	fprintf(stderr, "Usage: xfce4-bglist-editor <file.imglist>\n");
 	exit(1);
 }
 
@@ -31,7 +31,8 @@ int main(int argc, char *argv[])
 		
 		if (argv[i])
 			xfce_image_list_dialog_load_list (dlg, argv[i]);
-	}
+	} else
+		usage();
 
 	current = xfce_background_get_current_image ();
 	if (current) {
