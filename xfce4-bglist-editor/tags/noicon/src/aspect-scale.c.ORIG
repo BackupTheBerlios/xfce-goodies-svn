@@ -1,0 +1,100 @@
+#include <gdk/gdkpixbuf.h>
+#include "aspect-scale.h"
+
+GdkPixbuf *
+create_empty_pixbuf(gint dest_width, gint dest_height)
+{
+	GdkPixbuf *pix;
+	if (dest_width < 1) dest_width = 1;
+	if (dest_height < 1) dest_height = 1;
+	
+	pix = gdk_pixbuf_new (GDK_COLORSPACE_RGB, TRUE, 8, dest_width, dest_height);
+	gdk_pixbuf_fill (pix, 0);
+	return pix;
+}
+
+/*
+	aspect_scale_simple: scales a pixbuf while preserving aspect ratio. Border pixels are filled with transparency.
+	
+	@src           :	The source pixbuf
+	@dest_width    :	destination width, the pixbuf will be scaled to almost that height, preserving aspect ratio
+	@dest_height   :	destination height, the pixbuf will be scaled to almost that height, preserving aspect ratio
+	@interp_type   :	The interpolation type (for example GDK_INTERP_BILINEAR)
+*/
+GdkPixbuf *
+aspect_scale_simple(GdkPixbuf *src, gint dest_width, gint dest_height, GdkInterpType interp_type)
+{
+	/*
+		npix: empty pixbuf of size dest_width x dest_height
+		ow, oh: size of src pixbuf
+		nw, nh: scaled size of the new pixbuf, 
+		        so that aspect is preserved and 
+		        it takes maximum space in the pixbuf "npix"
+		        
+		n2pix: the src pixbuf scaled to nw x nh
+		x, y: offset of the n2pix in the npix so that it is centered
+	*/
+	GdkPixbuf *npix;
+	GdkPixbuf *n2pix;
+	gint ow, oh;
+	gint nw, nh;
+	gint x, y;
+	
+	npix = create_empty_pixbuf (dest_width, dest_height);
+	
+	if (!src)
+		return npix;
+	
+	ow = gdk_pixbuf_get_width(src);
+	oh = gdk_pixbuf_get_height(src);
+	
+	if (dest_width <= 0 || dest_height <= 0 || ow <= 0 || oh <= 0)
+		return npix; /* too small, so return empty dummy pixbuf (better would be a warning too, perhaps) */
+
+	if (ow <= oh) {
+		/* oh is major, so check that */
+		
+		nh = dest_height;
+		nw = ow * dest_height / oh;
+	} else {
+		/* ow is major, so check that */
+		
+		nw = dest_width;
+		nh = oh * dest_width / ow;
+	}
+
+#if 0
+	/* still bigger, take the other */	
+	if (nh > dest_height) {
+		nh = dest_height;
+		nw = ow * dest_height / oh;
+	}
+	
+	/* still bigger, revert */
+	if (dest_width > dest_width) {
+		nw = dest_width;
+		nh = oh * dest_width / ow;
+	}
+
+	/* still bigger, use maximum */
+	if (nw > dest_width)
+		nw = dest_width;
+		
+	if (nh > dest_height)
+		nh = dest_height;
+#endif
+
+	n2pix = gdk_pixbuf_scale_simple (src, nw, nh, interp_type);
+	
+	x = (dest_width - nw) / 2;
+	y = (dest_height - nh) / 2;
+	
+	/* TODO take care of rounding error in x,y ? */
+	
+	gdk_pixbuf_copy_area (n2pix, 0, 0, nw, nh, npix, x, y);
+	
+	g_object_unref (G_OBJECT (n2pix));
+
+	return npix;
+}
+
