@@ -27,6 +27,7 @@
 #include "xfce-image-list-dialog.h"
 #include "xfce-image-list-box.h"
 #include "trace.h"
+#include "icon.h"
 
 enum {
 	LAST_SIGNAL
@@ -258,6 +259,13 @@ static void
 xfce_image_list_dialog_init(XfceImageListDialog *aXfceImageListDialog)
 {
 	XfceImageListDialogPrivate *priv;
+	GdkPixbuf*	pixbuf;
+
+	pixbuf = gdk_pixbuf_new_from_inline (-1, my_pixbuf, FALSE, NULL);
+	if (pixbuf) {
+		gtk_window_set_icon (GTK_WINDOW (aXfceImageListDialog), pixbuf);
+		g_object_unref (G_OBJECT (pixbuf));
+	}
 
 	priv = g_new0(XfceImageListDialogPrivate, 1);
 
@@ -297,7 +305,6 @@ xfce_image_list_dialog_init(XfceImageListDialog *aXfceImageListDialog)
 	g_signal_connect (G_OBJECT (priv->listbox), "notify::filename", G_CALLBACK (xfce_image_list_dialog_notify_fname_changed_cb), aXfceImageListDialog);
 	
 	g_signal_connect (G_OBJECT (priv->ok_button), "clicked", G_CALLBACK (xfce_image_list_dialog_ok_button_clicked_cb), aXfceImageListDialog);
-
 }
 
 

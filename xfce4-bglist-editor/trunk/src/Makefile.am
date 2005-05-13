@@ -11,7 +11,7 @@ xfce4_bglist_editor_SOURCES = \
 	xfce-image-list-dialog.c xfce-image-list-dialog.h \
 	xfce-tree-helpers.c xfce-tree-helpers.h \
 	xfce-background-get.c xfce-background-get.h \
-	trace.h main.c
+	trace.h main.c icon.h
 
 xfce4_bglist_editor_CFLAGS = \
 	@GTK_CFLAGS@ \
