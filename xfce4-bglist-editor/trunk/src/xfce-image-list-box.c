@@ -1277,8 +1277,11 @@ xfce_image_list_box_find_filename(XfceImageListBox *a, const gchar *filename, Gt
 	found = FALSE;
 	
 	if (!filename)
-		return;
-		
+		return FALSE;
+
+	if (!priv->existing_paths)
+		return FALSE;
+	
 	fastiter = ((GtkTreeIter *)g_hash_table_lookup (priv->existing_paths, filename));
 	if (fastiter) {
 		iter = *fastiter;
@@ -1287,7 +1290,7 @@ xfce_image_list_box_find_filename(XfceImageListBox *a, const gchar *filename, Gt
 	}
 	
 	if (!gtk_tree_model_get_iter_first (GTK_TREE_MODEL (priv->store), &iter))
-		return;
+		return FALSE;
 			
 	do {
 		xfilename = NULL;
