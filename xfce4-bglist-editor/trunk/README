@@ -1,1 +1,12 @@
 
+This is a background list editor for xfdesktop. Note that xfdesktop itself
+needs to be patched to support that (i.e. to add it to the xfce settings).
+
+But you can call xfce4-bglist-editor manually too to get an idea of how it
+will look like. It takes one parameter, the name of the image list file:
+
+xfce4-bglist-editor ~/.config/xfce4/desktop/image.list
+
+Have fun!
+
+   Danny Milosavljevic <danny_milo@yahoo.com>
