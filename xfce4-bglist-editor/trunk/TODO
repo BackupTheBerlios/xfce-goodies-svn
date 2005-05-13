@@ -1,0 +1,10 @@
+?: progress dialog (cancellable)
+dnd drag from tree, from preview area, to filemanager
+"Unsaved Changes" Dialog 
+context menu entry for "load detailed images for selection" ?
+split xfce4-manga-read (add cursor+space+bs keys, disable add/... buttons, add scrollable)
+file chooser += preview image (small)
+up/down button
+ellipsis in name column and preview label for extra long entries !
+DONE: use xfce_scaled_image only
+DONE: fix bug occuring when removing the only row
