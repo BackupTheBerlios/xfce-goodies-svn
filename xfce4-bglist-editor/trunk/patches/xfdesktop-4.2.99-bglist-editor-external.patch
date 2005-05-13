@@ -1,0 +1,46 @@
+--- xfdesktop/settings/backdrop-mgr.c.orig	2004-09-06 00:01:27.000204312 +0200
++++ xfdesktop/settings/backdrop-mgr.c	2004-09-06 00:09:37.073701816 +0200
+@@ -771,6 +771,33 @@
+     gtk_widget_destroy(dialog);
+ }
+ 
++#define BGLIST_EDITOR "xfce4-bglist-editor"
++
++static gboolean
++edit_list_file_external(const gchar *path, GtkWidget *parent, ListMgrCb callback,
++                gpointer userdata)
++{
++	gboolean ok;
++	gchar *data;
++	gchar *tmp;
++	
++	tmp = g_find_program_in_path (BGLIST_EDITOR);
++	if (!tmp)
++		return FALSE;
++
++	g_free (tmp);
++	tmp = NULL;
++	
++	data = g_strdup_printf(BGLIST_EDITOR" \"%s\"", path);
++	if (data) {
++		ok = xfce_exec (data, FALSE, TRUE, NULL);
++		g_free (data);
++	} else 
++		ok = FALSE;
++		
++	return ok;
++}
++
+ void
+ edit_list_file(const gchar *path, GtkWidget *parent, ListMgrCb callback,
+ 		gpointer data)
+@@ -790,6 +817,9 @@
+     gchar *file;
+     gboolean set_sel = FALSE;
+     
++	if (edit_list_file_external (path, parent, callback, data))
++		return;
++	
+     list_mgr_dialog_new(_("Edit backdrop list"), parent, path, &dialog,
+             &entry, &tv);
+     ls = GTK_LIST_STORE(gtk_tree_view_get_model(tv));
