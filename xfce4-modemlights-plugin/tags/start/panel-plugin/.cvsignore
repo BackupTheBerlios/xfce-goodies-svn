@@ -1,0 +1,6 @@
+.deps
+.libs
+Makefile
+Makefile.in
+libmodemlights.la
+libmodemlights_la-modem-lights-plugin.lo
