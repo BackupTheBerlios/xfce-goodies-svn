@@ -1,4 +1,15 @@
 2005-05-18 Andreas J. Guelzow <aguelzow@taliesin.ca>
+	* pixmaps/.cvsignore: new
+	* pixmaps/Makefile.am: new
+	* pixmaps/modem-connected.png: new
+	* pixmaps/modem-dialing.png: new
+	* pixmaps/modem-disconnected.png: new
+	* Makefile.am: add pixmap subdirectory
+	* panel-plugin/Makefile.am: add ICONDIR
+	* panel-plugin/modemlights-plugin.c (modemlights_set_pixmaps):
+	  fall back to provided icons
+
+2005-05-18 Andreas J. Guelzow <aguelzow@taliesin.ca>
 	* .cvsignore: ignore *.tar.gz
 	* po/.cvsignore: ignore *.gmo
 	

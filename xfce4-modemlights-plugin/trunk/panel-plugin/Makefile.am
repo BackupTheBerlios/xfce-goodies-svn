@@ -18,6 +18,7 @@ libmodemlights_la_SOURCES = \
 libmodemlights_la_CFLAGS = \
 	@XFCE4_PANEL_CFLAGS@ \
 	-DDATADIR=\"$(datadir)\" \
+	-DICONDIR=\"$(datadir)/xfce4/modemlights\" \
 	-DLOCALEDIR=\"$(localedir)\"
 
 libmodemlights_la_LIBADD = \

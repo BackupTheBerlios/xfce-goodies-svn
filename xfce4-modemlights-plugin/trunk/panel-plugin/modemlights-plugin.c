@@ -25,6 +25,7 @@
 #include <libxfce4util/libxfce4util.h>
 #include <libxfcegui4/libxfcegui4.h>
 #include <libxfcegui4/xfce_scaled_image.h>
+#include <libxfcegui4/icons.h>
 
 #include <panel/plugins.h>
 #include <panel/xfce.h>
@@ -33,9 +34,9 @@
 
 #define BORDER 8
 
-#define THEME_OFFLINE_ICON "xfce-utils"
-#define THEME_ONLINE_ICON "xfce-utils"
-#define THEME_DIALING_ICON "xfce-utils"
+#define THEME_OFFLINE_ICON "modem-disconnected"
+#define THEME_ONLINE_ICON "modem-connected"
+#define THEME_DIALING_ICON "modem-dialing"
 
 typedef enum
 {
@@ -145,6 +146,11 @@ modemlights_set_pixmaps (XfceModemlightsPlugin *mwp, gint which)
 		if (!mwp->pix_offline)
 			mwp->pix_offline = xfce_themed_icon_load
 				(THEME_OFFLINE_ICON, icon_size[mwp->size]);
+		if (!mwp->pix_offline)
+			mwp->pix_offline = gdk_pixbuf_new_from_file_at_size
+				(ICONDIR "/" THEME_OFFLINE_ICON ".png", 
+				 icon_size[mwp->size], 
+				 icon_size[mwp->size], NULL);
 		if (mwp->mode == modem_disconnected && mwp->pix_offline) 
 			xfce_scaled_image_set_from_pixbuf
 				(XFCE_SCALED_IMAGE(mwp->image),
@@ -163,6 +169,11 @@ modemlights_set_pixmaps (XfceModemlightsPlugin *mwp, gint which)
 		if (!mwp->pix_online)
 			mwp->pix_online = xfce_themed_icon_load
 				(THEME_ONLINE_ICON, icon_size[mwp->size]);
+		if (!mwp->pix_online)
+			mwp->pix_online = gdk_pixbuf_new_from_file_at_size
+				(ICONDIR "/" THEME_ONLINE_ICON ".png", 
+				 icon_size[mwp->size], 
+				 icon_size[mwp->size], NULL);
 		if (mwp->mode == modem_connected && mwp->pix_online) 
 			xfce_scaled_image_set_from_pixbuf
 				(XFCE_SCALED_IMAGE(mwp->image),
@@ -181,6 +192,11 @@ modemlights_set_pixmaps (XfceModemlightsPlugin *mwp, gint which)
 		if (!mwp->pix_dialing)
 			mwp->pix_dialing = xfce_themed_icon_load
 				(THEME_DIALING_ICON, icon_size[mwp->size]);
+		if (!mwp->pix_dialing)
+			mwp->pix_dialing = gdk_pixbuf_new_from_file_at_size
+				(ICONDIR "/" THEME_DIALING_ICON ".png", 
+				 icon_size[mwp->size], 
+				 icon_size[mwp->size], NULL);
 		if (mwp->mode == modem_dialing && mwp->pix_dialing) 
 			xfce_scaled_image_set_from_pixbuf
 				(XFCE_SCALED_IMAGE(mwp->image),
@@ -240,7 +256,7 @@ modemlights_create(Control *c)
 {
 	XfceModemlightsPlugin *mwp = g_new0(XfceModemlightsPlugin, 1);
 	c->data = mwp;
-	
+
 	mwp->mode = modem_disconnected;
 	
 	mwp->tooltip = gtk_tooltips_new();

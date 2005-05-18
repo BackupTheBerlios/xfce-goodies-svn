@@ -51,4 +51,5 @@ AC_OUTPUT([
 Makefile
 panel-plugin/Makefile
 po/Makefile.in
+pixmaps/Makefile
 ])
