@@ -1,0 +1,61 @@
++---------------------------+
+| Xfce4 ModemLights Plugin |
++---------------------------+
+
+The xfce4-modem-lights applet is an xfce4 panel applet 
+intended to simplify establishing a ppp connection via 
+a modem. It is primarily designed to work with the debian 
+ppp package and the pon/poff scripts provided by that 
+package, but should be usable with any scripts that create
+a lock file during dialing and retain it through the 
+connection.
+
+This plugin should work with any Xfce version from 4.2.0 onwards.
+
+The applet requires 7 configuration options:
+
+"Connection command:"
+This is the command that initiates dialing, such as:
+ /usr/bin/pon interbaun
+Shortly after this command is executed, a lock file should 
+be created indicating that the appropriate device is in 
+use.
+
+"Disconnection Command:"
+This is the command that breaks the connection, such as:
+ /usr/bin/poff
+
+"Device:"
+This is the device name (interface name) for the 
+established connection, such as:
+ ppp0
+Note that this name may not be preceded or followed by 
+superfluous white space.
+To determine the device name, one can execute
+ cat /proc/net/dev
+before and after establishing the connection.
+This will show the active devices/interfaces in the first 
+column. The new device after establishing the connection 
+is the device/interface name required.
+
+"Lockfile:"
+This is the name of the lock file created by the 
+connection command, such as
+ /var/lock/LCK..ttyS1
+Again one can frequently find this name by checking the 
+content of /var/lock before and after establishing the 
+connection. The absence of that file indicates to the 
+applet that no connection has been established and that 
+no dialing is in progress.
+
+"Icon (Disconnected)":
+This is the path to the icon file that should be shown while no connection is active and no dialing is occurring.
+
+"Icon (Connecting)":
+This is the path to the icon file that should be shown while no connection is active but dialing is occurring.
+
+"Icon (Connected)":
+This is the path to the icon file that should be shown while a connection is active.
+ 
+To see the troughput on the ppp connection I would suggest adding the xfce4-netload applet next to the modem-lights applet and configuring the former to use the same device as the latter.
+
