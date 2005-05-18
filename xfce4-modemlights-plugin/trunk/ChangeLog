@@ -1,3 +1,13 @@
+2005-05-18 Andreas J. Guelzow <aguelzow@taliesin.ca>
+	* .cvsignore: ignore *.tar.gz
+	* po/.cvsignore: ignore *.gmo
+	
+2005-05-18 Andreas J. Guelzow <aguelzow@taliesin.ca>
+	* configure.ac, NEWS: post release bump
+	
+2005-05-18 Andreas J. Guelzow <aguelzow@taliesin.ca>
+	* Release 0.1.0
+	
 2005-05-18 Jasper Huijsmans <jasper@xfce.org>
 	* configure.ac, po/nl.po: Add Dutch translations.
 	

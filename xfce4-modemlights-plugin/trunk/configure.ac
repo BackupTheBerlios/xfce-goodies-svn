@@ -4,7 +4,7 @@ dnl xfce4-modem-lights-plugin - a modem dialing plugin for the xfce4 panel
 dnl
 
 dnl version info
-m4_define([modem_lights_version], [0.1.0])
+m4_define([modem_lights_version], [0.1.1])
 
 dnl init autoconf
 AC_INIT([xfce4-modemlights-plugin], [modem_lights_version],

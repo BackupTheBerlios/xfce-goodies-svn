@@ -12,3 +12,4 @@ ltmain.sh
 missing
 mkinstalldirs
 stamp-*
+*.tar.gz
