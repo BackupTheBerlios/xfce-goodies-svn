@@ -1,3 +1,15 @@
+2005-05-18 Jasper Huijsmans <jasper@xfce.org>
+	* configure.ac, po/nl.po: Add Dutch translations.
+	
+2005-05-18 Jasper Huijsmans <jasper@xfce.org>
+	* configure.ac: Set version to 0.1.0, set copyright to Andreas, remove
+	  unnecessary checks for gthreads and gobject.
+	* panel-plugin/Makefile.am, panel-plugin/modemlights-plugin.h: remove
+	  unneeded header file.
+	* po/ChangeLog: Add dummy changelog file to fix distcheck target.
+	* po/xfce4-modemlights-plugin.pot: Add pot file to CVS, to make it
+	  easier for translators to start translating.
+	
 2005-05-17 Andreas J. Guelzow <aguelzow@taliesin.ca>
 	* panel-plugin/modemlights-plugin.c (modemlights_set_pixmaps):
 	  fix typo in themed-icon name.
