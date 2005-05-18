@@ -1,2 +1,8 @@
 2005-05-17 Andreas J. Guelzow <aguelzow@taliesin.ca>
+	* panel-plugin/modemlights-plugin.c (modemlights_set_pixmaps):
+	  fix typo in themed-icon name.
+	* .cvsignore: add configure
+	* panel-plugin/.cvsignore: add libmodemlights_la-modemlights-plugin.lo
+
+2005-05-17 Andreas J. Guelzow <aguelzow@taliesin.ca>
 	* first version

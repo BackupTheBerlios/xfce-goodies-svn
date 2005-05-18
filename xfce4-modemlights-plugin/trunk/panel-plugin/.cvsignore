@@ -3,4 +3,4 @@
 Makefile
 Makefile.in
 libmodemlights.la
-libmodemlights_la-modem-lights-plugin.lo
+libmodemlights_la-modemlights-plugin.lo

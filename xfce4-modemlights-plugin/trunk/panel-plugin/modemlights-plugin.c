@@ -182,7 +182,7 @@ modemlights_set_pixmaps (XfceModemlightsPlugin *mwp, gint which)
 				 icon_size[mwp->size], NULL);
 		if (!mwp->pix_dialing)
 			mwp->pix_dialing = xfce_themed_icon_load
-				("THEME_DIALING_ICON", icon_size[mwp->size]);
+				(THEME_DIALING_ICON, icon_size[mwp->size]);
 		if (mwp->mode == modem_dialing && mwp->pix_dialing) 
 			xfce_scaled_image_set_from_pixbuf
 				(XFCE_SCALED_IMAGE(mwp->image),
