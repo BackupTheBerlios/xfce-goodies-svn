@@ -31,8 +31,6 @@
 
 #include <net/if.h>
 
-#include "modemlights-plugin.h"
-
 #define BORDER 8
 
 #define THEME_OFFLINE_ICON "xfce-utils"
