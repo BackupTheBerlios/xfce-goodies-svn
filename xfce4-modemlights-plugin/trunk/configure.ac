@@ -33,7 +33,7 @@ AC_HEADER_STDC
 AC_CHECK_HEADERS(net/if.h)
 
 dnl Check for i18n support
-XDT_I18N()
+XDT_I18N([nl])
 
 dnl Check for X11 installed
 XDT_CHECK_LIBX11_REQUIRE
