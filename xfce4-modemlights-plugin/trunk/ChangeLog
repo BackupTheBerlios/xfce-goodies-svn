@@ -1,3 +1,9 @@
+2005-05-19 Andreas J. Guelzow <aguelzow@taliesin.ca>
+	* configure.ac, NEWS: post release bump
+	
+2005-05-19 Andreas J. Guelzow <aguelzow@taliesin.ca>
+	* Release 0.1.1
+
 2005-05-18 Andreas J. Guelzow <aguelzow@taliesin.ca>
 	* pixmaps/.cvsignore: new
 	* pixmaps/Makefile.am: new
