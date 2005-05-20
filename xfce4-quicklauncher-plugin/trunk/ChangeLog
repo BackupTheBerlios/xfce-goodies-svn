@@ -1,3 +1,6 @@
+version 0.8:
+*************
++add french translation (not tested)
 +FIX: size of zoomed icons is now calculated from icons size instead of panel size
 +some little changes
 +FIX: some images wasn't unloaded when destroying a launcher.

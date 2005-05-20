@@ -2,7 +2,7 @@
  *            main.c
  *
  *  Thu Jul 15 06:01:04 2004
- *  Last Update: 04/04/2005
+ *  Last Update: 07/05/2005
  *  Copyright  2004 - 2005  bountykiller
  *  Email: masse_nicolas@yahoo.fr
  ****************************************************************************/
@@ -44,7 +44,7 @@ _create_pixbuf(gint id, const gchar* name, gint size)
 	if(id != XFCE_ICON_CATEGORY_EXTERN)
 		pixbuf = xfce_icon_theme_load_category(DEFAULT_ICON_THEME, id, size);
 	else
-		pixbuf = gdk_pixbuf_new_from_file_at_size(name, size, size, NULL);//hope it works with NULL
+		pixbuf = gdk_pixbuf_new_from_file_at_size(name, size, size, NULL);
 	if(!pixbuf)
 		pixbuf = xfce_icon_theme_load_category(DEFAULT_ICON_THEME, XFCE_ICON_CATEGORY_UNKNOWN, size);
 	return pixbuf;
@@ -418,7 +418,6 @@ quicklauncher_write_config(Control * control, xmlNodePtr node)
 	GList *iter;
 	xmlNodePtr launcher_node;
 	
-//	g_assert(_quicklauncher == control->data);
 	sprintf(value,"%d", _quicklauncher->nb_lines);
 	xmlSetProp(node, (const xmlChar *)"lines", value);
 	if(_quicklauncher->launchers) 
@@ -474,7 +473,7 @@ gboolean
 create_plugin (Control * control)
 {
     control->data = quicklauncher_new(control->base);
-	control->with_popup = FALSE;//Not implemented yet
+	control->with_popup = FALSE;// I had the popups myself 
     return TRUE;
 }
 
@@ -490,9 +489,8 @@ plugin_attach_callback (Control * control, const char *signal,
 										GCallback callback, gpointer data)
 {
 	GList *iter;
-	//also taken from systemsbuttons.c
 	SignalCallback *cb;
-	//g_assert(_quicklauncher  == control->data);
+	
 	cb = g_new0 (SignalCallback, 1);
 	cb->signal = signal;
 	cb->callback = callback;
@@ -510,7 +508,6 @@ plugin_attach_callback (Control * control, const char *signal,
 void
 plugin_load_config(Control * control, xmlNodePtr node)
 {
-	//g_assert(_quicklauncher  == control->data);
 	gtk_container_remove (GTK_CONTAINER (control->base), _quicklauncher->table);
 	quicklauncher_load_config(node);
 	gtk_container_add (GTK_CONTAINER (control->base), _quicklauncher->table);
@@ -520,7 +517,6 @@ void
 plugin_create_options (Control * control, GtkContainer * container,
 								      GtkWidget * done)
 {
-	//g_assert(_quicklauncher  == control->data);
 	quicklauncher_configure(container, done);
 }
 
@@ -528,7 +524,6 @@ plugin_create_options (Control * control, GtkContainer * container,
 void
 plugin_set_size (Control * control, int size)
 {
-	//g_assert(_quicklauncher  == control->data);
 	quicklauncher_set_size(size);
 }
 
@@ -554,8 +549,10 @@ plugin_set_theme (Control * control, const char *theme)
 G_MODULE_EXPORT void
 xfce_control_class_init (ControlClass * cc)
 {
+	xfce_textdomain(GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR, "UTF-8");
+	
     cc->name = "quicklauncher";
-    cc->caption = "Quicklauncher";
+    cc->caption = _("Quicklauncher");
     cc->create_control = (CreateControlFunc) create_plugin;
     cc->attach_callback = plugin_attach_callback;
     cc->free = free_plugin;

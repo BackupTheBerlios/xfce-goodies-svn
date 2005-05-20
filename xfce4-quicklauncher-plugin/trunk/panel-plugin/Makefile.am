@@ -19,9 +19,3 @@ libquicklauncher_la_CFLAGS =							\
 
 libquicklauncher_la_LIBADD = 							\
 	@XFCE4_PANEL_LIBS@
-
-if HAVE_CYGWIN
-libquicklauncher_la_LDFLAGS =						\
-	-no-undefined								\
-	-export-symbols $(datadir)/xfce4/devel/panel.def
-endif

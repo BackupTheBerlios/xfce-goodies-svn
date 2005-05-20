@@ -75,7 +75,7 @@ t_qck_launcher_opt_dlg* create_qck_launcher_dlg()
   gtk_box_pack_start (GTK_BOX (_dlg->vbox), _dlg->linebox, FALSE, FALSE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (_dlg->linebox), 5);
 
-  _dlg->label = gtk_label_new_with_mnemonic("Lines: ");
+  _dlg->label = gtk_label_new_with_mnemonic(_("Lines: "));
   gtk_widget_show (_dlg->label);
   gtk_box_pack_start (GTK_BOX (_dlg->linebox), _dlg->label, FALSE, FALSE, 0);
 
@@ -171,13 +171,13 @@ fill_qck_launcher_dlg()
 	//render = gtk_cell_renderer_combo_new();
 	//configure_combo(render); if I one day can use combo with pixbuf... 
 	g_object_set (G_OBJECT(render), "mode", GTK_CELL_RENDERER_MODE_ACTIVATABLE,"sensitive", TRUE, NULL);
-	column = gtk_tree_view_column_new_with_attributes("icone", render, "pixbuf", 0, NULL);
+	column = gtk_tree_view_column_new_with_attributes(_("icone"), render, "pixbuf", 0, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(_dlg->treeview1), column);
 		
 	render = gtk_cell_renderer_text_new();
 	g_object_set (G_OBJECT(render),"editable", TRUE, NULL);
 	g_signal_connect(render, "edited", G_CALLBACK (cmd_changed), NULL);
-	column = gtk_tree_view_column_new_with_attributes("commande", render, "text", 1,  NULL);
+	column = gtk_tree_view_column_new_with_attributes(_("commande"), render, "text", 1,  NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(_dlg->treeview1), column);
 
 	//load current config
@@ -202,8 +202,6 @@ fill_qck_launcher_dlg()
 								G_CALLBACK (on_btn_up_clicked), NULL);
 	g_signal_connect ((gpointer) _dlg->btn_down, "clicked",
 								G_CALLBACK (on_btn_down_clicked), NULL);
-//	g_signal_connect((gpointer) treemodel, "rows-reordered",
-//								G_CALLBACK (on_tree_reorder), NULL);
 }
 
 
@@ -267,7 +265,7 @@ gchar* get_icon_file()
 	GtkWidget *xfc, *img;
 	XfceFileFilter *filter;
 	gchar *result = NULL;
-	xfc = xfce_file_chooser_new("Open icon", GTK_WINDOW(_icon_window), XFCE_FILE_CHOOSER_ACTION_OPEN,
+	xfc = xfce_file_chooser_new(_("Open icon"), GTK_WINDOW(_icon_window), XFCE_FILE_CHOOSER_ACTION_OPEN,
 												  GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 		      									  GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT, NULL);
 	/*Preview widget*/
@@ -466,13 +464,6 @@ void cmd_changed(GtkCellRendererText *cellrenderertext, gchar *arg1, gchar *arg2
 	}
 }
 
-/* 
-void on_tree_reorder(GtkTreeModel *treemodel, GtkTreePath *arg1, GtkTreeIter *arg2,
-                                	gpointer arg3, gpointer user_data)
-{
-	g_print("unimplemented! \n");
-}
-*/
 
 void  file_chooser_preview_img (XfceFileChooser *chooser, gpointer user_data)
 {
