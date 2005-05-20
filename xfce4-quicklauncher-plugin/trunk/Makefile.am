@@ -1,6 +1,6 @@
 @SET_MAKE@
 
-SUBDIRS = intl panel-plugin po 
+SUBDIRS = po panel-plugin
 
 distclean-local:
 	rm -rf *.cache *~
@@ -16,6 +16,7 @@ distcheck-bz2: distcheck
 rpm: dist
 	rpmbuild -ta $(PACKAGE)-$(VERSION).tar.gz
 	@rm -f $(PACKAGE)-$(VERSION).tar.gz
+	
 EXTRA_DIST =	\
 	AUTHORS	\
 	COPYING	\
@@ -26,6 +27,6 @@ EXTRA_DIST =	\
 	TODO	\
 	config.rpath \
 	mkinstalldirs
+	
 ACLOCAL_AMFLAGS = -I m4
-
 
