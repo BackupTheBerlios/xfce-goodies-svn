@@ -9,7 +9,7 @@ AC_INIT([panel-plugin/xmms_plugin.c])
 
 AM_CONFIG_HEADER([config.h])
 
-AM_INIT_AUTOMAKE([xfce4-xmms-plugin], [0.1.2])
+AM_INIT_AUTOMAKE([xfce4-xmms-plugin], [0.3.1])
 
 AM_MAINTAINER_MODE
 
@@ -25,6 +25,9 @@ AC_PROG_LIBTOOL
 
 dnl Check for standard header files
 AC_HEADER_STDC
+
+dnl Check for Pango >= 1.8.0
+PKG_CHECK_MODULES(PANGO, pango >= 1.8.0,,exit)
 
 dnl configure the panel plugin
 XFCE_PANEL_PLUGIN([XFCE4_PANEL], [4.0.0])
