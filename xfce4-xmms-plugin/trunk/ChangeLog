@@ -1,6 +1,35 @@
-2003-11-20 06:00EST  pat
-	* added xfce4-xmms-plugin.spec for the RPM builders out there
-	thanks to Rudolf Kastl <che666@uni.de> again.  Thanks!
+2005-06-06 Kemal Ilgar Eroglu
+	* Release 0.3.1
+	
+2005-06-05 Kemal Ilgar Eroglu
+	* Make progressbar hideable
+	* Fix the "show title option not being remembered" issue.
+	* Add a choice to use BMP. The only difference is the spawning code, 
+	otherwise BMP uses XMMS libraries.
+	* Update the configure script to check for XMMS and Pango 1.8.0 .
+
+2005-05-31 Kemal Ilgar Eroglu
+	* Release 0.3.0
+
+2005-05-** Kemal Ilgar Rroglu and Mario Streiber
+2005-04-**
+	* Mario rewrote the code, introduced the preferences window.
+	* Title scrolling is now pixel based (Mario).
+	* Added a progressbar for volume.
+
+2005-03-22 Kemal Ilgar Eroglu
+	* Version 0.2.1
+	* Added show/hide and text size adjustment for srolling title.
+	* Settings are now saved
+	* Check if xmms is running (reading song title crashes otherwise)
+	* Fixed the scrolling algorithm ("switching to shorter title while
+	scrolling back" case is handled correctly now).
+
+2005-03-20 Kemal Ilgar Eroglu
+	* Version 0.2
+	* Scroll up/down changes volume
+	* Added song title scroll feature
+	* Clickable progressbar for reading/setting track position
 
 2003-11-20 04:56EST  pat
 	PATCH: Rudolf Kastl <che666@uni.de>
