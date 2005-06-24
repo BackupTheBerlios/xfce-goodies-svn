@@ -1,0 +1,66 @@
+# translation of xfce4-showdesktop.po to Vietnamese
+# This file is distributed under the same license as the PACKAGE package.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER.
+# Phan Vĩnh Thịnh <teppi@vnlinux.org>, 2005.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: xfce4-showdesktop\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2004-10-10 17:20+0200\n"
+"PO-Revision-Date: 2005-06-20 20:41+0400\n"
+"Last-Translator: Phan Vĩnh Thịnh <teppi@vnlinux.org>\n"
+"Language-Team: Vietnamese <none@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.9.1\n"
+
+#: panel-plugin/showdesktop.c:619
+msgid "Enable this option, if your panel is located on top or on the right."
+msgstr "Bật tùy chọn này nếu bảng panel nằm trên đỉnh hoặc bên phải."
+
+#: panel-plugin/showdesktop.c:620
+msgid ""
+"Normally, the first mouse button is connected to the windowmanager "
+"showdesktop feature, if the WM supports it, and the middle mouse button is "
+"connected to the plugin internal showdesktop feature. You can reverse it "
+"with this option."
+msgstr ""
+"Thông thường, nút chuột đầu tiên dùng cho tính năng hiện màn hình "
+"của trình quản lý cửa sổ, nếu WM hỗ trợ, và nút chuột giữa dùng cho tính "
+"năng hiện màn hình nội bộ. Người dùng có thể giữ cấu hình đó bằng tùy "
+"chọn này."
+
+#: panel-plugin/showdesktop.c:621
+msgid "If this option is enabled, the plugin consumes less space on the panel."
+msgstr "Nếu bật dùng tùy chọn này, thì plugin dùng ít không gian trên bảng panel hơn."
+
+#: panel-plugin/showdesktop.c:622
+msgid "display one button only"
+msgstr "chỉ hiển thị một nút"
+
+#: panel-plugin/showdesktop.c:629
+msgid "swap commands"
+msgstr "trao đổi câu lệnh"
+
+#: panel-plugin/showdesktop.c:634
+msgid "alternate button mode"
+msgstr "chế độ nút tương đương"
+
+#: panel-plugin/showdesktop.c:639
+msgid "reduce size"
+msgstr "giảm kích thước"
+
+#: panel-plugin/showdesktop.c:644
+msgid "one toggle button"
+msgstr "chỉ một nút"
+
+#: panel-plugin/showdesktop.c:650
+msgid "Options"
+msgstr "Tùy chọn"
+
+#: panel-plugin/showdesktop.c:671
+msgid "Show Desktop"
+msgstr "Hiện Màn hình"
+
