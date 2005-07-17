@@ -1,6 +1,6 @@
 dnl configure.ac
 dnl
-dnl xfce4-toys - eyes that spy at you
+dnl xfce4-eyes - eyes that spy on you
 dnl
 dnl
 
@@ -31,7 +31,7 @@ dnl Check for math library
 AC_CHECK_LIB([m], [sin])
 
 dnl Check for i18n support
-BM_I18N([xfce4-toys], [ar az be bg bn_IN ca cs de en_GB es et eu fa fi
+BM_I18N([xfce4-eyes], [ar az be bg bn_IN ca cs de en_GB es et eu fa fi
                        fr gu he hi hu it ja ko lt mr ms nl nb_NO pa pl
 		       pt_BR pt_PT ro ru sv sk ta tr uk vi zh_CN zh_TW ])
 
@@ -46,7 +46,7 @@ BM_DEBUG_SUPPORT
 
 AC_OUTPUT([
 Makefile
-xfce4-toys.spec
+xfce4-eyes.spec
 po/Makefile.in
 panel-plugin/Makefile
 themes/Makefile
