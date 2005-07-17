@@ -1,0 +1,23 @@
+# British English translations for xfce4-toys package.
+# Copyright (C) 2004 Zuza Software Foundation (Translate.org.za)
+# This file is distributed under the same license as the xfce4-toys package.
+#
+# Zuza Software Foundation (Translate.org.za), 2004.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: xfce4-toys\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2004-10-23 18:06+0200\n"
+"PO-Revision-Date: 2004-12-03 18:06+0200\n"
+"Last-Translator: Translate.org.za <info@translate.org.za>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: xfce4-eyes/panel-plugin/eyes.c:550
+msgid "Eyes"
+msgstr "Eyes"
+

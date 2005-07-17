@@ -1,0 +1,22 @@
+# Marathi Translation of xfce4-toys.
+# This file is distributed under the same license as the xfce4-toys package.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER.
+# Pallavi <pallavi_edu@rediffmail.com>, 2005.
+# Pallavi Nikam <pallavi_edu@rediffmail.com>, 2005.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: xfce4-toys\n"
+"POT-Creation-Date: 2004-08-08 20:14+0200\n"
+"PO-Revision-Date: 2005-04-20 20:15+0530\n"
+"Last-Translator: Pallavi Nikam <pallavi_edu@rediffmail.com>\n"
+"Language-Team: Marathi <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.9\n"
+
+#: xfce4-eyes/panel-plugin/eyes.c:550
+msgid "Eyes"
+msgstr "नेत्र"
+
