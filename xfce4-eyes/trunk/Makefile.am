@@ -1,0 +1,3 @@
+SUBDIRS =								\
+	panel-plugin							\
+	themes
