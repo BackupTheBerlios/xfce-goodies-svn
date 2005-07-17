@@ -1,0 +1,14 @@
+Source: xfce4-screenshooter-plugin
+Section: x11
+Priority: optional
+Maintainer: Daniel Bobadilla Leal <dbobadil@dcc.uchile.cl> 
+Build-Depends: libc6-dev (>= 2.1.2), xfce4-panel (>= 4.2.1.1-1), libxml2-dev, libxfcegui4-dev (>= 4.2.1-1), libstartup-notification0-dev, libxft-dev, xfce4-panel-dev (>= 4.2.1.1-1)
+Standards-Version: 3.6.1
+
+Package: xfce4-screenshooter-plugin
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: xfce4-panel plugin to take screenshots
+ Xfce4-screenshooter-plugin is a simple app for take screenshots, it's
+ similar to gnome "Take an screenshot" option.
+ .
