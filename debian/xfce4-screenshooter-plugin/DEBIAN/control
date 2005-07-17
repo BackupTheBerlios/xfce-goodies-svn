@@ -1,0 +1,12 @@
+Package: xfce4-screenshooter-plugin
+Version: 0.0.7
+Section: x11
+Priority: optional
+Architecture: i386
+Depends: libatk1.0-0 (>= 1.9.0), libc6 (>= 2.3.2.ds1-21), libglib2.0-0 (>= 2.6.0), libgtk2.0-0 (>= 2.6.0), libpango1.0-0 (>= 1.8.1), libxfce4util-1 (>= 4.2.0), libxfcegui4-3, libxml2 (>= 2.6.20), zlib1g (>= 1:1.2.1)
+Installed-Size: 24
+Maintainer: Daniel Bobadilla Leal <dbobadil@dcc.uchile.cl>
+Description: xfce4-panel plugin to take screenshots
+ Xfce4-screenshooter-plugin is a simple app for take screenshots, it's
+ similar to gnome "Take an screenshot" option.
+ .

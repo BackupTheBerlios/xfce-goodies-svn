@@ -1,0 +1,1 @@
+shlibs:Depends=libatk1.0-0 (>= 1.9.0), libc6 (>= 2.3.2.ds1-21), libglib2.0-0 (>= 2.6.0), libgtk2.0-0 (>= 2.6.0), libpango1.0-0 (>= 1.8.1), libxfce4util-1 (>= 4.2.0), libxfcegui4-3, libxml2 (>= 2.6.20), zlib1g (>= 1:1.2.1)
