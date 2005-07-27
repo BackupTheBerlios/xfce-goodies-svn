@@ -20,7 +20,7 @@
 
 //Global var
 extern t_qck_launcher_opt_dlg *_dlg;
-extern GtkWidget  *_icon_window;
+//extern GtkWidget  *_icon_window;
 
 t_qck_launcher_opt_dlg* create_qck_launcher_dlg();
 
