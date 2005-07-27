@@ -1,3 +1,7 @@
+version 0.81:
+*************
++fix a compilation problem with gcc4
++fix gettext stuff (thanks Jasper ;) )
 version 0.8:
 *************
 +add french translation (not tested)
