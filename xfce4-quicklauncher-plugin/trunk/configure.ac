@@ -9,7 +9,7 @@ AC_CONFIG_SRCDIR([configure])
 
 AC_CONFIG_HEADER(config.h)
 
-AM_INIT_AUTOMAKE([xfce4-quicklauncher-plugin], [0.8.1])
+AM_INIT_AUTOMAKE([xfce4-quicklauncher-plugin], [0.8.2])
 
 AM_MAINTAINER_MODE
 
