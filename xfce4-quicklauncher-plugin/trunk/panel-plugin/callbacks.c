@@ -261,7 +261,6 @@ show_icon_window( GtkTreeView *treeview, GtkTreePath *arg1,
 
 gchar* get_icon_file()
 {
-	//TO DO: add a preview window
 	GtkWidget *xfc, *img;
 	XfceFileFilter *filter;
 	gchar *result = NULL;
@@ -270,9 +269,10 @@ gchar* get_icon_file()
 		      									  GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT, NULL);
 	/*Preview widget*/
 	img =gtk_image_new();
-	gtk_widget_set_size_request(img, 32, 32);
+	gtk_widget_set_size_request(img, 96, 96);
+	gtk_widget_show(img);
 	xfce_file_chooser_set_preview_widget(XFCE_FILE_CHOOSER(xfc), img);
-	xfce_file_chooser_set_preview_widget_active(XFCE_FILE_CHOOSER(xfc), TRUE);
+	xfce_file_chooser_set_preview_widget_active(XFCE_FILE_CHOOSER(xfc), FALSE);
 	xfce_file_chooser_set_preview_callback(XFCE_FILE_CHOOSER(xfc), 
 																	file_chooser_preview_img, (gpointer)img);
 	
@@ -468,9 +468,12 @@ void cmd_changed(GtkCellRendererText *cellrenderertext, gchar *arg1, gchar *arg2
 void  file_chooser_preview_img (XfceFileChooser *chooser, gpointer user_data)
 {
 	g_assert(GTK_IS_IMAGE(user_data));
-	if(g_file_test(xfce_file_chooser_get_filename(chooser), G_FILE_TEST_IS_REGULAR))
+	gchar *filename = xfce_file_chooser_get_filename(chooser);
+	if(g_file_test(filename, G_FILE_TEST_IS_REGULAR))
 	{
 		xfce_file_chooser_set_preview_widget_active(chooser, TRUE);
-		gtk_image_set_from_file( GTK_IMAGE(user_data), xfce_file_chooser_get_filename(chooser) );
-	}
+		gtk_image_set_from_file( GTK_IMAGE(user_data), filename);
+	}	else
+	xfce_file_chooser_set_preview_widget_active(chooser, FALSE);
+	g_free(filename);
 }
