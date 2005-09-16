@@ -33,7 +33,7 @@
 
 
 #define XFCE_ICON_CATEGORY_STOCK 		(XFCE_N_BUILTIN_ICON_CATEGORIES + 1) //not used yet
-#define XFCE_ICON_CATEGORY_EXTERN		(XFCE_N_BUILTIN_ICON_CATEGORIES + 2)
+#define XFCE_ICON_CATEGORY_EXTERN		(XFCE_N_BUILTIN_ICON_CATEGORIES + 2) //no this isn't nice
 //can't you add these 2 things in xfce?? 
 //Please also note than the file icon.h in the panel directory has his
 //own declaration, wich is a bit confusing. (Moreover, they are not sync 

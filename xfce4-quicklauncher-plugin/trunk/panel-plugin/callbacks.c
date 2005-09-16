@@ -28,6 +28,7 @@
 
 #include "callbacks.h"
 #include "types.h"
+#include "avoid_deprecation.h"
 
 t_qck_launcher_opt_dlg *_dlg;
 static GtkWidget  *_icon_window;
@@ -46,7 +47,7 @@ void cmd_changed(GtkCellRendererText *cellrenderertext, gchar *arg1,
 								gchar *arg2, gpointer user_data);
 //void on_tree_reorder(GtkTreeModel *treemodel, GtkTreePath *arg1, GtkTreeIter *arg2,
 //                                	gpointer arg3, gpointer user_data);
-void  file_chooser_preview_img (XfceFileChooser *chooser, gpointer user_data);
+void  file_chooser_preview_img (FileChooser *chooser, gpointer user_data);
 
 
 GtkWindow*
@@ -261,35 +262,37 @@ show_icon_window( GtkTreeView *treeview, GtkTreePath *arg1,
 
 gchar* get_icon_file()
 {
-	GtkWidget *xfc, *img;
-	XfceFileFilter *filter;
+	GtkWidget *chooser, *img;
+	FileFilter *filter;
 	gchar *result = NULL;
-	xfc = xfce_file_chooser_new(_("Open icon"), GTK_WINDOW(_icon_window), XFCE_FILE_CHOOSER_ACTION_OPEN,
+	chooser = file_chooser_new(_("Open icon"), GTK_WINDOW(_icon_window), FILE_CHOOSER_ACTION_OPEN,
 												  GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 		      									  GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT, NULL);
 	/*Preview widget*/
-	img =gtk_image_new();
+	img = gtk_image_new();
 	gtk_widget_set_size_request(img, 96, 96);
 	gtk_widget_show(img);
-	xfce_file_chooser_set_preview_widget(XFCE_FILE_CHOOSER(xfc), img);
-	xfce_file_chooser_set_preview_widget_active(XFCE_FILE_CHOOSER(xfc), FALSE);
-	xfce_file_chooser_set_preview_callback(XFCE_FILE_CHOOSER(xfc), 
-																	file_chooser_preview_img, (gpointer)img);
+	file_chooser_set_preview_widget(FILE_CHOOSER(chooser), img);
+	file_chooser_set_preview_widget_active(FILE_CHOOSER(chooser), FALSE);
+	file_chooser_set_preview_callback(FILE_CHOOSER(chooser), 
+									file_chooser_preview_img, (gpointer)img);
 	
-	xfce_file_chooser_get_local_only(XFCE_FILE_CHOOSER(xfc));
-	xfce_file_chooser_set_select_multiple(XFCE_FILE_CHOOSER(xfc), FALSE);
-	filter = xfce_file_filter_new();
+	file_chooser_get_local_only(FILE_CHOOSER(chooser));
+	file_chooser_set_select_multiple(FILE_CHOOSER(chooser), FALSE);
+	filter = file_filter_new();
 	if (filter){
-		xfce_file_filter_set_name(filter, "image");
-		xfce_file_filter_add_mime_type(filter, "image/*");
-		xfce_file_chooser_add_filter(XFCE_FILE_CHOOSER(xfc), filter);	
+		file_filter_set_name(filter, "image");
+		file_filter_add_mime_type(filter, "image/*");
+		file_chooser_add_filter(FILE_CHOOSER(chooser), filter);	
 	}
-	xfce_file_chooser_set_current_folder(XFCE_FILE_CHOOSER(xfc), "/usr/share/pixmaps");//Maybe can be changed...
-	gtk_window_set_modal(GTK_WINDOW(xfc), TRUE);
-	gtk_window_set_transient_for(GTK_WINDOW(xfc),  _gtk_widget_get_parent_gtk_window(_dlg->vbox) );
-	if(gtk_dialog_run(GTK_DIALOG(xfc)) == GTK_RESPONSE_ACCEPT)
-		result = xfce_file_chooser_get_filename(XFCE_FILE_CHOOSER(xfc));
-	gtk_widget_destroy(xfc);
+	file_chooser_set_current_folder(FILE_CHOOSER(chooser), "/usr/share/pixmaps");//Maybe can be changed...
+	gtk_window_set_modal(GTK_WINDOW(chooser), TRUE);
+	gtk_window_set_transient_for(GTK_WINDOW(chooser),  _gtk_widget_get_parent_gtk_window(_dlg->vbox) );
+	if(gtk_dialog_run(GTK_DIALOG(chooser)) == GTK_RESPONSE_ACCEPT)
+		result = file_chooser_get_filename(FILE_CHOOSER(chooser));
+	
+	gtk_widget_destroy(img);
+	gtk_widget_destroy(chooser);
 	
 	return result;
 }
@@ -310,7 +313,6 @@ btn_clicked(GtkButton *button, gpointer icon_id)
 	if ( gtk_tree_selection_get_selected(sel, &treemodel, &iter) )
 	{
 		gtk_tree_model_get(treemodel, &iter, 2, &launcher, -1);
-		launcher->icon_id = (gint)icon_id;
 		if ( (gint)icon_id == XFCE_ICON_CATEGORY_EXTERN )	
 		{
 			gtk_window_set_modal(GTK_WINDOW(_icon_window), FALSE);
@@ -322,10 +324,12 @@ btn_clicked(GtkButton *button, gpointer icon_id)
 				if (launcher->icon_name) 
 					g_free(launcher->icon_name); 
 				launcher->icon_name = icon_name;
+				launcher->icon_id = (gint)icon_id;
 			}
-		}
+		}else
+			launcher->icon_id = (gint)icon_id;
 		launcher_update_icon(launcher);
-		pixbuf = _create_pixbuf((gint)icon_id, icon_name, 16); 
+		pixbuf = _create_pixbuf(launcher->icon_id, icon_name, 16); 
 		gtk_list_store_set(GTK_LIST_STORE(treemodel), &iter, 0, pixbuf, -1);				
 		UNREF(pixbuf);
 	}
@@ -465,15 +469,15 @@ void cmd_changed(GtkCellRendererText *cellrenderertext, gchar *arg1, gchar *arg2
 }
 
 
-void  file_chooser_preview_img (XfceFileChooser *chooser, gpointer user_data)
+void  file_chooser_preview_img (FileChooser *chooser, gpointer user_data)
 {
 	g_assert(GTK_IS_IMAGE(user_data));
-	gchar *filename = xfce_file_chooser_get_filename(chooser);
+	gchar *filename = file_chooser_get_filename(chooser);
 	if(g_file_test(filename, G_FILE_TEST_IS_REGULAR))
 	{
-		xfce_file_chooser_set_preview_widget_active(chooser, TRUE);
+		file_chooser_set_preview_widget_active(chooser, TRUE);
 		gtk_image_set_from_file( GTK_IMAGE(user_data), filename);
-	}	else
-	xfce_file_chooser_set_preview_widget_active(chooser, FALSE);
+	} else
+		file_chooser_set_preview_widget_active(chooser, FALSE);
 	g_free(filename);
 }

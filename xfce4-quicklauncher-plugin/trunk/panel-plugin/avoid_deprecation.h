@@ -1,0 +1,90 @@
+//This file is intented to avoid problems 
+//with the fact that XfceFileChooser will be
+//deprecated soon.
+//Hope it works for everyone.
+#include <gtk/gtk.h>
+
+#if GTK_CHECK_VERSION(2,4,0)
+	#define	FileChooser	GtkFileChooser
+	#define	FileChooserAction	GtkFileChooserAction
+	#define	file_chooser_dialog_new 	gtk_file_chooser_dialog_new 
+	#define	file_chooser_new	gtk_file_chooser_dialog_new 
+	#define	file_chooser_set_select_multiple	gtk_file_chooser_set_select_multiple
+	#define	file_chooser_get_select_multiple	gtk_file_chooser_get_select_multiple
+	#define	file_chooser_set_current_name	gtk_file_chooser_set_current_name
+	#define	file_chooser_get_filename	gtk_file_chooser_get_filename  
+	#define	file_chooser_set_filename	gtk_file_chooser_set_filename  
+	#define	file_chooser_get_filenames	gtk_file_chooser_get_filenames
+	#define	file_chooser_set_current_folder	gtk_file_chooser_set_current_folder
+	#define	file_chooser_get_current_folder	gtk_file_chooser_get_current_folder
+	#define	file_chooser_set_preview_widget	gtk_file_chooser_set_preview_widget
+	#define	file_chooser_get_preview_widget	gtk_file_chooser_get_preview_widget
+	#define	file_chooser_set_preview_callback	gtk_file_chooser_set_preview_callback
+	#define	file_chooser_set_preview_widget_active	gtk_file_chooser_set_preview_widget_active
+	#define	file_chooser_get_preview_widget_active	gtk_file_chooser_get_preview_widget_active
+	#define	file_chooser_set_use_preview_label	gtk_file_chooser_set_use_preview_label
+	#define	file_chooser_set_extra_widget	gtk_file_chooser_set_extra_widget
+	#define	file_chooser_get_extra_widget	gtk_file_chooser_get_extra_widget
+	#define	file_chooser_add_filter	gtk_file_chooser_add_filter
+	#define	file_chooser_remove_filter	gtk_file_chooser_remove_filter
+	#define	file_chooser_set_filter	gtk_file_chooser_set_filter
+	#define	file_chooser_set_local_only	gtk_file_chooser_set_local_only
+	#define	file_chooser_get_local_only	gtk_file_chooser_get_local_only
+	#define	file_chooser_add_shortcut_folder	gtk_file_chooser_add_shortcut_folder
+	#define	file_chooser_remove_shortcut_folder	gtk_file_chooser_remove_shortcut_folder
+	#define	FileFilter	GtkFileFilter
+	#define	file_filter_new	gtk_file_filter_new 
+	#define	file_filter_set_name	gtk_file_filter_set_name
+	#define	file_filter_add_mime_type	gtk_file_filter_add_mime_type
+	#define	file_filter_add_pattern	gtk_file_filter_add_pattern
+	#define	FILE_CHOOSER	GTK_FILE_CHOOSER
+	#define	FILE_FILTER	GTK_FILE_FILTER
+	#define	FILE_CHOOSER_ACTION_OPEN	GTK_FILE_CHOOSER_ACTION_OPEN
+	#define	FILE_CHOOSER_ACTION_SAVE	GTK_FILE_CHOOSER_ACTION_SAVE
+	#define	FILE_CHOOSER_ACTION_SELECT_FOLDER	GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER
+	#define	FILE_CHOOSER_ACTION_CREATE_FOLDER	GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER
+#else
+	#include <libxfcegui4.h>
+	#if !LIBXFCEGUI4_CHECK_VERSION (4, 3, 0)
+	#define	FileChooser	XfceFileChooser
+	#define	FileChooserAction	XfceFileChooserAction
+	#define	file_chooser_dialog_new 	xfce_file_chooser_dialog_new 
+	#define	file_chooser_new	xfce_file_chooser_new
+	#define	file_chooser_set_select_multiple	xfce_file_chooser_set_select_multiple
+	#define	file_chooser_get_select_multiple	xfce_file_chooser_get_select_multiple
+	#define	file_chooser_set_current_name	xfce_file_chooser_set_current_name
+	#define	file_chooser_get_filename	xfce_file_chooser_get_filename  
+	#define	file_chooser_set_filename	xfce_file_chooser_set_filename  
+	#define	file_chooser_get_filenames	xfce_file_chooser_get_filenames
+	#define	file_chooser_set_current_folder	xfce_file_chooser_set_current_folder
+	#define	file_chooser_get_current_folder	xfce_file_chooser_get_current_folder
+	#define	file_chooser_set_preview_widget	xfce_file_chooser_set_preview_widget
+	#define	file_chooser_get_preview_widget	xfce_file_chooser_get_preview_widget
+	#define	file_chooser_set_preview_callback	xfce_file_chooser_set_preview_callback
+	#define	file_chooser_set_preview_widget_active	xfce_file_chooser_set_preview_widget_active
+	#define	file_chooser_get_preview_widget_active	xfce_file_chooser_get_preview_widget_active
+	#define	file_chooser_set_use_preview_label	xfce_file_chooser_set_use_preview_label
+	#define	file_chooser_set_extra_widget	xfce_file_chooser_set_extra_widget
+	#define	file_chooser_get_extra_widget	xfce_file_chooser_get_extra_widget
+	#define	file_chooser_add_filter	xfce_file_chooser_add_filter
+	#define	file_chooser_remove_filter	xfce_file_chooser_remove_filter
+	#define	file_chooser_set_filter	xfce_file_chooser_set_filter
+	#define	file_chooser_set_local_only	xfce_file_chooser_set_local_only
+	#define	file_chooser_get_local_only	xfce_file_chooser_get_local_only
+	#define	file_chooser_add_shortcut_folder	xfce_file_chooser_add_shortcut_folder
+	#define	file_chooser_remove_shortcut_folder	xfce_file_chooser_remove_shortcut_folder
+	#define	FileFilter	XfceFileFilter
+	#define	file_filter_new	xfce_file_filter_new 
+	#define	file_filter_set_name	xfce_file_filter_set_name
+	#define	file_filter_add_mime_type	xfce_file_filter_add_mime_type
+	#define	file_filter_add_pattern	xfce_file_filter_add_pattern
+	#define	FILE_CHOOSER	XFCE_FILE_CHOOSER
+	#define	FILE_FILTER	XFCE_FILE_FILTER
+	#define	FILE_CHOOSER_ACTION_OPEN	XFCE_FILE_CHOOSER_ACTION_OPEN
+	#define	FILE_CHOOSER_ACTION_SAVE	XFCE_FILE_CHOOSER_ACTION_SAVE
+	#define	FILE_CHOOSER_ACTION_SELECT_FOLDER	XFCE_FILE_CHOOSER_ACTION_SELECT_FOLDER
+	#define	FILE_CHOOSER_ACTION_CREATE_FOLDER	XFCE_FILE_CHOOSER_ACTION_CREATE_FOLDER
+#else
+	#error you must have gtk > 2.4.0 or libxfcegui4 < 4.3.0 in order to compile this!!!
+	#endif
+#endif
