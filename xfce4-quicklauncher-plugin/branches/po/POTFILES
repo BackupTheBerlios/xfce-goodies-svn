@@ -1,0 +1,2 @@
+	../panel-plugin/main.c \
+	../panel-plugin/callbacks.c

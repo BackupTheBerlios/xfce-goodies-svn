@@ -1,0 +1,34 @@
+version 0.82:
+*************
++minor bug fix
++enhenced preview window in the filechooser
+version 0.81:
+*************
++fix a compilation problem with gcc4
++fix gettext stuff (thanks Jasper ;) )
+version 0.8:
+*************
++add french translation (not tested)
++FIX: size of zoomed icons is now calculated from icons size instead of panel size
++some little changes
++FIX: some images wasn't unloaded when destroying a launcher.
++add tooltip
+Version 0.7:
+************
++FIX: a problem with icon size when loading
++FIX: there was a crash sometimes when clicking on an icon.
++some internal changes
++make icons bigger when passing throught
++change icon when clicking on
++Change: use GdkPixbuf and event_boxes instead of buttons. Looks better ; ).    
+Version 0.6:
+************
++FIX: Icon size in the configuration dialog doesn't take care of the size of the icons in the  bar anymore
++Add: number of lines is now configurable
++FIX: Size of the icons are now better handled
++FIX: some possible memory leaks
++some internal changes.
+
+Version 0.5:
+************
++First public release

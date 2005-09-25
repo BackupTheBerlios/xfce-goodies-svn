@@ -1,0 +1,7 @@
+[Xfce Panel]
+Type=X-XFCE-PanelPlugin
+Encoding=UTF-8
+_Name=Quicklauncher
+_Comment=Program with several launchers
+Icon=gnome-fs-executable
+X-XFCE-Module=@INTERNAL_PLUGIN_PATH@/libquicklauncher.so
