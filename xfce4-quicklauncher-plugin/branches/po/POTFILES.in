@@ -1,4 +1,0 @@
-# List of source files containing translatable strings.
-
-panel-plugin/main.c
-panel-plugin/callbacks.c
