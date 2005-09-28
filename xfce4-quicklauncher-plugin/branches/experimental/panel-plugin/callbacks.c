@@ -30,8 +30,8 @@
 #include "types.h"
 #include "avoid_deprecation.h"
 
-static t_qck_launcher_opt_dlg *_dlg;
-static GtkWidget  *_icon_window;
+static t_qck_launcher_opt_dlg *_dlg = NULL;
+static GtkWidget  *_icon_window = NULL;
 
 GtkWidget* create_icon_window();
 void show_icon_window( GtkTreeView *treeview, GtkTreePath *arg1,
@@ -67,14 +67,13 @@ t_qck_launcher_opt_dlg* create_qck_launcher_dlg()
  {
   GtkAdjustment *adjust;
   
-  if(_dlg) return _dlg;
+  g_assert( !(_dlg || _icon_window) );
   _icon_window = create_icon_window();
   _dlg = (t_qck_launcher_opt_dlg *) g_new0(t_qck_launcher_opt_dlg, 1);
 
-  _dlg->dialog = gtk_dialog_new_with_buttons ("My dialog", NULL,
+  _dlg->dialog = gtk_dialog_new_with_buttons (_("Configure Quicklauncher"), NULL,
                                               GTK_DIALOG_NO_SEPARATOR,
-                                              GTK_STOCK_OK, GTK_RESPONSE_OK,
-                                              GTK_STOCK_CLOSE, GTK_RESPONSE_CANCEL,
+                                              GTK_STOCK_CLOSE, GTK_RESPONSE_OK,
                                               NULL);
     
   _dlg->vbox = gtk_vbox_new(FALSE, 0);
@@ -90,7 +89,7 @@ t_qck_launcher_opt_dlg* create_qck_launcher_dlg()
   gtk_widget_show (_dlg->label);
   gtk_box_pack_start (GTK_BOX (_dlg->linebox), _dlg->label, FALSE, FALSE, 0);
 
-  _dlg->spin1 = gtk_spin_button_new_with_range(1, 5, 1);
+  _dlg->spin1 = gtk_spin_button_new_with_range(1, 8, 1);
   gtk_widget_show (_dlg->spin1);
   gtk_box_pack_start (GTK_BOX (_dlg->linebox), _dlg->spin1, FALSE, FALSE, 0);
   
@@ -137,6 +136,9 @@ t_qck_launcher_opt_dlg* create_qck_launcher_dlg()
   gtk_container_add (GTK_CONTAINER (_dlg->vbuttonbox1), _dlg->btn_down);
   GTK_WIDGET_SET_FLAGS (_dlg->btn_down, GTK_CAN_DEFAULT);
   
+  g_signal_connect_swapped( (gpointer)_dlg->dialog, "response",
+							G_CALLBACK (free_qck_launcher_dlg), NULL);
+  
   return _dlg;	
 }
 
@@ -162,7 +164,7 @@ void configure_combo(GtkCellRenderer *render)
 
 
 void
-qck_launcher_opt_dlg_set_quicklauncher(t_quicklauncher *quicklauncher)
+qck_launcher_opt_dlg_set_quicklauncher(t_quicklauncher *quicklauncher)//must be improved
 {
 	GtkTreeModel *treemodel;
 	GList *i; 	
@@ -217,9 +219,18 @@ qck_launcher_opt_dlg_set_quicklauncher(t_quicklauncher *quicklauncher)
 
 
 void
-free_qck_launcher_dlg(GtkButton *button, gpointer user_data)
+free_qck_launcher_dlg(GtkDialog *dialog, gint arg1, gpointer user_data)
 {
-	gtk_widget_destroy(_icon_window);
+	g_print("destroy\n");
+	if (_icon_window)
+	{
+		gtk_widget_destroy(_icon_window);
+		_icon_window = NULL;
+	}
+	gtk_widget_hide(_dlg->dialog);
+	gtk_widget_destroy(_dlg->dialog);
+	g_free(_dlg);
+	_dlg = NULL;
 }
 
 
@@ -356,7 +367,7 @@ on_btn_new_clicked (GtkButton *button, gpointer user_data)
 	GtkTreeModel *treemodel;
 	GtkTreeIter iter;
 	GdkPixbuf *pixbuf; 
-	t_launcher *launcher =  launcher_new (NULL, XFCE_ICON_CATEGORY_UNKNOWN, NULL, _dlg->quicklauncher->icon_size);
+	t_launcher *launcher =  launcher_new (NULL, XFCE_ICON_CATEGORY_UNKNOWN, NULL, _dlg->quicklauncher);
 	
 	treemodel = gtk_tree_view_get_model(GTK_TREE_VIEW(_dlg->treeview1) );
 	gtk_list_store_insert(GTK_LIST_STORE(treemodel), &iter, INT_MAX); //INT_MAX must be enough ;-)

@@ -14,7 +14,7 @@ libquicklauncher_la_SOURCES =							\
 	
 
 libquicklauncher_la_CFLAGS =							\
-	-DPACKAGE_LOCALE_DIR=\"$(localedir)\"				\
+	-DLOCALEDIR=\"$(localedir)\"				\
 	@LIBXFCE4PANEL_CFLAGS@
 
 libquicklauncher_la_LIBADD = 							\
@@ -26,22 +26,21 @@ libquicklauncher_la_LIBADD = 							\
 # automake stage, we'll use sed to get the full path into the .desktop file.
 # We also need to let intltool merge the translated fields, so we add an
 # additional level of indirection: a <name>.desktop.in.in file.
-############################
-############################ 
-#desktop_in_in_files = quicklauncher.desktop.in.in
-#desktop_in_files = $(desktop_in_in_files:.desktop.in.in=.desktop.in)
+
+desktop_in_in_files = quicklauncher.desktop.in.in
+desktop_in_files = $(desktop_in_in_files:.desktop.in.in=.desktop.in)
 	
-#desktopdir = $(datadir)/xfce4/panel-plugins
-#desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
-#@INTLTOOL_DESKTOP_RULE@
+desktopdir = $(datadir)/xfce4/panel-plugins
+desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
+@INTLTOOL_DESKTOP_RULE@
 
-#EXTRA_DIST = 								\
-#	$(desktop_in_in_files)
+EXTRA_DIST = 								\
+	$(desktop_in_in_files)
 
-#DISTCLEANFILES =							\
-#	$(desktop_DATA) $(desktop_in_files)
+DISTCLEANFILES =							\
+	$(desktop_DATA) $(desktop_in_files)
 	
 # get full path into .desktop file
-#%.desktop.in: %.desktop.in.in
-#	sed -e "s^@INTERNAL_PLUGIN_PATH@^$(libdir)/xfce4/panel-plugins^" \
-#		$< > $@
+%.desktop.in: %.desktop.in.in
+	sed -e "s^@INTERNAL_PLUGIN_PATH@^$(libdir)/xfce4/panel-plugins^" \
+		$< > $@

@@ -25,33 +25,27 @@
 
 
 #include <libxfce4util/libxfce4util.h>
-#include <libxfcegui4/xfce-icontheme.h>
+#include <libxfcegui4/libxfcegui4.h>
 #include <libxfce4panel/xfce-panel-plugin.h>
 
 
 #define XFCE_ICON_CATEGORY_STOCK 		(XFCE_N_BUILTIN_ICON_CATEGORIES + 1) //not used yet
 #define XFCE_ICON_CATEGORY_EXTERN		(XFCE_N_BUILTIN_ICON_CATEGORIES + 2) //no this isn't nice
-//can't you add these 2 things in xfce?? 
-//Please also note than the file icon.h in the panel directory has his
-//own declaration, wich is a bit confusing. (Moreover, they are not sync 
-//with these from xfce_icontheme.h)
-
-// It would be great to define this somewhere .I don't think it is the case
-// just send me a mail if i'm wrong  :-)
-static char *icons_categories_names[XFCE_N_BUILTIN_ICON_CATEGORIES+2] = 
-	{"Unknown", "Editor", "Filemanager", "Utilities", "Games", "Help", "Multimedia", "Internet", "Graphics", \
-	 "Printer", "Productivity", "Sound", "Terminal", "Development", "Settings", "System", "Wine", "Stock", "Extern"};
-
 
 #define DEFAULT_ICON_THEME		(xfce_icon_theme_get_for_screen(NULL))
-#define UNREF(x)							if((x)) {g_object_unref((x));}
+#define UNREF(x)				if((x)) {g_object_unref((x));}
+
+
+static char *icons_categories_names[XFCE_N_BUILTIN_ICON_CATEGORIES+2] = 
+	{"Unknown", "Editor", "Filemanager", "Utilities", "Games", "Help", "Multimedia", \
+	"Internet", "Graphics", "Printer", "Productivity", "Sound", "Terminal", \
+	"Development", "Settings", "System", "Wine", "Stock", "Extern"};
 
 
 
 typedef struct
 {  
 	GList *launchers;
-	GList *callback_data;
 	GtkWidget *table;
 	XfcePanelPlugin *plugin;	
 	gint icon_size;
@@ -97,6 +91,7 @@ typedef struct
 	gchar *command;
 	gchar *icon_name;
 	gint icon_id;
+	t_quicklauncher *quicklauncher;
 	gulong command_ids[4];  
 }
 t_launcher;
@@ -106,7 +101,8 @@ t_launcher;
 GdkPixbuf *
 _create_pixbuf(gint id, const gchar* name, gint size);
 
-t_launcher* launcher_new (const gchar *command, gint icon_id, const gchar *icon_name, gint icon_size);
+t_launcher* launcher_new (const gchar *command, gint icon_id, 
+						const gchar *icon_name, t_quicklauncher *quicklauncher);
 
 void launcher_free (t_launcher *launcher);
 

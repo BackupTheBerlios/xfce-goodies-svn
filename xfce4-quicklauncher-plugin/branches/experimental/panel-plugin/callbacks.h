@@ -23,9 +23,7 @@
 //extern GtkWidget  *_icon_window;
 
 t_qck_launcher_opt_dlg* create_qck_launcher_dlg();
-
 void qck_launcher_opt_dlg_set_quicklauncher(t_quicklauncher *launcher);
-
-void free_qck_launcher_dlg(GtkButton *button, gpointer user_data);
+void free_qck_launcher_dlg(GtkDialog *dialog, gint arg1, gpointer user_data);
 
 #endif
