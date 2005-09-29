@@ -18,12 +18,7 @@ rpm: dist
 	@rm -f $(PACKAGE)-$(VERSION).tar.gz
 	
 EXTRA_DIST =	\
-	AUTHORS	\
-	COPYING	\
 	ChangeLog \
-	INSTALL	\
-	NEWS	\
-	README	\
 	TODO	\
 	config.rpath \
 	mkinstalldirs

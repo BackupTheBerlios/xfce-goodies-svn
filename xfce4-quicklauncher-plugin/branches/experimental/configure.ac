@@ -4,13 +4,16 @@ dnl	quicklauncher plugin
 dnl	2005 Masse Nicolas (masse_nicolas@yahoo.fr)
 dnl
 
-AC_INIT(panel-plugin/main.c)
+dnl version info
+m4_define([xfce4_quicklauncher_version],[1.9.0])
+
+dnl init autoconf
+AC_INIT([xfce4-quicklauncher-plugin], [xfce4_quicklauncher_version()], [masse_nicolas@yahoo.fr])
 AC_CONFIG_SRCDIR([configure])
 
-AC_CONFIG_HEADER(config.h)
-
+dnl init automake
 AM_INIT_AUTOMAKE([xfce4-quicklauncher-plugin], [1.9.0])
-
+AM_CONFIG_HEADER([config.h])
 AM_MAINTAINER_MODE
 
 dnl Check for UNIX variants
@@ -19,9 +22,13 @@ AC_ISC_POSIX
 AC_MINIX
 AM_CONDITIONAL([HAVE_CYGWIN], [test "`uname | grep \"CYGWIN\"`" != ""])
 
+dnl disable static lib
+AC_DISABLE_STATIC
+
 dnl Check for basic programs
 AC_PROG_CC
 AC_PROG_INSTALL
+AC_PROG_INTLTOOL()
 AC_PROG_LIBTOOL
 
 dnl configure the panel plugin
@@ -31,7 +38,7 @@ dnl Check for debugging support
 XDT_FEATURE_DEBUG()
 
 dnl For internationalisation
-BM_I18N([xfce4-quicklauncher-plugin], [fr])
+XDT_I18N([xfce4-quicklauncher-plugin], [fr])
 
 AC_OUTPUT([  
 panel-plugin/Makefile
