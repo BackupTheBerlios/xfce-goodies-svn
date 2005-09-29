@@ -19,7 +19,8 @@
 	#define	file_chooser_get_current_folder	gtk_file_chooser_get_current_folder
 	#define	file_chooser_set_preview_widget	gtk_file_chooser_set_preview_widget
 	#define	file_chooser_get_preview_widget	gtk_file_chooser_get_preview_widget
-	#define	file_chooser_set_preview_callback	gtk_file_chooser_set_preview_callback
+	#define	file_chooser_set_preview_callback(widget, func,data) \
+	g_signal_connect(widget, "update-preview", G_CALLBACK(func), data);
 	#define	file_chooser_set_preview_widget_active	gtk_file_chooser_set_preview_widget_active
 	#define	file_chooser_get_preview_widget_active	gtk_file_chooser_get_preview_widget_active
 	#define	file_chooser_set_use_preview_label	gtk_file_chooser_set_use_preview_label
