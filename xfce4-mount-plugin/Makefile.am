@@ -1,6 +1,7 @@
 @SET_MAKE@
 
 SUBDIRS = panel-plugin \
+	 icons 		\
           po
 
 distclean-local:

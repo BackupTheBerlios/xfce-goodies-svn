@@ -1,14 +1,14 @@
 Summary: 	Mount plugin for the Xfce panel
 Name: 		xfce4-mount-plugin
-Version: 	0.3.2
+Version: 	0.4.1
 Release: 	1
 License:	GPL
 URL: 		http://xfce-goodies.berlios.de/
 Source0: 	%{name}-%{version}.tar.gz
 Group: 		User Interface/Desktops
 BuildRoot: 	%{_tmppath}/%{name}-root
-Requires:	xfce4-panel >= 4.0.0
-BuildRequires:	xfce4-panel >= 4.0.0
+Requires:	xfce4-panel >= @XFCE4_PANEL_REQUIRED_VERSION@
+BuildRequires:	xfce4-panel >= @XFCE4_PANEL_REQUIRED_VERSION@
 
 %description
 This plugin allows to mount/unmount file systems.

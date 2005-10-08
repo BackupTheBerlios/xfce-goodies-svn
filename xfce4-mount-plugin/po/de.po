@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xfce4-mount-plugin 0.3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-09-17 23:01+0200\n"
+"POT-Creation-Date: 2005-10-08 15:42+0200\n"
 "PO-Revision-Date: 2005-09-17 22:24+0200\n"
 "Last-Translator: Fabian Nowak <timystery@arcor.de>\n"
 "Language-Team: de <LL@li.org>\n"
@@ -14,97 +14,120 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: panel-plugin/devices.c:44
+#: ../panel-plugin/devices.c:50
 #, c-format
 msgid "%.1f B"
 msgstr "%.1f B"
 
-#: panel-plugin/devices.c:45
+#: ../panel-plugin/devices.c:51
 #, c-format
 msgid "%.1f KB"
 msgstr "%.1f KB"
 
-#: panel-plugin/devices.c:46
+#: ../panel-plugin/devices.c:52
 #, c-format
 msgid "%.1f MB"
 msgstr "%.1f MBytes"
 
-#: panel-plugin/devices.c:47
+#: ../panel-plugin/devices.c:53
 #, c-format
 msgid "%.1f GB"
 msgstr "%.1f GB"
 
-#: panel-plugin/devices.c:57
+#: ../panel-plugin/devices.c:63
 #, c-format
 msgid "size : %g\n"
 msgstr "Größe: %g\n"
 
-#: panel-plugin/devices.c:58
+#: ../panel-plugin/devices.c:64
 #, c-format
 msgid "used size : %g\n"
 msgstr "Verwendeter Platz: %g\n"
 
-#: panel-plugin/devices.c:59
+#: ../panel-plugin/devices.c:65
 #, c-format
 msgid "available size : %g\n"
 msgstr "Verfügbarer Platz: %g\n"
 
-#: panel-plugin/devices.c:60
+#: ../panel-plugin/devices.c:66
 #, c-format
 msgid "percentage used: %d\n"
 msgstr "Verwendeter Anteil: %d\n"
 
-#: panel-plugin/devices.c:61
+#: ../panel-plugin/devices.c:67
 #, c-format
 msgid "file system type : %s\n"
 msgstr "Dateisystemtyp: %s\n"
 
-#: panel-plugin/devices.c:62
+#: ../panel-plugin/devices.c:68
 #, c-format
 msgid "actual mount point : %s\n"
-msgstr "Eigentlicher Einhänepunkt: %s\n"
+msgstr "Eigentlicher Einhängepunkt: %s\n"
 
-#: panel-plugin/devices.c:137
+#: ../panel-plugin/devices.c:143
 #, c-format
 msgid "disk : %s\n"
 msgstr "Platte: %s\n"
 
-#: panel-plugin/devices.c:138
+#: ../panel-plugin/devices.c:144
 #, c-format
 msgid "mount point : %s\n"
 msgstr "Einhängepunkt: %s\n"
 
-#: panel-plugin/devices.c:141
+#: ../panel-plugin/devices.c:147
 #, c-format
 msgid "not mounted\n"
 msgstr "nicht eingehängt\n"
 
+#: ../panel-plugin/devices.c:201 ../panel-plugin/devices.c:237
+msgid "Mount Plugin: Error executing command."
+msgstr "Mount-Plugin: Kann den Befehl nicht ausführen."
+
+#: ../panel-plugin/mount-plugin.c:51
+msgid "Mount Plugin"
+msgstr "Plugin zum Einhängen von Geräten"
+
 #. remove mount info
-#: panel-plugin/mount-plugin.c:155
+#: ../panel-plugin/mount-plugin.c:192
 msgid "<span foreground=\"#FF0000\">not mounted</span>"
 msgstr "<span foreground=\"#FF0000\">nicht eingehängt</span>"
 
-#: panel-plugin/mount-plugin.c:322
+#. add_tooltip (GTK_WIDGET(mounter->button), _("devices"));
+#: ../panel-plugin/mount-plugin.c:380
 msgid "devices"
 msgstr "Geräte"
 
+#: ../panel-plugin/mount-plugin.c:452
+msgid "Edit Properties"
+msgstr "Eigenschaften ändern"
+
+#. end extensions for panel 4.4
+#: ../panel-plugin/mount-plugin.c:459
+#: ../panel-plugin/xfce4-mount-plugin.desktop.in.in.h:1
+msgid "Mount devices"
+msgstr "Geräte einhängen"
+
 #. entries
-#: panel-plugin/mount-plugin.c:411
+#: ../panel-plugin/mount-plugin.c:483
 msgid "command to execute after mounting a device"
 msgstr "Kommando, das nach dem Einhängen eines Gerätes ausgeführt werden soll"
 
-#: panel-plugin/mount-plugin.c:417
+#: ../panel-plugin/mount-plugin.c:489
 msgid "(mount directory is added to the command)"
 msgstr "(das verwendete Verzeichnis wird zum Befehl hinzugefügt)"
 
-#: panel-plugin/mount-plugin.c:423
+#: ../panel-plugin/mount-plugin.c:495
 msgid "eg. konqueror"
 msgstr "z.B. konqueror"
 
-#: panel-plugin/mount-plugin.c:429
+#: ../panel-plugin/mount-plugin.c:501
 msgid "eg. xffm"
 msgstr "z.B. xffm"
 
-#: panel-plugin/mount-plugin.c:465
-msgid "mount/display devices"
-msgstr "Geräte einhängen/anzeigen"
+#: ../panel-plugin/xfce4-mount-plugin.desktop.in.in.h:2
+msgid ""
+"Show all mountable devices. Supports mounting/unmounting and opening "
+"filemanager."
+msgstr ""
+" Zeige alle einhängbaren Geräte an. Ach Ein-/Aushängen ist möglich."
+

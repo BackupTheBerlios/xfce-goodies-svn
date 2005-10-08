@@ -26,24 +26,36 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "devices.h"
 #include <gtk/gtk.h>
 
+#include <stdlib.h>
 
-/* for debugging */
-#include <libxfce4util/debug.h>
+
+/* for debugging, in 4.4 no more needed */
+/* #include <libxfce4util/debug.h> */
 
 /* for internationalization, by F. Nowak */
-#include <libxfce4util/i18n.h>
-/* end i18n extension */
+#include <libxfce4util/libxfce4util.h>
 
-#include <panel/xfce.h>
-#include <panel/plugins.h>
 #include <libxfcegui4/libxfcegui4.h>
+
+/* for panel 4.4 */
+#include <libxfce4panel/xfce-panel-plugin.h>
+
+/* no more needed in 4.4 panel */
+/* #include <panel/xfce.h>
+#include <panel/plugins.h> */
+
+static GtkTooltips *tooltips = NULL;
+
 #include "icons.h"
+
+#define APP_NAME N_("Mount Plugin")
 
 #define BORDER 6
 
 /*--------- graphical interface ----------*/
 typedef struct 
 {
+   XfcePanelPlugin *plugin;
 	char * on_mount_cmd ;
 	GtkWidget * button ;
 	GtkWidget * menu ;
@@ -61,9 +73,21 @@ typedef struct
 } t_disk_display ;
 /*------------------------------------------------*/
 
+/*------------- settings dialog --------------------------*/
+typedef struct
+{
+	t_mounter * mt ;
+	GtkWidget * dialog ;
+	/* options */
+	GtkWidget * string_cmd ;	
+}
+t_mounter_dialog ;
+/*------------------------------------------------------*/
+
 
 /*---------------- on_activate_disk_display ---------------*/
-static void on_activate_disk_display(GtkWidget * widget,t_disk * disk)
+static void 
+on_activate_disk_display (GtkWidget * widget,t_disk * disk)
 {
 	t_mounter * mt ;
 	if (disk != NULL)
@@ -82,24 +106,35 @@ static void on_activate_disk_display(GtkWidget * widget,t_disk * disk)
 	}
 }
 
+static void
+mounter_set_size (XfcePanelPlugin *plugin, int size, t_mounter *mt)
+{
+   /* schrink the gtk button's image to new size - */
+   gtk_widget_set_size_request (GTK_WIDGET(mt->button), size - 4, size - 4);
+ 
+}
+
 /*---------------------------------------------------------*/
 
 /*-------------------- disk_display_new -----------------*/
 /*create a new t_disk_display from t_disk infos */
-static t_disk_display * disk_display_new(t_disk * disk, t_mounter * mounter)
+static t_disk_display* 
+disk_display_new (t_disk * disk, t_mounter * mounter)
 {
 	if (disk != NULL) 
 	{
 		t_disk_display * dd ;
-		dd = g_new0(t_disk_display,1) ;
+		dd = g_new0 (t_disk_display, 1) ;
 		dd->menu_item = gtk_menu_item_new();
-		g_signal_connect(G_OBJECT(dd->menu_item),"activate",G_CALLBACK(on_activate_disk_display),disk);
-		g_object_set_data(G_OBJECT(dd->menu_item),"mounter",(gpointer)mounter);
+		g_signal_connect (G_OBJECT(dd->menu_item), "activate",
+		                  G_CALLBACK(on_activate_disk_display), disk);
+		g_object_set_data (G_OBJECT(dd->menu_item), "mounter", (gpointer)mounter);
 		
-		dd->hbox = gtk_hbox_new(FALSE,10);
-		gtk_container_add(GTK_CONTAINER(dd->menu_item), dd->hbox);
+		dd->hbox = gtk_hbox_new (FALSE, 10);
+		gtk_container_add (GTK_CONTAINER(dd->menu_item), dd->hbox);
 		
-		dd->label_disk = gtk_label_new(g_strconcat(disk->device," -> ",disk->mount_point,NULL));
+		dd->label_disk = gtk_label_new (g_strconcat(disk->device, " -> ",
+		                                disk->mount_point, NULL));
 		/*change to uniform label size*/
 		gtk_label_set_width_chars(GTK_LABEL(dd->label_disk),28);
 		gtk_label_set_justify(GTK_LABEL(dd->label_disk),GTK_JUSTIFY_LEFT);
@@ -122,7 +157,9 @@ static t_disk_display * disk_display_new(t_disk * disk, t_mounter * mounter)
 
 
 /*-------------------- disk_display_refresh -----------------*/
-static void disk_display_refresh(t_disk_display * disk_display, t_mount_info * mount_info)
+static void 
+disk_display_refresh(t_disk_display * disk_display, 
+                                 t_mount_info * mount_info)
 {
 	TRACE("enters disk_display_refresh");
 	if (disk_display != NULL)
@@ -162,29 +199,35 @@ static void disk_display_refresh(t_disk_display * disk_display, t_mount_info * m
 /*----------------------------------------------*/
 
 /*--------------- mounter_data_free -----------------*/
-static void mounter_data_free(t_mounter * mt)
+static void 
+mounter_data_free (t_mounter * mt)
 {
 	TRACE ("enters mounter_data_free");
-	disks_free(&(mt->pdisks));
-	gtk_widget_destroy(GTK_WIDGET(mt->menu));
-	mt->menu = NULL ;
+	
+	disks_free (&(mt->pdisks));
+	gtk_widget_destroy (GTK_WIDGET(mt->menu));
+	mt->menu = NULL;
+	
 	TRACE ("leaves mounter_data_free");
 }
 /*----------------------------------------------*/
 
 /*--------------- mounter_free -----------------*/
-static void mounter_free(Control * control)
+static void 
+mounter_free (XfcePanelPlugin *plugin, t_mounter *mounter)
 {
 	TRACE ("enters mounter_free");
-	t_mounter * mt = (t_mounter*) control->data ;
-	mounter_data_free(mt);
-	g_free(mt->on_mount_cmd);
-	g_free(mt);
+	
+	mounter_data_free (mounter);
+	
+	g_free (mounter);
+	
 	TRACE ("leaves mounter_free");
 }
 /*----------------------------------------------*/
 /*---------------- mounter_data_new --------------------------*/
-static void mounter_data_new(t_mounter * mt)
+static void 
+mounter_data_new (t_mounter * mt)
 {
 	int i ;
 	t_disk * disk ;
@@ -215,7 +258,8 @@ static void mounter_data_new(t_mounter * mt)
 /*------------------------------------------------------*/
 
 /*---------------------- mounter_refresh ---------------*/
-static void mounter_refresh(t_mounter * mt)
+static void 
+mounter_refresh (t_mounter * mt)
 {
 	TRACE ("enters mounter_refresh");
 	
@@ -228,137 +272,139 @@ static void mounter_refresh(t_mounter * mt)
 /*---------------------------------------------------------*/
 
 /* --------------plugin event --------------------------------*/
-static gboolean on_button_press(GtkWidget * widget , GdkEventButton * event,t_mounter * mounter)
+static gboolean 
+on_button_press (GtkWidget *widget, GdkEventButton *event,
+                                 t_mounter *mounter)
 {
-	TRACE("enters on_button_pressed");
+	TRACE ("enters on_button_pressed");
 	if (mounter != NULL && event->button == 1)
 	{
 		
-		mounter_refresh(mounter); // refreshs infos regarding mounts data
-		gtk_menu_popup(GTK_MENU(mounter->menu),NULL,NULL,NULL,NULL,0,event->time);
+		mounter_refresh (mounter); // refreshs infos regarding mounts data
+		gtk_menu_popup (GTK_MENU(mounter->menu),NULL,NULL,NULL,NULL,0,event->time);
 		return TRUE;
 	}
-	TRACE("leaves on_button_pressed");
+	TRACE ("leaves on_button_pressed");
 	return FALSE ;
 }
 /*------------------------------------------------------*/
 
 /*---------------------- mounter_read_config --------------------*/
 static void
-mounter_read_config (Control * control, xmlNodePtr node)
+mounter_read_config (XfcePanelPlugin *plugin, t_mounter *mt)
 {
-	DBG("enter read_config");
-	xmlChar *value;
-	t_mounter *mt;
+	DBG ("enter read_config");
 	
-/*
-	if (!node || !node->children)
-	{	
-		DBG("empty node !");	
-		return;
-	}
-*/	
-	mt = (t_mounter *) control->data;
-	
-	/* on_mount_cmd */
-	
-	value = xmlGetProp (node, (const xmlChar *) "on_mount_cmd");
-	if (value)
-	{
-		g_free (mt->on_mount_cmd);
-		DBG("apply on_mount_cmd = %s",value);
-		mt->on_mount_cmd = (char *) value;
-	}
-	DBG("leaves read_config");
+	 const char *value;
+    char *file;
+    XfceRc *rc;
+    
+    if ( !( file = xfce_panel_plugin_lookup_rc_file (plugin) ) )
+        return;
+    
+    rc = xfce_rc_simple_open (file, TRUE);
+    g_free (file);
+    
+    if (value = xfce_rc_read_entry(rc, "on_mount_cmd", NULL) /* && *value */ ) {
+      mt->on_mount_cmd = g_strdup (value);
+    }
+    
+    xfce_rc_close (rc);
+    
+    /* setup_mounter (mt); */
 
-
+	 DBG ("leaves read_config");
 }
 /*-------------------------------------------------------*/
 
 /*------------------- mounter_write_config -----------------------*/
 static void
-mounter_write_config (Control * control, xmlNodePtr parent)
+mounter_write_config (XfcePanelPlugin *plugin, t_mounter *mt)
 {
 	DBG("enter write_config");
-	t_mounter * mt;
-	mt = (t_mounter *) control->data;
-	DBG("save on_mount_cmd : %s", mt->on_mount_cmd);
-	xmlSetProp (parent, "on_mount_cmd", mt->on_mount_cmd);
-	DBG("leaves write config");
-}
-/*----------------------------------------------------------*/
-
-/*--------------- mounter_attach_callback -----*/
-void mounter_attach_callback(Control * control, const char *signal, GCallback callback, gpointer data)
-{
-	TRACE ("enters mounter_attach_callback");
-	t_mounter * mounter = (t_mounter*)control->data ;
 	
-	g_signal_connect(G_OBJECT(mounter->button),signal,callback,data);
-	TRACE ("leaves mounter_attach_callback");
+	 XfceRc *rc;
+    char *file;
+    char value[20];
 
+    if (!(file = xfce_panel_plugin_save_location (plugin, TRUE)))
+        return;
+    
+    rc = xfce_rc_simple_open (file, FALSE);
+    g_free (file);
+
+    if (!rc)
+        return;
+	
+	DBG ("save on_mount_cmd : %s", mt->on_mount_cmd);
+
+   xfce_rc_write_entry (rc, "on_mount_cmd", 
+         mt->on_mount_cmd ? mt->on_mount_cmd : "");
+         
+   xfce_rc_close (rc);
+
+	DBG ("leaves write config");
 }
 /*--------------------------------------------*/
 
 /*------------------- create_mounter -------------------*/
-static gboolean create_mounter_control (Control * control)
+static t_mounter *
+create_mounter_control (XfcePanelPlugin *plugin)
 {
 	TRACE ("enters create_mounter_control");
 
-	t_mounter * mounter ;
+	t_mounter *mounter;
 	
 	mounter = g_new0(t_mounter,1);
 
 	/* default mount command */
 	mounter->on_mount_cmd = NULL;	
+	
+	mounter->plugin = plugin;
+	
+	if (!tooltips) 
+    {
+        tooltips = gtk_tooltips_new();
+    }
 
 	/*plugin button */
 	
 	GdkPixbuf * pb ;
-	pb = gdk_pixbuf_new_from_inline (sizeof(icon_plugin), icon_plugin, FALSE, NULL);
+	pb = gdk_pixbuf_new_from_inline (sizeof(icon_plugin), icon_plugin, FALSE, 
+	                                 NULL);
 	mounter->button = xfce_iconbutton_new_from_pixbuf (pb);
-	gtk_button_set_relief(GTK_BUTTON(mounter->button),GTK_RELIEF_NONE);
+	gtk_button_set_relief (GTK_BUTTON(mounter->button), GTK_RELIEF_NONE);
 
-	add_tooltip(GTK_WIDGET(mounter->button),_("devices"));
+	/* add_tooltip (GTK_WIDGET(mounter->button), _("devices")); */
+
+   gtk_tooltips_set_tip (tooltips, GTK_WIDGET(mounter->button), _("devices"), 
+                         NULL);
 
 	/*-------------------------------------------------------------*/
-	g_signal_connect(G_OBJECT(mounter->button),"button_press_event",G_CALLBACK(on_button_press),mounter);
+	g_signal_connect (G_OBJECT(mounter->button), "button_press_event",
+	                  G_CALLBACK(on_button_press), mounter);
 	gtk_widget_show(mounter->button);
 	
 	/*get the data*/	
-	mounter_data_new(mounter);
-
-	gtk_container_add(GTK_CONTAINER(control->base), mounter->button);
-	control->data = mounter ;
-	TRACE ("leaves create_mounter_control");
-	return TRUE;
+	mounter_data_new (mounter);
 	
+	TRACE ("leaves create_mounter_control");
+	return mounter;
 }
 
-/*--------------------------------------------------------*/
-
-/*------------- settings dialog --------------------------*/
-typedef struct
-{
-	t_mounter * mt ;
-	GtkWidget * dialog ;
-	/* options */
-	GtkWidget * string_cmd ;	
-}
-t_mounter_dialog ;
-/*------------------------------------------------------*/
 
 /*---------- free_mounter_dialog ---------------------*/
-static void free_mounter_dialog(GtkWidget * widget, t_mounter_dialog * md)
+static void 
+free_mounter_dialog(GtkWidget * widget, t_mounter_dialog * md)
 {
 	g_free(md);
 }
 /*----------------------------------------------------*/
 
 /*---------------- mounter_apply_options ---------------*/
-static void mounter_apply_options (t_mounter_dialog * md)
-{
-	const char * tmp;
+static void
+mounter_apply_options (t_mounter_dialog *md) {
+   const char * tmp;
 	t_mounter * mt = md->mt;
 
 	tmp = gtk_entry_get_text(GTK_ENTRY(md->string_cmd));
@@ -367,12 +413,23 @@ static void mounter_apply_options (t_mounter_dialog * md)
 	if (tmp && *tmp)
 		mt->on_mount_cmd = g_strdup(tmp);
 	else
-		mt->on_mount_cmd = NULL ;
+		mt->on_mount_cmd = NULL;
+}
+
+static void 
+on_optionsDialog_response (GtkWidget *dlg, int response, t_mounter_dialog * md)
+{
+	mounter_apply_options (md);
+
+   gtk_widget_destroy (md->dialog);
+   xfce_panel_plugin_unblock_menu (md->mt->plugin);
+   mounter_write_config (md->mt->plugin, md->mt);
 }
 /*------------------------------------------------------*/
 
 /*-------------- entry_lost_focus -----------------------*/
-/* This shows a way to update plugin settings when the user leaves a text entry, by connecting to the "focus-out" event on the entry.*/
+/* This shows a way to update plugin settings when the user leaves a text entry,
+by connecting to the "focus-out" event on the entry.*/
 
 static gboolean
 entry_lost_focus(t_mounter_dialog * md)
@@ -385,26 +442,41 @@ entry_lost_focus(t_mounter_dialog * md)
 /*----------------------------------------------------*/
 
 /*----------------- mounter_create_options -------------*/
-static void mounter_create_options (Control * control, GtkContainer * container, GtkWidget * done)
+static void 
+mounter_create_options (XfcePanelPlugin *plugin, t_mounter *mt)
 {
+
+   xfce_panel_plugin_block_menu (plugin);
+
+   GtkWidget *dlg, *header;
+   dlg = gtk_dialog_new_with_buttons (_("Edit Properties"), 
+                GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (plugin))),
+                GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_NO_SEPARATOR,
+                GTK_STOCK_CLOSE, GTK_RESPONSE_OK, NULL);
+                
+   gtk_container_set_border_width (GTK_CONTAINER (dlg), 2);
+   
+   header = xfce_create_header (NULL, _("Mount devices"));
+   gtk_widget_set_size_request (GTK_BIN (header)->child, -1, 32);
+   gtk_container_set_border_width (GTK_CONTAINER (header), BORDER - 2);
+   gtk_widget_show (header);
+   gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dlg)->vbox), header, FALSE, TRUE, 0);
+
 	GtkWidget *vbox, *label, *label2, *label3, *label4;
 	GtkSizeGroup *sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	t_mounter_dialog * md;
-	t_mounter * mt;
-	
-	xfce_textdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR, "UTF-8");
 	
 	md = g_new0(t_mounter_dialog, 1);
 	
-	md->mt = mt = (t_mounter *) control->data;
+	md->mt = mt; /* = (t_mounter *) control->data; */
 	
-	md->dialog = gtk_widget_get_toplevel (done);
+	md->dialog = dlg; /* gtk_widget_get_toplevel (done); */
 	
 	/* don't set a border width, the dialog will take care of that */
 	
 	vbox = gtk_vbox_new (FALSE, BORDER);
 	gtk_widget_show (vbox);
-	
+	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dlg)->vbox), GTK_WIDGET (vbox), TRUE, TRUE, 0);
 	
 	/* entries */
 	
@@ -440,72 +512,50 @@ static void mounter_create_options (Control * control, GtkContainer * container,
 	
 	g_signal_connect_swapped (md->string_cmd, "focus-out-event",
 			G_CALLBACK(entry_lost_focus), md);
+				
+	g_signal_connect (dlg, "response",
+            G_CALLBACK(on_optionsDialog_response), md);
 	
-	/* update settings when dialog is closed */
-	
-	g_signal_connect_swapped (done, "clicked",
-				G_CALLBACK (mounter_apply_options), md);
-	
-	g_signal_connect_swapped (md->dialog, "destroy-event",
-				G_CALLBACK (free_mounter_dialog), md);
-	
-	/* add widgets to dialog */
-	
-	gtk_container_add (container, vbox);
+	gtk_widget_show (dlg);
 }
 /*----------------------------------------------------*/
 
 
-G_MODULE_EXPORT void
-xfce_control_class_init (ControlClass * cc)
-{
-    TRACE ("enters xfce_control_class_init");
+/* extensions for panel 4.4 */
+
+static void 
+mount_construct (XfcePanelPlugin *plugin)
+{   
     xfce_textdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR, "UTF-8");
-    cc->name = "mount-plugin";
-    cc->caption = _("mount/display devices");
-    cc->create_control = (CreateControlFunc) create_mounter_control;
-    cc->attach_callback = mounter_attach_callback;
-    cc->free = mounter_free;
 
-    cc->read_config = mounter_read_config;
-    cc->write_config = mounter_write_config;
-    cc->create_options = mounter_create_options;
-    cc->set_theme = NULL;
+    t_mounter *mounter;
 
-    /* cc->set_size = NULL;
-     * cc->set_orientation = NULL;
-     * cc->about = NULL;
-     */
+    mounter = create_mounter_control (plugin);
 
-    /* Additional API calls */
-
-    /* use if there should be only one instance per screen */
-    control_class_set_unique (cc, TRUE);
-
-    /* use if the gmodule should not be unloaded *
-     * (usually because of library issues)       */
-    /*control_class_set_unloadable (cc, FALSE);*/
-
-    /* use to set an icon to represent the module        *
-     * (you could even update it when the theme changes) */
-     /*
-    if (1)
-    {
-	GdkPixbuf *pixbuf;
-
-	pixbuf = xfce_icon_theme_load (xfce_icon_theme_get_for_screen (NULL),
-                                       "sampleicon.png", 48);
-
-        if (pixbuf)
-        {
-            control_class_set_icon (cc, pixbuf);
-            g_object_unref (pixbuf);
-        }
-    }
-    */
-    TRACE ("leaves xfce_control_class_init");
+    mounter_read_config (plugin, mounter);
     
+    g_signal_connect (plugin, "free-data", G_CALLBACK (mounter_free), mounter);
+    
+    g_signal_connect (plugin, "save", G_CALLBACK (mounter_write_config), mounter);
+    
+    xfce_panel_plugin_menu_show_configure (plugin);
+    g_signal_connect (plugin, "configure-plugin", 
+                      G_CALLBACK (mounter_create_options), mounter);
+    
+    g_signal_connect (plugin, "size-changed", G_CALLBACK (mounter_set_size), 
+                         mounter);
+    
+    /* g_signal_connect (plugin, "orientation-changed", 
+                      G_CALLBACK (monitor_set_orientation), mounter); */
+    
+    gtk_container_add (GTK_CONTAINER(plugin), mounter->button);
+
+    xfce_panel_plugin_add_action_widget (plugin, mounter->button);
+	
 }
 
-/* Macro that checks panel API version */
-XFCE_PLUGIN_CHECK_INIT
+XFCE_PANEL_PLUGIN_REGISTER_EXTERNAL (mount_construct);
+
+
+/* end extensions for panel 4.4 */
+

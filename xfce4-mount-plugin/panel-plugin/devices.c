@@ -27,10 +27,16 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "devices.h"
 
 /* for internationalization, by F. Nowak */
-#include <libxfce4util/i18n.h>
+#include <libxfce4util/libxfce4util.h>
 /* end i18n extension */
 
-#include <panel/xfce.h>
+/* no more needed in panel 4.4
+#include <panel/xfce.h> */
+
+/* but as replacement: */
+#include <libxfce4panel/xfce-panel-plugin.h>
+
+#include <libxfcegui4/xfce-exec.h>
 
 #define MTAB "/etc/mtab"
 #define KB 1024
@@ -189,7 +195,10 @@ void disk_mount(t_disk * pdisk, char * on_mount_cmd)
 		else
 			cmd = g_strconcat(cmd," ' ",NULL);
 		DBG("cmd :%s",cmd);
-		exec_cmd_silent(cmd,FALSE,FALSE);
+		GError *error = NULL;
+		gboolean val = xfce_exec (cmd, FALSE, FALSE, &error);
+		if  (!val)
+		   xfce_err(_("Mount Plugin: Error executing command."));
 		g_free(cmd);
 	}
 }
@@ -222,7 +231,10 @@ void disk_umount(t_disk * pdisk )
 			return exit_status ;
 		}
 		*/
-		exec_cmd_silent(cmd,FALSE,FALSE);
+		GError *error = NULL;
+		gboolean val = xfce_exec (cmd, FALSE, FALSE, &error);
+		if  (!val)
+		   xfce_err(_("Mount Plugin: Error executing command."));
 		g_free(cmd);
 	}
 	//return -1 ;
