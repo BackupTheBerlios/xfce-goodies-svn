@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xfce4-sensors-plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-09-17 23:01+0200\n"
+"POT-Creation-Date: 2005-10-15 01:21+0200\n"
 "PO-Revision-Date: 2005-01-19 16:24+0900\n"
 "Last-Translator: ByungHyun Choi<byunghyun.choi@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,100 +16,137 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: panel-plugin/devices.c:44
+#: ../panel-plugin/devices.c:45
 #, c-format
 msgid "%.1f B"
 msgstr ""
 
-#: panel-plugin/devices.c:45
+#: ../panel-plugin/devices.c:46
 #, c-format
 msgid "%.1f KB"
 msgstr ""
 
-#: panel-plugin/devices.c:46
+#: ../panel-plugin/devices.c:47
 #, c-format
 msgid "%.1f MB"
 msgstr ""
 
-#: panel-plugin/devices.c:47
+#: ../panel-plugin/devices.c:48
 #, c-format
 msgid "%.1f GB"
 msgstr ""
 
-#: panel-plugin/devices.c:57
+#: ../panel-plugin/devices.c:58
 #, c-format
 msgid "size : %g\n"
 msgstr ""
 
-#: panel-plugin/devices.c:58
+#: ../panel-plugin/devices.c:59
 #, c-format
 msgid "used size : %g\n"
 msgstr ""
 
-#: panel-plugin/devices.c:59
+#: ../panel-plugin/devices.c:60
 #, c-format
 msgid "available size : %g\n"
 msgstr ""
 
-#: panel-plugin/devices.c:60
+#: ../panel-plugin/devices.c:61
 #, c-format
 msgid "percentage used: %d\n"
 msgstr ""
 
-#: panel-plugin/devices.c:61
+#: ../panel-plugin/devices.c:62
 #, c-format
 msgid "file system type : %s\n"
 msgstr ""
 
-#: panel-plugin/devices.c:62
+#: ../panel-plugin/devices.c:63
 #, c-format
 msgid "actual mount point : %s\n"
 msgstr ""
 
-#: panel-plugin/devices.c:137
+#: ../panel-plugin/devices.c:138
 #, c-format
 msgid "disk : %s\n"
 msgstr ""
 
-#: panel-plugin/devices.c:138
+#: ../panel-plugin/devices.c:139
 #, c-format
 msgid "mount point : %s\n"
 msgstr ""
 
-#: panel-plugin/devices.c:141
+#: ../panel-plugin/devices.c:142
 #, c-format
 msgid "not mounted\n"
 msgstr ""
 
+#: ../panel-plugin/devices.c:201 ../panel-plugin/devices.c:223
+msgid "Mount Plugin: Error executing command."
+msgstr ""
+
+#: ../panel-plugin/mount-plugin.c:34
+msgid "Mount Plugin"
+msgstr ""
+
 #. remove mount info
-#: panel-plugin/mount-plugin.c:155
+#: ../panel-plugin/mount-plugin.c:184
 #, fuzzy
 msgid "<span foreground=\"#FF0000\">not mounted</span>"
 msgstr "<span foreground=\"#000000\" size=\"%s\"><b>센서</b></span>"
 
-#: panel-plugin/mount-plugin.c:322
+#. add_tooltip (GTK_WIDGET(mounter->button), _("devices"));
+#: ../panel-plugin/mount-plugin.c:399
 msgid "devices"
 msgstr ""
 
-#. entries
-#: panel-plugin/mount-plugin.c:411
-msgid "command to execute after mounting a device"
+#: ../panel-plugin/mount-plugin.c:496
+msgid "Edit Properties"
 msgstr ""
 
-#: panel-plugin/mount-plugin.c:417
-msgid "(mount directory is added to the command)"
+#. end extensions for panel 4.4
+#: ../panel-plugin/mount-plugin.c:503
+#: ../panel-plugin/xfce4-mount-plugin.desktop.in.in.h:1
+msgid "Mount devices"
 msgstr ""
 
-#: panel-plugin/mount-plugin.c:423
-msgid "eg. konqueror"
+#: ../panel-plugin/mount-plugin.c:535
+msgid "Execute after mounting:"
 msgstr ""
 
-#: panel-plugin/mount-plugin.c:429
-msgid "eg. xffm"
+#: ../panel-plugin/mount-plugin.c:542
+msgid ""
+"This command will be executed after mounting the device with the mount point "
+"of the device as argument. \n"
+"If you are unsure what to insert, try \"xffm\" or \"rox\" or \"thunar\"."
 msgstr ""
 
-#: panel-plugin/mount-plugin.c:465
-msgid "mount/display devices"
+#: ../panel-plugin/mount-plugin.c:561
+msgid "Specify own commands"
+msgstr ""
+
+#: ../panel-plugin/mount-plugin.c:571
+msgid ""
+"WARNING: These options are for experts only! If you do not know what they "
+"may be good for, keep your hands off!"
+msgstr ""
+
+#: ../panel-plugin/mount-plugin.c:584
+msgid "Mount command:"
+msgstr ""
+
+#: ../panel-plugin/mount-plugin.c:589
+msgid "Unmount command:"
+msgstr ""
+
+#: ../panel-plugin/mount-plugin.c:611
+msgid "Most users will only want to prepend \"sudo\" to both commands."
+msgstr ""
+
+#: ../panel-plugin/xfce4-mount-plugin.desktop.in.in.h:2
+msgid ""
+"Show all mountable devices. Supports mounting/unmounting and opening "
+"filemanager."
 msgstr ""
 
 #, fuzzy

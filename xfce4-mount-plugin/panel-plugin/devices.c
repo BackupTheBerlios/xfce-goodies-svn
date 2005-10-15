@@ -19,29 +19,24 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <glib.h>
 #include <fstab.h>
+#include <glib.h>
 #include <mntent.h>
-#include <sys/vfs.h>
 #include <stdio.h>
-#include "devices.h"
+#include <sys/vfs.h>
 
-/* for internationalization, by F. Nowak */
-#include <libxfce4util/libxfce4util.h>
-/* end i18n extension */
-
-/* no more needed in panel 4.4
-#include <panel/xfce.h> */
-
-/* but as replacement: */
 #include <libxfce4panel/xfce-panel-plugin.h>
-
+#include <libxfce4util/libxfce4util.h>
 #include <libxfcegui4/xfce-exec.h>
+
+#include "devices.h"
 
 #define MTAB "/etc/mtab"
 #define KB 1024
 #define MB 1048576
 #define GB 1073741824
+
+#define DBG g_printf
 
 /*-------------------- get_size_human_readable --------------------*/
 /* return a string containing a size expressed in KB,MB or GB and the unit it is expressed in */
@@ -72,7 +67,8 @@ void mount_info_print(t_mount_info * mount_info)
 /*-----------------------------------------------*/
 
 /*------------------------- mount_info_new --------------------*/
-t_mount_info * mount_info_new(float size,float used,float avail, unsigned int percent,char * type, char * mounted_on)
+t_mount_info * mount_info_new (float size, float used, float avail, 
+                    unsigned int percent, char * type, char * mounted_on)
 {
 	if ( type != NULL && mounted_on != NULL && size != 0 )
 	{
@@ -136,7 +132,7 @@ void mount_info_free(t_mount_info * * mount_info)
 
 
 /*------- print a t_disk struct using printf -------------*/
-void disk_print(t_disk * pdisk)
+void disk_print (t_disk * pdisk)
 {
 	if (pdisk != NULL)
 	{
@@ -151,7 +147,7 @@ void disk_print(t_disk * pdisk)
 /*----------------------------------------*/
 
 /* create a new t_disk struct */
-t_disk * disk_new( const char * dev, const char * mp)
+t_disk * disk_new (const char * dev, const char * mp)
 {
 	if ( dev != NULL && mp != NULL)
 	{
@@ -183,22 +179,28 @@ void disk_free(t_disk * * pdisk)
 
 /*------------ mount a t_disk ---------------*/
 /* return exit status of the mount command*/
-void disk_mount(t_disk * pdisk, char * on_mount_cmd)
+void disk_mount (t_disk *pdisk, char *on_mount_cmd, char* mount_command)
 {
 	if (pdisk != NULL)
 	{
 		char * cmd ;
 
-		cmd = g_strconcat("bash -c 'mount ",pdisk->mount_point,NULL);
+		cmd = g_strconcat ("bash -c '", mount_command, " ", 
+		                   pdisk->mount_point, NULL);
 		if (on_mount_cmd != NULL)
-			cmd = g_strconcat(cmd," && ",on_mount_cmd," ", pdisk->mount_point, " ' ", NULL);
+			cmd = g_strconcat (cmd, " && ", on_mount_cmd, " ", 
+			                   pdisk->mount_point, " ' ", NULL);
 		else
-			cmd = g_strconcat(cmd," ' ",NULL);
-		DBG("cmd :%s",cmd);
+			cmd = g_strconcat (cmd, " ' ", NULL);
+
+		DBG("cmd :%s \n",cmd);
+		
 		GError *error = NULL;
+		
 		gboolean val = xfce_exec (cmd, FALSE, FALSE, &error);
 		if  (!val)
 		   xfce_err(_("Mount Plugin: Error executing command."));
+		   
 		g_free(cmd);
 	}
 }
@@ -206,38 +208,23 @@ void disk_mount(t_disk * pdisk, char * on_mount_cmd)
 
 /* --------------unmount a t_disk ----------------*/
 /* return exit status of the mount command*/
-void disk_umount(t_disk * pdisk )
+void disk_umount (t_disk *pdisk, char* umount_command )
 {
 	if (pdisk != NULL)
 	{
 		char * cmd ;
-		/*char * standard_output ;
-		char * standard_error ;
-		int exit_status ;
-		GError * error ;
-		gboolean bresult ;
-		*/
+
 		/* changed from pdisk->device to pdisk->mount_point */
-		cmd = g_strconcat("umount ",pdisk->mount_point,NULL);
+		cmd = g_strconcat (umount_command, " ", pdisk->mount_point, NULL);
 		
-		/*bresult = g_spawn_command_line_sync(cmd,&standard_output,&standard_error,&exit_status,&error);
-		if (bresult)
-		{
-			if (exit_status) 
-			{
-				mount_info_free(&(pdisk->mount_info));
-			}
-			
-			return exit_status ;
-		}
-		*/
 		GError *error = NULL;
+		
 		gboolean val = xfce_exec (cmd, FALSE, FALSE, &error);
 		if  (!val)
 		   xfce_err(_("Mount Plugin: Error executing command."));
+		   
 		g_free(cmd);
 	}
-	//return -1 ;
 }
 /*------------------------------------------------*/
 

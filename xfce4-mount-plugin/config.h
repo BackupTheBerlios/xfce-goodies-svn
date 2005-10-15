@@ -107,19 +107,19 @@
 #define PACKAGE_NAME "xfce4-mount-plugin"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "xfce4-mount-plugin 0.4.1"
+#define PACKAGE_STRING "xfce4-mount-plugin 0.4.3"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "xfce4-mount-plugin"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "0.4.1"
+#define PACKAGE_VERSION "0.4.3"
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "0.4.1"
+#define VERSION "0.4.3"
 
 /* Define to 1 if on AIX 3.
    System headers sometimes define this.

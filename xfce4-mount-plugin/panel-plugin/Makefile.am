@@ -35,7 +35,7 @@ EXTRA_DIST = 						      	                     \
 	kcmpartitions.png                                        \
 	$(desktop_in_in_files)
 
-DISTCLEANFILES =							                        \
+DISTCLEANFILES =				                        \
 	$(desktop_DATA) $(desktop_in_files)
 	
 noinst_DATA =							                           \

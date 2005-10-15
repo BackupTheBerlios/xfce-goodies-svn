@@ -7,7 +7,7 @@ dnl 2005 Fabian Nowak <timystery@arcor.de>
 dnl
 dnl for Xfce4-panel 4.3 and higher only!
 
-m4_define([mount_version],[0.4.1])
+m4_define([mount_version],[0.4.3])
 
 AC_INIT([xfce4-mount-plugin], [mount_version()],
 	[timystery@arcor.de])
@@ -71,7 +71,7 @@ AC_OUTPUT([
 Makefile
 xfce4-mount-plugin.spec
 panel-plugin/Makefile
-po/Makefile.in
 icons/Makefile
+po/Makefile.in
 ])
 

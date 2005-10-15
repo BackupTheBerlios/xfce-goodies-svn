@@ -1,8 +1,8 @@
 @SET_MAKE@
 
 SUBDIRS = panel-plugin \
-	 icons 		\
-          po
+          po		\
+	  icons
 
 distclean-local:
 	rm -rf *.cache *~
@@ -19,14 +19,20 @@ rpm: dist
 	rpmbuild -ta $(PACKAGE)-$(VERSION).tar.gz
 	@rm -f $(PACKAGE)-$(VERSION).tar.gz
 
-EXTRA_DIST =								\
+EXTRA_DIST =                     \
 	AUTHORS								\
 	COPYING								\
 	ChangeLog							\
 	INSTALL								\
-	NEWS								\
+	NEWS								   \
 	README								\
-	TODO								\
-	xfce4-mount-plugin.spec
+	TODO								   \
+	xfce4-mount-plugin.spec       \
+	intltool-extract.in				\
+	intltool-merge.in					\
+	intltool-update.in            
 
-localedir = ${prefix}/share/locale
+DISTCLEANFILES =							\
+	intltool-extract						\
+	intltool-merge							\
+	intltool-update

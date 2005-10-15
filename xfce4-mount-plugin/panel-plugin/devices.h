@@ -18,32 +18,30 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef _devices_h_
-#define _devices_h_
+#ifndef _DEVICES_H_
+#define _DEVICES_H_
 #include <glib.h>
 
 
 
 /* struct mount info, additional info when a t_disk is mounted */
-typedef struct
-{
-	float size ; // total size of device
-	float used; // used size of device
-	float avail; //Available size of device
-	unsigned int percent ; //percentage used
-	char * type ;
-	char * mounted_on; // actual mount point
-} t_mount_info ;
+typedef struct s_mount_info {
+	float size; /* total size of device */
+	float used; /* used size of device */
+	float avail; /* Available size of device */
+	unsigned int percent; /* percentage used */
+	char *type;
+	char *mounted_on; /* actual mount point - current??? */
+} t_mount_info;
 /*-------------------------------------------------*/
 
 /* struct t_disk, describes a t_disk */
-typedef struct
-{
-	char * device; // device name ie /dev/cdrom
-	char * mount_point; // device mount point ie /mnt/cdrom
-	t_mount_info *  mount_info ; // NULL if not mounted
+typedef struct s_disk {
+	char *device; /* device name, e.g. /dev/cdrom */
+	char *mount_point; /* device mount point, e.g. /mnt/cdrom */
+	t_mount_info *  mount_info; /* NULL if not mounted */
 
-} t_disk ;
+} t_disk;
 /*----------------------------------------------*/
 
 /*-------------------- get_size_human_readable --------------------*/
@@ -53,10 +51,10 @@ char * get_size_human_readable(float size);
 
 /*------------ mount a t_disk ---------------*/
 /* return exit status of the mount command*/
-void disk_mount(t_disk * pdisk, char * on_mount_cmd);
+void disk_mount (t_disk *pdisk, char *on_mount_cmd, char* mount_command);
 
 /* --------------unmount a t_disk ----------------*/
-void disk_umount(t_disk * pdisk );
+void disk_umount (t_disk *pdisk, char* umount_command);
 
 /*------------------------- disks_new ----------------*/
 /* fill a GPtrArray with pointers on struct t_disk containing infos on devices and theoretical mount point. use setfsent() and getfsent(). */
@@ -64,21 +62,21 @@ GPtrArray * disks_new() ;
 
 /*--------------------- disks_free --------------------------*/
 /* free a GPtrArray containing pointer on struct t_disk elements */
-void disks_free(GPtrArray * * pdisks);
+void disks_free (GPtrArray * * pdisks);
 
 /*----------------------- disks_print----------------------*/
 /* print a GPtrArray containing pointer on struct t_disk elements */
-void disks_print(GPtrArray * pdisks);
+void disks_print (GPtrArray * pdisks);
 
 /*-------------------- disks_search -------------------------*/
 /*return a pointer on FIRST struct t_disk containing char * device as device field 
 if not found return NULL */
-t_disk * disks_search(GPtrArray * pdisks, char * device);
+t_disk * disks_search (GPtrArray * pdisks, char * device);
 
 /* --------------- disks_refresh ----------------------*/
 /* refresh t_mount_info infos in a GPtrArray containing struct t_disk * elements */
-void disks_refresh(GPtrArray * pdisks);
+void disks_refresh (GPtrArray * pdisks);
 
-#endif /* _devices_h_ */
+#endif /* _DEVICES_H_ */
 
 

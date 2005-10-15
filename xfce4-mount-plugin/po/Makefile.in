@@ -19,7 +19,7 @@
 
 GETTEXT_PACKAGE = xfce4-mount-plugin
 PACKAGE = xfce4-mount-plugin
-VERSION = 0.4.1
+VERSION = 0.4.3
 
 SHELL = /bin/sh
 
@@ -38,7 +38,7 @@ localedir = $(libdir)/locale
 gnulocaledir = $(datadir)/locale
 gettextsrcdir = $(datadir)/glib-2.0/gettext/po
 subdir = po
-install_sh = /home/tim/tmp/mount-plugin-0.4.2/install-sh
+install_sh = /home/tim/tmp/mount-plugin/install-sh
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 
 INSTALL = /usr/bin/install -c

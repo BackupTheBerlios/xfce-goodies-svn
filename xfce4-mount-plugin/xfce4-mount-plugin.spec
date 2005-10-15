@@ -1,6 +1,6 @@
 Summary: 	Mount plugin for the Xfce panel
 Name: 		xfce4-mount-plugin
-Version: 	0.4.1
+Version: 	0.4.3
 Release: 	1
 License:	GPL
 URL: 		http://xfce-goodies.berlios.de/
