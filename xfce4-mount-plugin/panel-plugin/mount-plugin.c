@@ -590,6 +590,10 @@ mounter_create_options (XfcePanelPlugin *plugin, t_mounter *mt)
     gtk_widget_show (md->box_mount_commands);
     gtk_container_add (GTK_CONTAINER (eventbox), md->box_mount_commands);
 	                  
+    /* FIXME: labels are centered.
+        gtk_label_set_justify does not work,
+        adding alignment containers does not do s, either.
+        so it must be something with the table: GTK_FILL doesn't do it. */
 	label = gtk_label_new (_("Mount command:"));
 	gtk_label_set_justify (GTK_LABEL(label), GTK_JUSTIFY_LEFT);
 	gtk_widget_show (label);
