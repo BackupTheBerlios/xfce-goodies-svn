@@ -526,7 +526,9 @@ mounter_create_options (XfcePanelPlugin *plugin, t_mounter *mt)
 	/* entries */	
 	GtkWidget *eventbox = gtk_event_box_new ();
 	gtk_widget_show (eventbox);
-	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (eventbox), FALSE, FALSE, 0);
+	gtk_container_set_border_width (GTK_CONTAINER (eventbox), BORDER);
+	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (eventbox), FALSE, FALSE, 
+	                   0);
 	
 	GtkWidget *hbox = gtk_hbox_new (FALSE, BORDER);
 	gtk_widget_show (hbox);
@@ -534,7 +536,7 @@ mounter_create_options (XfcePanelPlugin *plugin, t_mounter *mt)
 	
 	label = gtk_label_new (_("Execute after mounting:"));
 	gtk_widget_show (label);
-	gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, BORDER);
+	gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
 	
 	GtkTooltips *tip = gtk_tooltips_new ();
 	gtk_tooltips_enable (tip);
@@ -549,13 +551,20 @@ mounter_create_options (XfcePanelPlugin *plugin, t_mounter *mt)
 	if (mt->on_mount_cmd != NULL)
 		gtk_entry_set_text (GTK_ENTRY(md->string_cmd), 
 		                    g_strdup(mt->on_mount_cmd));
+    gtk_entry_set_width_chars (GTK_ENTRY(md->string_cmd), 21);
 	gtk_widget_show (md->string_cmd);
 	gtk_box_pack_start (GTK_BOX(hbox), md->string_cmd, FALSE, FALSE, 0);
 
+    GtkWidget *innervbox = gtk_vbox_new (FALSE, 0);
+    gtk_container_set_border_width (GTK_CONTAINER (innervbox), BORDER);
+    gtk_widget_show (innervbox);
+    gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (innervbox), FALSE, FALSE, 
+	                    0);
+
 	eventbox = gtk_event_box_new ();
 	gtk_widget_show (eventbox);
-	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (eventbox), FALSE, FALSE, 
-	                    BORDER);
+	gtk_box_pack_start (GTK_BOX (innervbox), GTK_WIDGET (eventbox), FALSE, FALSE, 
+	                    0);
 	
 	md->specify_commands = gtk_check_button_new_with_label ( 
 	                               _("Specify own commands") );
@@ -574,22 +583,25 @@ mounter_create_options (XfcePanelPlugin *plugin, t_mounter *mt)
         
     eventbox = gtk_event_box_new ();
 	gtk_widget_show (eventbox);
-	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (eventbox), FALSE, FALSE,
-	                    BORDER);
+	gtk_box_pack_start (GTK_BOX (innervbox), GTK_WIDGET (eventbox), FALSE, FALSE,
+	                    0);
 	
     md->box_mount_commands = gtk_table_new (2, 2, FALSE);
     gtk_widget_show (md->box_mount_commands);
     gtk_container_add (GTK_CONTAINER (eventbox), md->box_mount_commands);
-	
+	                  
 	label = gtk_label_new (_("Mount command:"));
+	gtk_label_set_justify (GTK_LABEL(label), GTK_JUSTIFY_LEFT);
 	gtk_widget_show (label);
 	gtk_table_attach (GTK_TABLE(md->box_mount_commands), label, 0, 1, 0, 1, 
 	                  GTK_SHRINK, GTK_SHRINK, BORDER, 0);
+	
 	                  
 	label = gtk_label_new (_("Unmount command:"));
+	gtk_label_set_justify (GTK_LABEL(label), GTK_JUSTIFY_LEFT);
 	gtk_widget_show (label);
 	gtk_table_attach (GTK_TABLE(md->box_mount_commands), label, 0, 1, 1, 2, 
-	                  GTK_FILL, GTK_FILL, BORDER, 0);
+	                  GTK_SHRINK, GTK_SHRINK, BORDER, 0);
 	                  
 	md->string_mount_command = gtk_entry_new ();
 	gtk_entry_set_text (GTK_ENTRY(md->string_mount_command ), 
@@ -597,7 +609,7 @@ mounter_create_options (XfcePanelPlugin *plugin, t_mounter *mt)
 	gtk_widget_show (md->string_mount_command );
 	gtk_table_attach (GTK_TABLE(md->box_mount_commands),
 	                  md->string_mount_command , 1, 2,
-	                  0, 1, GTK_FILL, GTK_FILL, 0, 0);
+	                  0, 1, GTK_SHRINK, GTK_SHRINK, 0, 0);
 	
 	md->string_umount_command = gtk_entry_new ();
 	gtk_entry_set_text (GTK_ENTRY(md->string_umount_command ), 

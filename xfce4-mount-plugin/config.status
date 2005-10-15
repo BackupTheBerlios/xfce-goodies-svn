@@ -499,12 +499,12 @@ s,@INSTALL_DATA@,${INSTALL} -m 644,;t t
 s,@CYGPATH_W@,echo,;t t
 s,@PACKAGE@,xfce4-mount-plugin,;t t
 s,@VERSION@,0.4.3,;t t
-s,@ACLOCAL@,${SHELL} /home/tim/tmp/mount-plugin/missing --run aclocal-1.9,;t t
-s,@AUTOCONF@,${SHELL} /home/tim/tmp/mount-plugin/missing --run autoconf,;t t
-s,@AUTOMAKE@,${SHELL} /home/tim/tmp/mount-plugin/missing --run automake-1.9,;t t
-s,@AUTOHEADER@,${SHELL} /home/tim/tmp/mount-plugin/missing --run autoheader,;t t
-s,@MAKEINFO@,${SHELL} /home/tim/tmp/mount-plugin/missing --run makeinfo,;t t
-s,@install_sh@,/home/tim/tmp/mount-plugin/install-sh,;t t
+s,@ACLOCAL@,${SHELL} /home/tim/tmp/xfce4-mount-plugin_svn/missing --run aclocal-1.9,;t t
+s,@AUTOCONF@,${SHELL} /home/tim/tmp/xfce4-mount-plugin_svn/missing --run autoconf,;t t
+s,@AUTOMAKE@,${SHELL} /home/tim/tmp/xfce4-mount-plugin_svn/missing --run automake-1.9,;t t
+s,@AUTOHEADER@,${SHELL} /home/tim/tmp/xfce4-mount-plugin_svn/missing --run autoheader,;t t
+s,@MAKEINFO@,${SHELL} /home/tim/tmp/xfce4-mount-plugin_svn/missing --run makeinfo,;t t
+s,@install_sh@,/home/tim/tmp/xfce4-mount-plugin_svn/install-sh,;t t
 s,@STRIP@,,;t t
 s,@ac_ct_STRIP@,,;t t
 s,@INSTALL_STRIP_PROGRAM@,${SHELL} $(install_sh) -c -s,;t t
@@ -512,7 +512,7 @@ s,@mkdir_p@,mkdir -p --,;t t
 s,@AWK@,mawk,;t t
 s,@SET_MAKE@,,;t t
 s,@am__leading_dot@,.,;t t
-s,@AMTAR@,${SHELL} /home/tim/tmp/mount-plugin/missing --run tar,;t t
+s,@AMTAR@,${SHELL} /home/tim/tmp/xfce4-mount-plugin_svn/missing --run tar,;t t
 s,@am__tar@,${AMTAR} chof - "$$tardir",;t t
 s,@am__untar@,${AMTAR} xf -,;t t
 s,@MAINTAINER_MODE_TRUE@,,;t t

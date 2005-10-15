@@ -38,7 +38,7 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
 	$(srcdir)/xfce4-mount-plugin.spec.in $(top_srcdir)/configure \
 	AUTHORS COPYING ChangeLog INSTALL NEWS TODO compile \
-	config.guess depcomp install-sh ltmain.sh missing \
+	config.guess config.sub depcomp install-sh ltmain.sh missing \
 	mkinstalldirs
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \

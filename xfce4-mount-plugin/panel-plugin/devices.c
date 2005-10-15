@@ -36,8 +36,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define MB 1048576
 #define GB 1073741824
 
-#define DBG g_printf
-
 /*-------------------- get_size_human_readable --------------------*/
 /* return a string containing a size expressed in KB,MB or GB and the unit it is expressed in */
 char * get_size_human_readable(float size)
