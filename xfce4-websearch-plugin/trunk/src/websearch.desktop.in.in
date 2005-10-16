@@ -1,0 +1,7 @@
+[Xfce Panel]
+Type=X-XFCE-PanelPlugin
+Encoding=UTF-8
+_Name=WebSearch
+_Comment=Search the Web directly from the Panel
+Icon=stock_find
+X-XFCE-Module=@INTERNAL_PLUGIN_PATH@/libwebsearch.so

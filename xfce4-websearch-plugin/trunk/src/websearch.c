@@ -22,8 +22,12 @@
 #endif
 
 #include <gdk/gdkkeysyms.h>
+#include <gtk/gtk.h>
+#include <libxfce4util/libxfce4util.h>
+#include <libxfcegui4/libxfcegui4.h>
+#include <libxfce4panel/xfce-panel-plugin.h>
 
-#include <panel/plugins.h>
+#define WEBSEARCH_SETTINGS "WebSearch"
 
 #define DISPLAY_CHARS 10
 
@@ -51,6 +55,7 @@ typedef struct
 
 typedef struct
 {
+    XfcePanelPlugin* plugin;
     WebSearchPlugin* websearch;
     GtkWidget* browser_entry;
     GtkWidget* engine_combo;
@@ -62,11 +67,11 @@ static gboolean entry_buttonpress_callback(GtkWidget* entry,
     static Atom atom = 0;
     GtkWidget* toplevel = gtk_widget_get_toplevel(entry);
 
-    if(event->button != 3 && toplevel && toplevel->window)
+    if (event->button != 3 && toplevel && toplevel->window)
     {
         XClientMessageEvent xev;
 
-        if(G_UNLIKELY(!atom))
+        if (G_UNLIKELY(!atom))
         {
             atom = XInternAtom(GDK_DISPLAY(), "_NET_ACTIVE_WINDOW", FALSE);
         }
@@ -91,13 +96,12 @@ static gboolean entry_buttonpress_callback(GtkWidget* entry,
 }
 
 static gboolean entry_keypress_callback(GtkWidget* entry, GdkEventKey* event,
-        gpointer user_data)
+        WebSearchPlugin* websearch)
 {
-    WebSearchPlugin* websearch = (WebSearchPlugin*) user_data;
     SearchEngines* engines = websearch->engines;
     gchar* execute = NULL;
 
-    switch(event->keyval)
+    switch (event->keyval)
     {
         case GDK_Return:
             execute = g_strconcat(
@@ -176,26 +180,11 @@ static WebSearchPlugin* websearch_new()
     return websearch;
 }
  
-static gboolean websearch_create_control(Control* control)
+static void websearch_free(XfcePanelPlugin* plugin, WebSearchPlugin* websearch)
 {
-    WebSearchPlugin *websearch = websearch_new();
-
-    gtk_container_add(GTK_CONTAINER(control->base), websearch->eventbox);
-
-    control->data = (gpointer) websearch;
-    control->with_popup = FALSE;
-
-    gtk_widget_set_size_request(control->base, -1, -1);
-
-    return TRUE;
-}
-
-static void websearch_free(Control* control)
-{
-    WebSearchPlugin* websearch = (WebSearchPlugin*) control->data;
     int i = 0;
 
-    for(i = 0; i < websearch->engines->count; i++)
+    for (i = 0; i < websearch->engines->count; i++)
     {
         g_free(websearch->engines->engines[i]->name);
         g_free(websearch->engines->engines[i]->uri);
@@ -208,56 +197,72 @@ static void websearch_free(Control* control)
     g_free(websearch);
 }
 
-static void websearch_attach_callback(Control* control, const char* signal,
-        GCallback callback, gpointer data)
+static void websearch_read_config(XfcePanelPlugin* plugin,
+        WebSearchPlugin* websearch)
 {
-    WebSearchPlugin* websearch = (WebSearchPlugin*) control->data;
-    
-    g_signal_connect(websearch->eventbox, signal, callback, data);
-    g_signal_connect(websearch->entry, signal, callback, data);
+    char* file = NULL;
+    const gchar* value = NULL;
+    XfceRc* rc = NULL;
+
+    if ((file = xfce_panel_plugin_lookup_rc_file(plugin)))
+    {
+        rc = xfce_rc_simple_open(file, TRUE);
+        g_free(file);
+        
+        if (rc)
+        {
+            if (xfce_rc_has_group(rc, WEBSEARCH_SETTINGS))
+            {
+                xfce_rc_set_group(rc, WEBSEARCH_SETTINGS);
+
+                if ((value = xfce_rc_read_entry(rc, "browserCommand", NULL)))
+                {
+                    g_free(websearch->browser_command);
+                    websearch->browser_command = g_strdup(value);
+                }
+                if ((value = xfce_rc_read_entry(rc, "selectedEngine", NULL)))
+                {
+                    websearch->engines->selected = strtol(value, NULL, 10);
+                }
+            }
+            xfce_rc_close(rc);
+        }
+    }                                
 }
 
-static void websearch_read_config(Control* control, xmlNodePtr node)
+static void websearch_write_config(XfcePanelPlugin* plugin,
+        WebSearchPlugin* websearch)
 {
-    WebSearchPlugin* websearch = (WebSearchPlugin*) control->data;
-    xmlChar* value = NULL;
-
-    if((node = node->children) == NULL) return;   
-    if(xmlStrEqual(node->name, (const xmlChar*) "browserCommand"))
-    {
-        value = xmlNodeGetContent(node);
-        g_free(websearch->browser_command);
-        websearch->browser_command = g_strdup((char*) value);
-        if((node = node->next) == NULL) return;
-    }
-    
-    if(xmlStrEqual(node->name, (const xmlChar*) "selectedEngine"))
-    {
-        value = xmlNodeGetContent(node);
-        websearch->engines->selected = strtol((char*) value, NULL, 10);
-    }
-}
-
-static void websearch_write_config(Control* control, xmlNodePtr parent)
-{
-    WebSearchPlugin* websearch = (WebSearchPlugin*) control->data;
+    char* file = NULL;
     gchar* value = NULL;
+    XfceRc* rc = NULL;
 
-    xmlNewTextChild(parent, NULL, (const xmlChar*) "browserCommand", 
-            (xmlChar*) websearch->browser_command);
-    
-    value = g_strdup_printf("%d", websearch->engines->selected);
-    xmlNewTextChild(parent, NULL, (const xmlChar*) "selectedEngine", 
-            (xmlChar*) value);
-    g_free(value);
+    if ((file = xfce_panel_plugin_save_location(plugin, TRUE)))
+    {
+        rc = xfce_rc_simple_open(file, FALSE);
+        g_free(file);
+
+        if (rc)
+        {
+            xfce_rc_set_group(rc, WEBSEARCH_SETTINGS);
+            xfce_rc_write_entry(rc, "browserCommand", 
+                    websearch->browser_command);
+            value = g_strdup_printf("%d", websearch->engines->selected);
+            xfce_rc_write_entry(rc, "selectedEngine", value);
+            g_free(value);
+            xfce_rc_close(rc);
+        }
+    }
 }
 
-static OptionsInput* options_input_new(WebSearchPlugin* websearch)
+static OptionsInput* options_input_new(XfcePanelPlugin* plugin,
+        WebSearchPlugin* websearch)
 {
     SearchEngines* engines = websearch->engines;
     OptionsInput* input = g_new(OptionsInput, 1);
     int i = 0;
     
+    input->plugin = plugin;
     input->websearch = websearch;
     input->browser_entry = gtk_entry_new();
     input->engine_combo = gtk_combo_box_new_text();
@@ -276,30 +281,42 @@ static OptionsInput* options_input_new(WebSearchPlugin* websearch)
     return input;
 }
 
-static void apply_options_callback(GtkWidget* widget, gpointer user_data)
+static void apply_options_callback(GtkDialog* dialog, gint response, 
+        OptionsInput* input)
 {
-    OptionsInput* input = (OptionsInput*) user_data;
-    WebSearchPlugin* websearch = input->websearch;
+    if (response == GTK_RESPONSE_OK)
+    {
+        WebSearchPlugin* websearch = input->websearch;
 
-    g_free(websearch->browser_command);
-    websearch->browser_command = 
-            g_strdup(gtk_entry_get_text(GTK_ENTRY(input->browser_entry)));
+        g_free(websearch->browser_command);
+        websearch->browser_command = 
+                g_strdup(gtk_entry_get_text(GTK_ENTRY(input->browser_entry)));
 
-    websearch->engines->selected = 
-            gtk_combo_box_get_active(GTK_COMBO_BOX(input->engine_combo));
-
+        websearch->engines->selected = 
+                gtk_combo_box_get_active(GTK_COMBO_BOX(input->engine_combo));
+    }
+    gtk_widget_destroy(GTK_WIDGET(dialog));
+    xfce_panel_plugin_unblock_menu(input->plugin);
     g_free(input);
 }
 
-static void websearch_create_options(Control* control, GtkContainer* container,
-        GtkWidget *done)
+static void websearch_create_options(XfcePanelPlugin* plugin,
+        WebSearchPlugin* websearch)
 {
-    WebSearchPlugin* websearch = (WebSearchPlugin*) control->data;
+    GtkWidget* dialog = NULL;
     GtkWidget* layout = gtk_table_new(2, 2, FALSE);
     GtkWidget* label = NULL;
-    OptionsInput* input = options_input_new(websearch);
+    OptionsInput* input = options_input_new(plugin, websearch);
 
-    gtk_container_add(GTK_CONTAINER(container), layout);
+    xfce_panel_plugin_block_menu(plugin);
+    dialog = gtk_dialog_new_with_buttons(_("Properties"),
+            GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(plugin))),
+            GTK_DIALOG_DESTROY_WITH_PARENT,
+            GTK_STOCK_OK, GTK_RESPONSE_OK,
+            GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, NULL);
+
+    gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox), layout, 
+            TRUE, TRUE, 10);
 
     label = gtk_label_new(_("Browser command: "));
     gtk_misc_set_alignment(GTK_MISC(label), 0.0f, 0.5f);
@@ -315,33 +332,50 @@ static void websearch_create_options(Control* control, GtkContainer* container,
     gtk_table_attach(GTK_TABLE(layout), input->engine_combo,
             1, 2, 1, 2, GTK_FILL, GTK_FILL, 0, 0);
     
-    g_signal_connect(done, "clicked",
+    g_signal_connect(dialog, "response",
             G_CALLBACK(apply_options_callback), input);
     
-    gtk_widget_show_all(layout);
+    gtk_widget_show_all(dialog);
 }
 
-static void websearch_set_size(Control* control, int size)
+static void websearch_about(XfcePanelPlugin* plugin, WebSearchPlugin* websearch)
 {
+    GtkWidget* dialog = gtk_about_dialog_new();
+    const gchar* authors[] = { "Piotr Wolny <gildur@gmail.com>", NULL };
+    gtk_about_dialog_set_name(GTK_ABOUT_DIALOG(dialog), _("WebSearch"));
+    gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(dialog), VERSION);
+    gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dialog), 
+            "Copyright (c) 2005 by Piotr Wolny\nLicensed under GNU GPL");
+    gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(dialog), 
+            "http://xfce-goodies.berlios.de");
+    gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(dialog), authors);
+    gtk_widget_show_all(dialog);
 }
 
-G_MODULE_EXPORT void xfce_control_class_init(ControlClass* cc)
+static void websearch_construct(XfcePanelPlugin* plugin)
 {
+    WebSearchPlugin* websearch = NULL;
     xfce_textdomain(GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR, "UTF-8");
+   
+    websearch = websearch_new();
+    websearch_read_config(plugin, websearch);
+
+    gtk_container_add(GTK_CONTAINER(plugin), websearch->eventbox);
+    xfce_panel_plugin_add_action_widget(plugin, websearch->eventbox);
+    xfce_panel_plugin_add_action_widget(plugin, websearch->entry);
+
+    g_signal_connect(plugin, "free-data", G_CALLBACK(websearch_free), 
+            websearch);
     
-    cc->name = "websearch";
-    cc->caption = _("WebSearch");
+    g_signal_connect(plugin, "save", G_CALLBACK(websearch_write_config),
+            websearch);
+
+    xfce_panel_plugin_menu_show_configure(plugin);
+    g_signal_connect(plugin, "configure-plugin",
+            G_CALLBACK(websearch_create_options), websearch);
     
-    cc->create_control = (CreateControlFunc) websearch_create_control;
-    cc->free = websearch_free;
-    
-    cc->attach_callback = websearch_attach_callback;
-    
-    cc->read_config = websearch_read_config;
-    cc->write_config = websearch_write_config;
-    cc->create_options = websearch_create_options;
-    
-    cc->set_size = websearch_set_size;
+    xfce_panel_plugin_menu_show_about(plugin);
+    g_signal_connect(plugin, "about", G_CALLBACK(websearch_about), websearch);
 }
 
-XFCE_PLUGIN_CHECK_INIT
+XFCE_PANEL_PLUGIN_REGISTER_INTERNAL(websearch_construct);
