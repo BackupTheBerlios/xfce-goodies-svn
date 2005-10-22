@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-15 11:06+0200\n"
+"POT-Creation-Date: 2005-10-22 13:29+0200\n"
 "PO-Revision-Date: 2005-09-17 23:02+0100\n"
 "Last-Translator: SZERVÑC Attila <sas@321.hu>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -131,20 +131,24 @@ msgid ""
 "may be good for, keep your hands off!"
 msgstr ""
 
-#: ../panel-plugin/mount-plugin.c:593
+#. FIXME: labels are centered.
+#. gtk_label_set_justify does not work,
+#. adding alignment containers does not do s, either.
+#. so it must be something with the table: GTK_FILL doesn't do it.
+#: ../panel-plugin/mount-plugin.c:597
 msgid "Mount command:"
 msgstr ""
 
-#: ../panel-plugin/mount-plugin.c:600
+#: ../panel-plugin/mount-plugin.c:604
 msgid "Unmount command:"
 msgstr ""
 
-#: ../panel-plugin/mount-plugin.c:623
+#: ../panel-plugin/mount-plugin.c:627
 msgid "Most users will only want to prepend \"sudo\" to both commands."
 msgstr ""
 
 #: ../panel-plugin/xfce4-mount-plugin.desktop.in.in.h:2
-msgid "Shows all mountable devices and (un)mounts them on request."
+msgid "Show all mountable devices and (un)mount them on click."
 msgstr ""
 
 #~ msgid "(mount directory is added to the command)"
