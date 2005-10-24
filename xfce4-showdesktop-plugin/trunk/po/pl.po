@@ -1,23 +1,27 @@
-# Polish translations for xfce4-showdesktop-plugin package
-# Polskie t³umaczenia dla pakietu xfce4-showdesktop-plugin.
-# Copyright (C) 2003 THE PACKAGE'S COPYRIGHT HOLDER
+# Polish translations for xfce4-showdesktop-plugin package.
+# Copyright (C) 2003-2004 Andre Lerche.
+# This file is distributed under the same license as the
+#   xfce4-showdesktop-plugin package.
 # Andrzej Augustynowicz <andree@pld-linux.org>, 2003.
+# Piotr MaliÅ„ski <admin@rk.edu.pl>, 2005.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xfce4-showdesktop-plugin\n"
+"Project-Id-Version: xfce4-showdesktop-plugin 0.4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-10-10 17:20+0200\n"
-"PO-Revision-Date: 2003-12-15 23:27+0000\n"
-"Last-Translator:  Andrzej Augustynowicz <andree@pld-linux.org>\n"
+"POT-Creation-Date: 2005-10-24 23:07+0900\n"
+"PO-Revision-Date: 2005-10-24 22:49+0900\n"
+"Last-Translator: Piotr MaliÅ„ski <admin@rk.edu.pl>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=ISO-8859-2\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: panel-plugin/showdesktop.c:619
 msgid "Enable this option, if your panel is located on top or on the right."
 msgstr ""
+"WÅ‚Ä…cz tÄ… opcjÄ™ jeÅ¼eli twÃ³j panel ulokowany jest na gÃ³rze lub po prawej "
+"stronie."
 
 #: panel-plugin/showdesktop.c:620
 msgid ""
@@ -29,19 +33,19 @@ msgstr ""
 
 #: panel-plugin/showdesktop.c:621
 msgid "If this option is enabled, the plugin consumes less space on the panel."
-msgstr ""
+msgstr "JeÅ¼eli opcja jest wÅ‚Ä…czona to wtyczka zajmuje mniej miejsca w panelu"
 
 #: panel-plugin/showdesktop.c:622
 msgid "display one button only"
-msgstr ""
+msgstr "wyÅ›wietlaj tylko jeden przycisk"
 
 #: panel-plugin/showdesktop.c:629
 msgid "swap commands"
-msgstr "zamieñ polecenia"
+msgstr "wyczyÅ›Ä‡ polecenia"
 
 #: panel-plugin/showdesktop.c:634
 msgid "alternate button mode"
-msgstr ""
+msgstr "alternatywny tryb przyciskÃ³w"
 
 #: panel-plugin/showdesktop.c:639
 msgid "reduce size"
@@ -49,45 +53,12 @@ msgstr "zredukuj rozmiar"
 
 #: panel-plugin/showdesktop.c:644
 msgid "one toggle button"
-msgstr ""
+msgstr "jeden przycisk wÅ‚Ä…czajÄ…cy"
 
 #: panel-plugin/showdesktop.c:650
 msgid "Options"
-msgstr ""
+msgstr "Opcje"
 
 #: panel-plugin/showdesktop.c:671
 msgid "Show Desktop"
-msgstr "Poka¿ Pulpit"
-
-#~ msgid ""
-#~ "Button 1: show all windows\n"
-#~ "Button 2: show previous window group"
-#~ msgstr ""
-#~ "Przycisk 1: poka¿ wszystkie okna\n"
-#~ "Przycisk 2: poka¿ poprzedni± grupê okien"
-
-#~ msgid ""
-#~ "Button 1: hide all windows\n"
-#~ "Button 2: hide previous window group"
-#~ msgstr ""
-#~ "Przycisk 1: ukryj wszystkie okna\n"
-#~ "Przycisk 2: ukryj poprzedni± grupê okien"
-
-#~ msgid "show tooltips"
-#~ msgstr "poka¿ opisy"
-
-#, fuzzy
-#~ msgid ""
-#~ "Button 1: save window state 1\n"
-#~ "Button 2: restore window state 1"
-#~ msgstr ""
-#~ "Przycisk 1: poka¿ wszystkie okna\n"
-#~ "Przycisk 2: poka¿ poprzedni± grupê okien"
-
-#, fuzzy
-#~ msgid ""
-#~ "Button 1: save window state 2\n"
-#~ "Button 2: restore window state 2"
-#~ msgstr ""
-#~ "Przycisk 1: poka¿ wszystkie okna\n"
-#~ "Przycisk 2: poka¿ poprzedni± grupê okien"
+msgstr "PokaÅ¼ Pulpit"
