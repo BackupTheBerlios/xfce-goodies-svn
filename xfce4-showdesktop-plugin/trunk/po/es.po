@@ -1,26 +1,26 @@
-# Translation of xfce4-showdesktop-plugin
-# Copyright (C) 2004, Free Software Foundation, Inc. 
-# This file is distributed under the same license as the PACKAGE package.
+# Spanish translation of xfce4-showdesktop-plugin package.
+# Copyright (C) 2003-2004 Andre Lerche.
+# This file is distributed under the same license as the
+#   xfce4-showdesktop-plugin package.
 # Rudy Godoy <rudy@kernel-panik.org>, 2004.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: xfce4-showdesktop-plugin 0.3.0\n"
+"Project-Id-Version: xfce4-showdesktop-plugin 0.4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-10-10 17:20+0200\n"
-"PO-Revision-Date: 2004-07-13 16:33-0500\n"
+"POT-Creation-Date: 2005-10-24 23:07+0900\n"
+"PO-Revision-Date: 2005-10-24 22:55+0900\n"
 "Last-Translator: Rudy Godoy <rudy@kernel-panik.org>\n"
 "Language-Team: Debian l10n Spanish Team <debian-l10n-spanish@lists.debian."
 "org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: panel-plugin/showdesktop.c:619
 msgid "Enable this option, if your panel is located on top or on the right."
 msgstr ""
-"Habilitar esta opciÛn si su panel est· ubicado en la parte superior o en la "
+"Habilitar esta opci√≥n si su panel est√° ubicado en la parte superior o en la "
 "derecha."
 
 #: panel-plugin/showdesktop.c:620
@@ -30,35 +30,35 @@ msgid ""
 "connected to the plugin internal showdesktop feature. You can reverse it "
 "with this option."
 msgstr ""
-"Usualmente, el primer botÛn del ratÛn est· conectado a la opciÛn de "
-"showdesktop para el gestor de ventanas, si Èste lo soporta, y el botÛn del "
-"medio est· conectado a la opciÛn interna del aÒadido showdesktop. Puede "
-"intercambiarlos con esta opciÛn."
+"Usualmente, el primer bot√≥n del rat√≥n est√° conectado a la opci√≥n de "
+"showdesktop para el gestor de ventanas, si √©ste lo soporta, y el bot√≥n del "
+"medio est√° conectado a la opci√≥n interna del a√±adido showdesktop. Puede "
+"intercambiarlos con esta opci√≥n."
 
 #: panel-plugin/showdesktop.c:621
 msgid "If this option is enabled, the plugin consumes less space on the panel."
 msgstr ""
-"Si se habilita esta opciÛn, el aÒadiido consume menos espacio en elpanel."
+"Si se habilita esta opci√≥n, el a√±adiido consume menos espacio en elpanel."
 
 #: panel-plugin/showdesktop.c:622
 msgid "display one button only"
-msgstr "mostrar solo un botÛn"
+msgstr "mostrar solo un bot√≥n"
 
 #: panel-plugin/showdesktop.c:629
 msgid "swap commands"
-msgstr "intercambiar Ûrdenes"
+msgstr "intercambiar √≥rdenes"
 
 #: panel-plugin/showdesktop.c:634
 msgid "alternate button mode"
-msgstr "alternar modos de botÛn"
+msgstr "alternar modos de bot√≥n"
 
 #: panel-plugin/showdesktop.c:639
 msgid "reduce size"
-msgstr "reducir tamaÒo"
+msgstr "reducir tama√±o"
 
 #: panel-plugin/showdesktop.c:644
 msgid "one toggle button"
-msgstr "un botÛn de intercambio"
+msgstr "un bot√≥n de intercambio"
 
 #: panel-plugin/showdesktop.c:650
 msgid "Options"
@@ -72,15 +72,15 @@ msgstr "Mostrar escritorio"
 #~ "Button 1: show all windows\n"
 #~ "Button 2: show previous window group"
 #~ msgstr ""
-#~ "BotÛn 1: mostrar todas las ventanas\n"
-#~ "BotÛn 2: mostrar el grupo de ventanas anterior"
+#~ "Bot√≥n 1: mostrar todas las ventanas\n"
+#~ "Bot√≥n 2: mostrar el grupo de ventanas anterior"
 
 #~ msgid ""
 #~ "Button 1: hide all windows\n"
 #~ "Button 2: hide previous window group"
 #~ msgstr ""
-#~ "BotÛn 1: ocultar todas las ventanas\n"
-#~ "BotÛn 2: ocultar el grupo de ventanas anterior"
+#~ "Bot√≥n 1: ocultar todas las ventanas\n"
+#~ "Bot√≥n 2: ocultar el grupo de ventanas anterior"
 
 #~ msgid "show tooltips"
 #~ msgstr "mostrar texto contextual"
