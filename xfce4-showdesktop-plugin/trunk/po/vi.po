@@ -1,16 +1,17 @@
-# translation of xfce4-showdesktop.po to Vietnamese
-# This file is distributed under the same license as the PACKAGE package.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER.
+# Vietnamese translations of xfce4-showdesktop-plugin package.
+# Copyright (C) 2003-2004 Andre Lerche.
+# This file is distributed under the same license as the
+#   xfce4-showdesktop-plugin package.
 # Phan Vĩnh Thịnh <teppi@vnlinux.org>, 2005.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xfce4-showdesktop\n"
+"Project-Id-Version: xfce4-showdesktop-plugin 0.4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-10-10 17:20+0200\n"
-"PO-Revision-Date: 2005-06-20 20:41+0400\n"
+"POT-Creation-Date: 2005-10-24 23:07+0900\n"
+"PO-Revision-Date: 2005-10-24 23:02+0900\n"
 "Last-Translator: Phan Vĩnh Thịnh <teppi@vnlinux.org>\n"
-"Language-Team: Vietnamese <none@li.org>\n"
+"Language-Team: Vietnamese <gnomevi-list@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -27,14 +28,14 @@ msgid ""
 "connected to the plugin internal showdesktop feature. You can reverse it "
 "with this option."
 msgstr ""
-"Thông thường, nút chuột đầu tiên dùng cho tính năng hiện màn hình "
-"của trình quản lý cửa sổ, nếu WM hỗ trợ, và nút chuột giữa dùng cho tính "
-"năng hiện màn hình nội bộ. Người dùng có thể giữ cấu hình đó bằng tùy "
-"chọn này."
+"Thông thường, nút chuột đầu tiên dùng cho tính năng hiện màn hình của trình "
+"quản lý cửa sổ, nếu WM hỗ trợ, và nút chuột giữa dùng cho tính năng hiện màn "
+"hình nội bộ. Người dùng có thể giữ cấu hình đó bằng tùy chọn này."
 
 #: panel-plugin/showdesktop.c:621
 msgid "If this option is enabled, the plugin consumes less space on the panel."
-msgstr "Nếu bật dùng tùy chọn này, thì plugin dùng ít không gian trên bảng panel hơn."
+msgstr ""
+"Nếu bật dùng tùy chọn này, thì plugin dùng ít không gian trên bảng panel hơn."
 
 #: panel-plugin/showdesktop.c:622
 msgid "display one button only"
@@ -63,4 +64,3 @@ msgstr "Tùy chọn"
 #: panel-plugin/showdesktop.c:671
 msgid "Show Desktop"
 msgstr "Hiện Màn hình"
-
