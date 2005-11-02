@@ -1,0 +1,69 @@
+# Korean translations for xfce4-modemlights-plugin package.
+# Copyright (C) 2002-2005 The Xfce development team.
+# This file is distributed under the same license as the xfce4-modemlights-plugin package.
+# ByungHyun Choi <byunghyun.choi@gmail.com>, 2005.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: xfce4-modemlights-plugin 0.1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-05-18 09:25+0200\n"
+"PO-Revision-Date: 2005-11-03 01:52+0900\n"
+"Last-Translator: ByungHyun Choi <byunghyunchoi@hotmail.com>\n"
+"Language-Team: xfce4-users-kr-i18n <xfce4-users-kr-i18n@lists.sourceforge."
+"net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: panel-plugin/modemlights-plugin.c:109 panel-plugin/modemlights-plugin.c:255
+msgid "No connection"
+msgstr "연결되지 않았습니다."
+
+#: panel-plugin/modemlights-plugin.c:117
+msgid "Connection Established"
+msgstr "연결"
+
+#: panel-plugin/modemlights-plugin.c:126
+msgid "Dialing"
+msgstr "전화거는 중"
+
+#: panel-plugin/modemlights-plugin.c:459
+msgid "Select lock file"
+msgstr "잠금 화일 선택"
+
+#: panel-plugin/modemlights-plugin.c:479
+msgid "Lockfile:"
+msgstr "잠금 화일:"
+
+#: panel-plugin/modemlights-plugin.c:516
+msgid "Select icon"
+msgstr "아이콘 선택"
+
+#: panel-plugin/modemlights-plugin.c:614
+msgid "_Connection Command:"
+msgstr "연결 명령(_C):"
+
+#: panel-plugin/modemlights-plugin.c:621
+msgid "_Disconnection Command:"
+msgstr "연결종료 명령(_D)"
+
+#: panel-plugin/modemlights-plugin.c:627
+msgid "De_vice:"
+msgstr "장치(_v):"
+
+#: panel-plugin/modemlights-plugin.c:642
+msgid "Icon (Disconnected):"
+msgstr "아이콘(연결 종료):"
+
+#: panel-plugin/modemlights-plugin.c:650
+msgid "Icon (Connecting):"
+msgstr "아이콘(연결 중):"
+
+#: panel-plugin/modemlights-plugin.c:657
+msgid "Icon (Connected):"
+msgstr "아이콘(연결 완료):"
+
+#: panel-plugin/modemlights-plugin.c:733
+msgid "Modem Lights"
+msgstr "모뎀 LED"
