@@ -30,7 +30,7 @@
 
 #define DOEXPAND TRUE
 #define DOFILL   TRUE
-#define PADDING  1
+#define PADDING  0
 
 #define PREV (DATA_DIR "/xmms-plugin-prev.png")
 #define PLAY (DATA_DIR "/xmms-plugin-play.png")
@@ -60,7 +60,8 @@
 
 /* data structure to hold all required data for the plugin */
 typedef struct {
-  GtkWidget      *boxMain, *pbar, *vol_pbar, *viewport, *label, *base;
+  GtkWidget      	*boxMain, *boxV, *pbar, *vol_pbar, *viewport, *label;
+  XfcePanelPlugin 	*base;
   GtkTooltips    *tooltip;
   PangoAttribute *labelattr;
   PangoAttrList  *labelattrlist;
@@ -69,7 +70,7 @@ typedef struct {
   gint           xmms_session;
   guint          timeout;
   gboolean       xmmsvisible, show_mw, show_pl, show_eq, timer_reset,
-                 show_scrolledtitle, quit_xmms, size_adjust, simple_title, pbar_visible, vol_pbar_visible, use_bmp;
+                 show_scrolledtitle, quit_xmms, simple_title, pbar_visible, vol_pbar_visible, use_bmp, hor_vol_if_vertical;
 } plugin_data;
 
 #endif

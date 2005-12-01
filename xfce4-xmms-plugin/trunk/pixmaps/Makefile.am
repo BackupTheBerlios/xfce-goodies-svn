@@ -1,6 +1,6 @@
 SRC = prev play pause stop next
 
-xmmsicondir=$(datadir)/xfce4/xmms-plugin
+xmmsicondir=$(datadir)/xfce4/xfce4-xmms-plugin
 xmmsicon_DATA=                                                          \
         xmms-plugin-prev.png                                            \
         xmms-plugin-play.png                                            \

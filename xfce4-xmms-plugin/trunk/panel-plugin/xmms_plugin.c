@@ -36,14 +36,18 @@
 
 #include <gtk/gtk.h>
 
-#include <libxfce4util/i18n.h>
-#include <libxfcegui4/dialogs.h>
-#include <panel/plugins.h>
-#include <panel/xfce.h>
+/*#include <panel/plugins.h>
+#include <panel/xfce.h>*/
+#include <libxfce4util/libxfce4util.h>
+#include <libxfcegui4/xfce_iconbutton.h>
+#include <libxfce4panel/xfce-panel-plugin.h>
 
 #include <xmmsctrl.h>
 
 #include "xmms_plugin.h"
+
+gboolean xmms_plugin_control_new(XfcePanelPlugin *plugin);
+XFCE_PANEL_PLUGIN_REGISTER_EXTERNAL(xmms_plugin_control_new);
 
 /******************/
 /* xmms_control.c */
@@ -80,25 +84,6 @@ static void display_xmms(plugin_data *pd, gboolean show) {
   }
 }
 
-
-/**************************************/
-/* function to do the size adjustment */
-/**************************************/
-static void adjust_size(plugin_data *pd) {
-
-  if (pd->size_adjust) {
-     gtk_widget_set_size_request (pd->pbar, 0, 4);
-     gtk_widget_set_size_request (pd->viewport, 0, 6);
-  }
-  else {
-     gtk_widget_set_size_request (pd->pbar, 0, -1);
-     gtk_widget_set_size_request (pd->viewport, 0, -1);
-  }
-
-  gtk_widget_show_all(pd->boxMain);
-  if( !pd->show_scrolledtitle )
-     gtk_widget_hide_all(pd->viewport);
-}
 
 
 /*********************************************************/
@@ -320,147 +305,13 @@ static void new_button_with_img(GtkWidget *box, gchar *filename, gpointer cb, gp
 }
 
 
-/******************************/
-/* creates the plugin widgets */
-/******************************/
-gboolean xmms_plugin_control_new(Control *ctrl) {
-  GtkWidget *button, *box, *boxV, *boxMain, *pbar, *vol_pbar, *viewport, *eventbox, *label;
-  plugin_data *pd;
-  gchar *title = TITLE_STRING" +++ "TITLE_STRING" +++ ";
-  gint vl, vr;
-  GtkRcStyle *rc;
-  GdkColor color;
-
-  pd = g_new(plugin_data, 1);
-  
-  /* These defaults will be overwritten by read config */
-  pd->titletextsize          = TITLE_SIZE;
-  pd->title_scroll_position  = 0;
-  pd->scroll_speed           = SCROLL_SPEED;
-  pd->scroll_step            = SCROLL_STEP;
-  pd->step_delay             = STEP_DELAY;
-  pd->scroll_delay           = SCROLL_DELAY;
-  pd->playlist_position      = -1;
-  pd->play_time              = -1;
-  pd->xmmsvisible            = TRUE;
-  pd->xmms_session           = 0;
-  pd->timeout                = 0;
-  pd->timer_reset            = FALSE;
-  pd->show_scrolledtitle     = TRUE;
-  pd->tooltip                = gtk_tooltips_new();
-  pd->labelattrlist          = pango_attr_list_new();
-  pd->labelattr              = pango_attr_size_new(pd->titletextsize * PANGO_SCALE);
-  pd->labelattr->start_index = 0;
-  pd->labelattr->end_index   = strlen(title);
-  pd->quit_xmms              = FALSE;
-  pd->simple_title           = FALSE;
-  pd->size_adjust            = FALSE;
-  pd->pbar_visible           = TRUE;
-  pd->vol_pbar_visible       = TRUE;
-  pd->use_bmp                = FALSE;
-  pango_attr_list_insert       (pd->labelattrlist, pd->labelattr);
-
-  
-
-  /* add scrolling callback for the plugin base widget */
-  pd->base                     = ctrl->base;
-  gtk_widget_add_events(GTK_WIDGET(ctrl->base), GDK_SCROLL_MASK);
-  g_signal_connect(G_OBJECT(ctrl->base),"scroll_event",G_CALLBACK(box_scroll), pd);
-  gtk_tooltips_set_tip           (pd->tooltip, GTK_WIDGET(ctrl->base), TITLE_STRING, NULL);
-
-  /* main container for the plugin widgets */
-  boxMain                      = gtk_hbox_new(FALSE, 0);
-  boxV                         = gtk_vbox_new(FALSE, 0);
-
-  /* label for the song title */
-  eventbox                     = gtk_event_box_new();
-  label                        = gtk_label_new(title);
-  gtk_label_set_line_wrap        (GTK_LABEL(label), FALSE);
-  gtk_container_add              (GTK_CONTAINER(eventbox), label);
-  gtk_widget_set_events          (eventbox, GDK_BUTTON_PRESS_MASK);
-  gtk_label_set_attributes       (GTK_LABEL(label), pd->labelattrlist);
-
-  /* viewport widget that manages the scrolling */
-  viewport                     = gtk_viewport_new(NULL, NULL);
-  gtk_viewport_set_shadow_type   (GTK_VIEWPORT(viewport), GTK_SHADOW_NONE);
-  gtk_container_add              (GTK_CONTAINER(viewport), eventbox);
-  gtk_widget_set_size_request    (viewport, 0, -1);
-  gtk_box_pack_start             (GTK_BOX(boxV), viewport, DOEXPAND, DOFILL, PADDING);
-
-  /* the progress bar */
-  pbar                         = gtk_progress_bar_new();
-  gtk_progress_bar_set_bar_style (GTK_PROGRESS_BAR(pbar), GTK_PROGRESS_CONTINUOUS);
-  gtk_widget_set_size_request    (pbar, 0, -1);
-  gtk_widget_set_events          (pbar, GDK_BUTTON_PRESS_MASK);
-  g_signal_connect               (G_OBJECT(pbar), "button_press_event",
-                                  G_CALLBACK(pbar_click), pd);
-  gtk_box_pack_start             (GTK_BOX(boxV), pbar, DOEXPAND, DOFILL, PADDING);
-       
-  pd->boxMain  = boxMain;
-  pd->viewport = viewport;
-  pd->label    = label;
-  pd->pbar     = pbar;
-
-  /* box that contains the xmms control buttons */
-  box                          = gtk_hbox_new(FALSE, 0);
-  new_button_with_img(box, PREV, G_CALLBACK(prev), pd);
-  new_button_with_img(box, PLAY, G_CALLBACK(play), pd);
-  new_button_with_img(box, PAUS, G_CALLBACK(paus), pd);
-  new_button_with_img(box, STOP, G_CALLBACK(stop), pd);
-  new_button_with_img(box, NEXT, G_CALLBACK(next), pd);
-
-  gtk_box_pack_start             (GTK_BOX(boxV), box, DOEXPAND, DOFILL, PADDING);    
-  gtk_container_set_border_width (GTK_CONTAINER(boxMain), 2);  
-  
-  /* the volume progress bar */
-  vol_pbar                          = gtk_progress_bar_new();
-  gtk_progress_bar_set_orientation  (GTK_PROGRESS_BAR(vol_pbar),GTK_PROGRESS_BOTTOM_TO_TOP);
-  gtk_progress_bar_set_bar_style    (GTK_PROGRESS_BAR(vol_pbar), GTK_PROGRESS_CONTINUOUS);
-  gtk_widget_set_size_request       (vol_pbar, 6, 0);
-  xmms_remote_get_volume            (pd->xmms_session, &vl, &vr);
-  gtk_progress_bar_set_fraction     (GTK_PROGRESS_BAR(vol_pbar), ((double)(MAX(vl, vr)))/100);
-  rc =                              gtk_widget_get_modifier_style (GTK_WIDGET (vol_pbar));
-
-  if (!rc)
-	rc = gtk_rc_style_new ();
-
-  gdk_color_parse ("#00c000", &color);
-
-  if (rc) {
-	rc->color_flags[GTK_STATE_PRELIGHT] |= GTK_RC_BG;
-	rc->bg[GTK_STATE_PRELIGHT] = color;
-  }
-
-  gtk_widget_modify_style (GTK_WIDGET (vol_pbar), rc);
-  pd->vol_pbar                      = vol_pbar;
-  
-  gtk_box_pack_start             (GTK_BOX(boxMain), boxV, FALSE, FALSE, 1);
-  gtk_box_pack_start             (GTK_BOX(boxMain), vol_pbar, FALSE, FALSE, 1);
-  
-  
-  gtk_container_add              (GTK_CONTAINER(ctrl->base), boxMain);
-
-  gtk_widget_show_all(boxMain);
-
-  pd->timeout                  = g_timeout_add(1000 / pd->scroll_speed, pbar_label_update, pd);
-                                              
-  ctrl->data = (gpointer) pd;
-  ctrl->with_popup = FALSE;
- 
-  return(TRUE);
-}
-
 
 /******************************************************/
 /* frees all resources used by the plugin (I hope :-) */
 /******************************************************/
-static void xmms_plugin_free(Control *ctrl) {
-  plugin_data *pd;
+static void xmms_plugin_free(XfcePanelPlugin *plugin, plugin_data *pd) {
 
-  g_return_if_fail(ctrl != NULL);
-  g_return_if_fail(ctrl-> data != NULL);
-
-  pd = (plugin_data*) ctrl->data;
+  g_return_if_fail(plugin != NULL);
 
   /* remove timeout */
   if (pd->timeout) g_source_remove(pd->timeout);
@@ -482,230 +333,209 @@ static void xmms_plugin_free(Control *ctrl) {
 }
      
 
-/*****************/
-/* preferences.c */
-/*****************/
+/*************************************/
+/* Adjust the position of volume bar */
+/*************************************/
 
+adjust_vol_pbar(plugin_data *pd){
+
+  gtk_widget_hide(pd->vol_pbar);
+
+  if(pd->vol_pbar){
+    g_object_ref(G_OBJECT(pd->vol_pbar));
+    gtk_container_remove(GTK_CONTAINER(gtk_widget_get_parent(pd->vol_pbar)),
+    								pd->vol_pbar);
+  }  
+  
+  /* Vertical panel and we want horizontal volume bar? */
+  if( (xfce_panel_plugin_get_orientation(pd->base)==GTK_ORIENTATION_VERTICAL) 
+  							&& pd->hor_vol_if_vertical ){
+  							
+  	gtk_progress_bar_set_orientation(GTK_PROGRESS_BAR (pd->vol_pbar),
+  	 GTK_PROGRESS_LEFT_TO_RIGHT ) ;	
+  	gtk_widget_set_size_request
+  			(pd->vol_pbar,
+  			xfce_panel_plugin_get_size
+  			(pd-> base)-3,5);					
+  			
+  	gtk_box_pack_start(GTK_BOX(pd->boxV),pd->vol_pbar, DOEXPAND, DOFILL, PADDING);
+  }else{
+  	gtk_progress_bar_set_orientation(GTK_PROGRESS_BAR (pd->vol_pbar),
+  	 GTK_PROGRESS_BOTTOM_TO_TOP ) ;	
+  	gtk_widget_set_size_request
+  			(pd->vol_pbar,5,
+  			xfce_panel_plugin_get_size(pd->base)-3);		  	 		    
+  	gtk_box_pack_start(GTK_BOX(pd->boxMain),pd->vol_pbar, DOEXPAND, DOFILL, 
+  									PADDING);    
+  }
+  
+  gtk_widget_show(pd->vol_pbar);
+  
+  if( xfce_panel_plugin_get_orientation(pd->base)==GTK_ORIENTATION_VERTICAL)
+    gtk_widget_set_size_request
+    		(pd->base,xfce_panel_plugin_get_size(pd->base),50);
+  else
+    gtk_widget_set_size_request
+    		(pd->base,80,xfce_panel_plugin_get_size(pd->base));  
+     
+}
 
 /**************************/
 /* read plugin parameters */
 /**************************/
-void xmms_plugin_read_config(Control *control, xmlNodePtr node) {
-  xmlChar *value;
+void xmms_plugin_read_config(plugin_data *pd) {
+
+  XfceRc *rc;
+  char *file;
   gint n;
-  gboolean b;
-  plugin_data     *pd = (plugin_data *) control->data;
-  PangoAttrSize *attr = (PangoAttrSize*) pd->labelattr;
-
-  g_return_if_fail(node!=NULL && node->children!=NULL);
-
-  /* Read xml properties. All values out of range will be ignored. */
-  /* The default will be used then.                                */
-  node=node->children;
-
-  /* get song text size */
-  value = xmlGetProp (node, (const xmlChar *) "textsize");
-  if (value) {
-    n = atoi((char*) value);
-    if ((n >= MIN_TITLE_SIZE) && (n <= MAX_TITLE_SIZE)) {
-      pd->titletextsize = n;
-      attr->size = pd->titletextsize * PANGO_SCALE;
-      gtk_label_set_attributes(GTK_LABEL(pd->label), pd->labelattrlist);
-    }
-  }
-  xmlFree(value);
-
-  /* get scroll speed */
-  value = xmlGetProp (node, (const xmlChar *) "scroll_speed");
-  if (value) {
-    n = atoi((char*) value);
-    if ((n >= MIN_SCROLL_SPEED) && (n <= MAX_SCROLL_SPEED)) {
-      pd->scroll_speed = n;
-      pd->timer_reset = TRUE;
-    }
-  }
-  xmlFree(value);
-
-  /* get scroll step width */
-  value = xmlGetProp (node, (const xmlChar *) "scroll_step");
-  if (value) {
-    n = atoi((char*) value);
-    if ((n >= MIN_SCROLL_STEP) && (n <= MAX_SCROLL_STEP)) pd->scroll_step = n;
-  }
-  xmlFree(value);
-
-  /* get scroll delay */
-  value = xmlGetProp (node, (const xmlChar *) "scroll_delay");
-  if (value) {
-    n = atoi((char*) value);
-    if ((n >= MIN_SCROLL_DELAY) && (n <= MAX_SCROLL_DELAY)) pd->scroll_delay = n;
-  }
-  xmlFree(value);
-  pd->step_delay = pd->scroll_delay * pd->scroll_speed * pd->scroll_step;
-
-  /* get xmms window visibility */
-  value = xmlGetProp (node, (const xmlChar *) "xmms_visible");
-  if (value) {
-    if (!strcmp(value, "TRUE")) pd->xmmsvisible = TRUE;
-    else                        pd->xmmsvisible = FALSE;
-    xmlFree(value);
-  }
-
-  /* get visibility  of scrolled song title */
-  value = xmlGetProp (node, (const xmlChar *) "title_visible");
-  if (value) {
-    if (!strcmp(value, "TRUE"))
-       pd->show_scrolledtitle = TRUE;
-    else {
-       pd->show_scrolledtitle = FALSE;
-       gtk_widget_hide_all (pd->viewport);
-    }
-    xmlFree(value);
-  }
-  /* show/hide the event box parent of the scrolled title */
-  if (pd->show_scrolledtitle)   gtk_widget_show_all(gtk_widget_get_parent(pd->label));
-  else                          gtk_widget_hide_all(gtk_widget_get_parent(pd->label));
-
-  /* load quit xmms option */
-  value = xmlGetProp (node, (const xmlChar *) "quit_xmms");
-  if (value) {
-     if (!strcmp(value, "TRUE")) pd->quit_xmms = TRUE;
-     else                        pd->quit_xmms = FALSE;
-     xmlFree(value);
-  }
-
-  /* load simple title option */
-  value = xmlGetProp (node, (const xmlChar *) "simple_title");
-  if (value) {
-     if (!strcmp(value, "TRUE")) pd->simple_title = TRUE;
-     else                        pd->simple_title = FALSE;
-     xmlFree(value);
-  }
-  set_song_title(pd);
-
-  /* load size adjust option */
-  value = xmlGetProp (node, (const xmlChar *) "size_adjust");
-  if (value) {
-     if (!strcmp(value, "TRUE")) pd->size_adjust = TRUE;
-     else                        pd->size_adjust = FALSE;
-     xmlFree(value);
-  }
-  adjust_size(pd);
   
-  /* load progressbar visibility option */
-  value = xmlGetProp (node, (const xmlChar *) "pbar_visible");
-  if (value) {
-     if (!strcmp(value, "TRUE")) {
-           pd->pbar_visible = TRUE;
-           gtk_widget_show_all  (pd->pbar);
-     }
-     else {                 
-           pd->pbar_visible = FALSE;
-           gtk_widget_hide_all  (pd->pbar);
-     }
+  if ((file = xfce_panel_plugin_lookup_rc_file (pd->base)) != NULL)
+  {
+      rc = xfce_rc_simple_open (file, TRUE);
+      g_free (file);
+
+      if (rc != NULL)
+      {
+         /* load title font size */
+ 	 n = xfce_rc_read_int_entry (rc,"textsize",10);
+	 if ((n >= MIN_TITLE_SIZE) && (n <= MAX_TITLE_SIZE))
+      	 	pd->titletextsize = n;
+      	 	
+ 	 /* load scroll speed */
+	 n = xfce_rc_read_int_entry (rc, "scroll_speed",5);
+	 if ((n >= MIN_SCROLL_SPEED) && (n <= MAX_SCROLL_SPEED)) {
+      		pd->scroll_speed = n;
+      		pd->timer_reset = TRUE;
+    	 }
+    	 
+ 	 /* load scroll step width */
+ 	 n = xfce_rc_read_int_entry (rc,"scroll_step", 2);
+	 if ((n >= MIN_SCROLL_STEP) && (n <= MAX_SCROLL_STEP)) pd->scroll_step = n;
+	 
+ 	 /* load scroll delay */
+ 	 n = xfce_rc_read_int_entry (rc,"scroll_delay", 0);         if ((n >= MIN_SCROLL_DELAY) && (n <= MAX_SCROLL_DELAY)) pd->scroll_delay = n;
+         
+  	 /* load xmms window visibility */
+ 	 pd->xmmsvisible = xfce_rc_read_bool_entry (rc, "xmms_visible", TRUE);
+
+ 	 /* load visibility of scrolled sing title */
+ 	 pd->show_scrolledtitle = xfce_rc_read_bool_entry (rc, "title_visible", TRUE);
+
+ 	 /* load quit xmms option */
+ 	 pd->quit_xmms = xfce_rc_read_bool_entry (rc, "quit_xmms", FALSE);
+
+  	 /* load simple title option */
+  	 pd->simple_title = xfce_rc_read_bool_entry (rc, "simple_title", TRUE);
+  
+ 	 /* load progressbar visibility option */
+ 	 pd->pbar_visible = xfce_rc_read_bool_entry (rc, "pbar_visible", TRUE);
+
+  
+  	 /* load volume progressbar visibility option */
+ 	 pd->vol_pbar_visible =xfce_rc_read_bool_entry(rc,"vol_pbar_visible",TRUE);   	  
+
+  	 /* load use bmp option */
+ 	 pd->use_bmp = xfce_rc_read_bool_entry (rc, "use_bmp", FALSE);    
+ 	 
+	 /* load horizontal volume bar if vertical panel option */
+	 pd->hor_vol_if_vertical = 
+	 		xfce_rc_read_bool_entry (rc, "hor_vol_if_vertical",TRUE);   	     
+	 		
+	 xfce_rc_close(rc);
+	}	
            
-     xmlFree(value);
   }
 
-  /* load volume progressbar visibility option */
-  value = xmlGetProp (node, (const xmlChar *) "vol_pbar_visible");
-  if (value) {
-     if (!strcmp(value, "TRUE")) {
-           pd->vol_pbar_visible = TRUE;
-           gtk_widget_show_all  (pd->vol_pbar);
-     }
-     else {                 
-           pd->vol_pbar_visible = FALSE;
-           gtk_widget_hide_all  (pd->vol_pbar);
-     }
-           
-     xmlFree(value);
-  }
-
-  /* load use bmp option */
-  value = xmlGetProp (node, (const xmlChar *) "use_bmp");
-  if (value) {
-     if (!strcmp(value, "TRUE"))
-           pd->use_bmp = TRUE;
-     else
-           pd->use_bmp = FALSE;
-           
-     xmlFree(value);
-  }
 }
 
 
 /**************************/
 /* save plugin parameters */
 /**************************/
-void xmms_plugin_write_config(Control *ctrl, xmlNodePtr parent) {
-  xmlChar value[10];
-  plugin_data *pd=(plugin_data *)ctrl->data;
-  xmlNodePtr node;
+void xmms_plugin_write_config(XfcePanelPlugin *plugin, plugin_data *pd) {
 
-  g_return_if_fail(parent!=NULL);
-         
-  node = xmlNewTextChild (parent, NULL, (const xmlChar *)"XmmsControl", NULL);
-  g_return_if_fail(node!=NULL);
-       
+  XfceRc *rc;
+  char *file;
+  
+  g_return_if_fail(plugin!=NULL);
+ 
+  if (!(file = xfce_panel_plugin_save_location (plugin, TRUE)))
+    return;
+
+  rc = xfce_rc_simple_open (file, FALSE);
+  g_free (file);
+
+  if (!rc)
+    return;
+    
+                    
   /* save title font size */
-  g_snprintf (value, 5, "%d", pd->titletextsize);
-  xmlSetProp (node, "textsize", (const xmlChar *)value);
+  xfce_rc_write_int_entry (rc,"textsize",pd->titletextsize);
 
   /* save scroll speed */
-  g_snprintf (value, 5, "%d", pd->scroll_speed);
-  xmlSetProp (node, "scroll_speed", (const xmlChar *)value);
+  xfce_rc_write_int_entry (rc, "scroll_speed",pd->scroll_speed);
 
   /* save scroll step width */
-  g_snprintf (value, 5, "%d", pd->scroll_step);
-  xmlSetProp (node, "scroll_step", (const xmlChar *)value);
+  xfce_rc_write_int_entry (rc,"scroll_step", pd->scroll_step);
 
   /* save scroll delay */
-  g_snprintf (value, 5, "%d", pd->scroll_delay);
-  xmlSetProp (node, "scroll_delay", (const xmlChar *)value);
-
+  xfce_rc_write_int_entry (rc,"scroll_delay", pd->scroll_delay);
   /* save xmms window visibility */
-  xmlSetProp (node, "xmms_visible", (pd->xmmsvisible) ? "TRUE" : "FALSE");
+  xfce_rc_write_bool_entry (rc, "xmms_visible", pd->xmmsvisible);
 
   /* save visibility of scrolled sing title */
-  xmlSetProp (node, "title_visible", (pd->show_scrolledtitle) ? "TRUE" : "FALSE");
+  xfce_rc_write_bool_entry (rc, "title_visible", pd->show_scrolledtitle);
 
   /* save quit xmms option */
-  xmlSetProp (node, "quit_xmms", (pd->quit_xmms) ? "TRUE" : "FALSE");
+  xfce_rc_write_bool_entry (rc, "quit_xmms", pd->quit_xmms);
 
   /* save simple title option */
-  xmlSetProp (node, "simple_title", (pd->simple_title) ? "TRUE" : "FALSE");
-
-  /* save size adjust option */
-  xmlSetProp (node, "size_adjust", (pd->size_adjust) ? "TRUE" : "FALSE");
+  xfce_rc_write_bool_entry (rc, "simple_title", pd->simple_title);
   
   /* save progressbar visibility option */
-  xmlSetProp (node, "pbar_visible", (pd->pbar_visible) ? "TRUE" : "FALSE");  
+  xfce_rc_write_bool_entry (rc, "pbar_visible", pd->pbar_visible);  
   
   /* save volume progressbar visibility option */
-  xmlSetProp (node, "vol_pbar_visible", (pd->vol_pbar_visible) ? "TRUE" : "FALSE");  
+  xfce_rc_write_bool_entry (rc, "vol_pbar_visible", pd->vol_pbar_visible);  
 
   /* save use bmp option */
-  xmlSetProp (node, "use_bmp", (pd->use_bmp) ? "TRUE" : "FALSE");    
+  xfce_rc_write_bool_entry (rc, "use_bmp", pd->use_bmp);   
+  
+  /* save horizontal volume bar if vertical panel option */
+  xfce_rc_write_bool_entry (rc, "hor_vol_if_vertical", pd->hor_vol_if_vertical);
+  
+  xfce_rc_close(rc);   
 }
 
+/*****************************/
+/* apply visibility settings */
+/*****************************/
+void apply_visibility_settings(plugin_data *pd) {
 
-/**************************************************************/
-/* generic function to add panel callbacks to the base widget */
-/**************************************************************/
-static void xmms_plugin_attach_callback(Control *ctrl, const gchar *signal, GCallback cb, gpointer data) {
-  g_signal_connect(ctrl->base, signal, cb, data); 
+  PangoAttrSize *attr = (PangoAttrSize*) pd->labelattr;
+    
+  attr->size = pd->titletextsize * PANGO_SCALE;
+  gtk_label_set_attributes(GTK_LABEL(pd->label), pd->labelattrlist);
+  
+  if(!pd->show_scrolledtitle)
+  gtk_widget_hide_all (pd->viewport);
+  /* show/hide the event box parent of the scrolled title */
+  if (pd->show_scrolledtitle)
+ 	gtk_widget_show_all(gtk_widget_get_parent(pd->label));
+  else                          
+ 	gtk_widget_hide_all(gtk_widget_get_parent(pd->label));
+ 	
+ 	
+  if(pd->pbar_visible)
+ 	gtk_widget_show_all  (pd->pbar);
+  else
+  	gtk_widget_hide_all  (pd->pbar);   
+  	
+  if(pd->vol_pbar_visible)
+  	gtk_widget_show_all  (pd->vol_pbar);
+  else
+  	gtk_widget_hide_all  (pd->vol_pbar); 								 	
 }
-
-
-/**************************************/
-/* callback to change the plugin size */
-/**************************************/
-static void xmms_plugin_set_size(Control *ctrl, int size){
-  /* do the resize */
-  /* yeah...do it....or something */
-}
-
 
 /************************************/
 /* callback to change the font size */
@@ -796,14 +626,6 @@ static void simple_title_toggled(GtkToggleButton *button, gpointer data) {
 }
 
 
-/**********************************/
-/* callback to size adjust option */
-/**********************************/
-static void size_adjust_toggled(GtkToggleButton *button, gpointer data) {
-  plugin_data *pd    = (plugin_data*) data;
-  pd->size_adjust   = gtk_toggle_button_get_active(button);
-  adjust_size(pd);
-}
 
 /*********************************************************/
 /* callback for show track postion (pbar_visible) option */
@@ -838,6 +660,15 @@ static void use_bmp_toggled(GtkToggleButton *button, gpointer data) {
   plugin_data *pd  = (plugin_data*) data;
   pd->use_bmp      = gtk_toggle_button_get_active(button);
 
+}
+
+/*********************************************/
+/* callback for "hor_vol_if_vertical" option */
+/*********************************************/
+static void hor_vol_toggled(GtkToggleButton *button, gpointer data) {
+  plugin_data *pd  = (plugin_data*) data;
+  pd->hor_vol_if_vertical   = gtk_toggle_button_get_active(button);
+  adjust_vol_pbar(pd);
 }
 
 /*****************************************************/
@@ -877,18 +708,66 @@ static void add_check(GtkWidget *parent, gchar *title, gboolean active, GCallbac
   g_signal_connect              (G_OBJECT(check), "toggled", cb, data);
 }
 
+/***************************/
+/* options dialog response */
+/***************************/
+static void
+options_dialog_response (GtkWidget *dlg, int reponse, plugin_data *pd)
+{
+    gtk_widget_destroy (dlg);
+    xfce_panel_plugin_unblock_menu (pd->base);
+    xmms_plugin_write_config(pd->base,pd);
+}
+
+/*************************************/
+/* Panel orientation change callback */
+/*************************************/
+static void orient_change(XfcePanelPlugin *plugin, GtkOrientation orient, plugin_data *pd){
+
+
+  adjust_vol_pbar(pd);
+}
+
 /**********************/
 /* preferences dialog */
 /**********************/
-static void xmms_plugin_create_options (Control *ctrl, GtkContainer *con, GtkWidget *done) {
-  plugin_data *pd = (plugin_data*) ctrl->data;
+static void xmms_plugin_create_options (XfcePanelPlugin *plugin, plugin_data *pd) {
+
   GtkWidget *vbox, *table, *label, *size, *speed, *step, *delay;
   gint att_opts = GTK_SHRINK | GTK_EXPAND | GTK_FILL;
+
+  GtkWidget *dlg, *header;
+
 
   gtk_tooltips_disable(pd->tooltip);
   gtk_tooltips_enable(pd->tooltip);
 
+  xfce_panel_plugin_block_menu (plugin);
+    
+  dlg = gtk_dialog_new_with_buttons (_("Properties"), 
+              GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (plugin))),
+              GTK_DIALOG_DESTROY_WITH_PARENT |
+              GTK_DIALOG_NO_SEPARATOR,
+              GTK_STOCK_CLOSE, GTK_RESPONSE_OK,
+              NULL);
+    
+  g_signal_connect (dlg, "response", G_CALLBACK (options_dialog_response),
+                    pd);
+
+  gtk_container_set_border_width (GTK_CONTAINER (dlg), 2);
+    
+  header = xfce_create_header (NULL, _("Xfce4 XMMS Plugin Options"));
+  gtk_widget_set_size_request (GTK_BIN (header)->child, 200, 32);
+  gtk_container_set_border_width (GTK_CONTAINER (header), 6);
+  gtk_widget_show (header);
+  gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dlg)->vbox), header,
+                      FALSE, TRUE, 0);
+
   vbox  = gtk_vbox_new      (FALSE, 4);
+  gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dlg)->vbox), vbox,
+                      FALSE, TRUE, 0);
+  
+  
   table = gtk_table_new     (4, 2, FALSE);
   gtk_box_pack_start (GTK_BOX(vbox), gtk_hseparator_new(), DOEXPAND, DOFILL, PADDING);
 
@@ -916,53 +795,165 @@ static void xmms_plugin_create_options (Control *ctrl, GtkContainer *con, GtkWid
   add_check(vbox, "Show volume level", pd->vol_pbar_visible, G_CALLBACK(vol_pbar_visible_toggled), pd, NULL);
   /* add check button for simple title option */
   add_check(vbox, "Simple song title format", pd->simple_title, G_CALLBACK(simple_title_toggled), pd, NULL);
-  /* add check button for size adjustment */
-  add_check(vbox, "Size adjustment", pd->size_adjust, G_CALLBACK(size_adjust_toggled), pd, "Checking ths option can be useful if the panel looks larger than it should");
+  /* add check button for hor_vol_if_vertical option */
+  add_check(vbox, "Horizontal volume bar on vertical panels", 
+  pd->hor_vol_if_vertical, G_CALLBACK(hor_vol_toggled), pd, NULL);  
   /* add check button for "Use BMP" option */
   add_check(vbox, "Use BMP (Beep Media Player)", pd->use_bmp, G_CALLBACK(use_bmp_toggled), pd, NULL);  
   /* add check button for quit xmms option */
   add_check(vbox, "Quit XMMS/BMP when plugin terminates", pd->quit_xmms, G_CALLBACK(quit_xmms_toggled), pd, NULL);
   
-  gtk_container_add  (GTK_CONTAINER(con), vbox);
-  gtk_widget_show_all(vbox);
+  gtk_widget_show_all(GTK_WIDGET(dlg));
   
 }
 
-/*******************/
-/* panel_display.c */
-/*******************/
 
+/******************************/
+/* creates the plugin widgets */
+/******************************/
+gboolean xmms_plugin_control_new(XfcePanelPlugin *plugin) {
+  GtkWidget *button, *box, *boxV, *boxMain, *pbar, *vol_pbar, *viewport, *eventbox, *label;
+  plugin_data *pd;
+  gchar *title = TITLE_STRING" +++ "TITLE_STRING" +++ ";
+  gint vl, vr;
+  GtkRcStyle *rc;
+  GdkColor color;
 
-/******************/
-/* initialization */
-/******************/
-G_MODULE_EXPORT void xfce_control_class_init(ControlClass *cc){
-  /* these are required */
-  cc->name		= "xmms_plugin";
-  cc->caption		= _("XMMS Control");
+  pd = g_new(plugin_data, 1);
   
-  cc->create_control	= (CreateControlFunc) xmms_plugin_control_new;
+  /* These defaults will be overwritten by read config */
+  pd->titletextsize          = TITLE_SIZE;
+  pd->title_scroll_position  = 0;
+  pd->scroll_speed           = SCROLL_SPEED;
+  pd->scroll_step            = SCROLL_STEP;
+  pd->step_delay             = STEP_DELAY;
+  pd->scroll_delay           = SCROLL_DELAY;
+  pd->playlist_position      = -1;
+  pd->play_time              = -1;
+  pd->xmmsvisible            = TRUE;
+  pd->xmms_session           = 0;
+  pd->timeout                = 0;
+  pd->timer_reset            = FALSE;
+  pd->show_scrolledtitle     = TRUE;
+  pd->tooltip                = gtk_tooltips_new();
+  pd->labelattrlist          = pango_attr_list_new();
+  pd->labelattr              = pango_attr_size_new(pd->titletextsize * PANGO_SCALE);
+  pd->labelattr->start_index = 0;
+  pd->labelattr->end_index   = strlen(title);
+  pd->quit_xmms              = FALSE;
+  pd->simple_title           = FALSE;
+  pd->pbar_visible           = TRUE;
+  pd->vol_pbar_visible       = TRUE;
+  pd->use_bmp                = FALSE;
+  pd->hor_vol_if_vertical    = TRUE;
+  pango_attr_list_insert       (pd->labelattrlist, pd->labelattr);
 
-  cc->free		= xmms_plugin_free;
-  cc->attach_callback	= xmms_plugin_attach_callback;
   
-  /* options */
-  cc->read_config       = xmms_plugin_read_config;
-  cc->write_config      = xmms_plugin_write_config;
-  cc->create_options    = xmms_plugin_create_options;
+  xfce_panel_plugin_set_expand(plugin,FALSE);
   
-  /* Don't use this function at all if you want xfce to
-   * do the sizing.
-   * Just define the set_size function to NULL, or rather, don't 
-   * set it to something else.
-   */
-  cc->set_size		= xmms_plugin_set_size;
   
-  /* unused in the sample:
-   * ->set_orientation
-   * ->set_theme
-   */
+  g_signal_connect (plugin, "free-data", 
+                      G_CALLBACK (xmms_plugin_free), pd);
+
+  g_signal_connect (plugin, "save", 
+                      G_CALLBACK (xmms_plugin_write_config), pd);
+
+  xfce_panel_plugin_menu_show_configure (plugin);
+  g_signal_connect (plugin, "configure-plugin", 
+                      G_CALLBACK (xmms_plugin_create_options), pd);
+  
+  g_signal_connect (plugin, "orientation-changed", 
+                      G_CALLBACK (orient_change), pd);
+                      
+  /* add scrolling callback for the plugin base widget */
+  pd->base                     = plugin;
+  gtk_widget_add_events(GTK_WIDGET(plugin), GDK_SCROLL_MASK);
+  g_signal_connect(G_OBJECT(plugin),"scroll_event",G_CALLBACK(box_scroll), pd);
+  gtk_tooltips_set_tip           (pd->tooltip, GTK_WIDGET(plugin), TITLE_STRING, NULL);
+
+  /* main container for the plugin widgets */
+  boxMain                      = gtk_hbox_new(FALSE, 0);
+  boxV                         = gtk_vbox_new(FALSE, 0);
+
+  /* label for the song title */
+  eventbox                     = gtk_event_box_new();
+  label                        = gtk_label_new(title);
+  gtk_label_set_line_wrap        (GTK_LABEL(label), FALSE);
+  gtk_container_add              (GTK_CONTAINER(eventbox), label);
+  gtk_widget_set_events          (eventbox, GDK_BUTTON_PRESS_MASK);
+  gtk_label_set_attributes       (GTK_LABEL(label), pd->labelattrlist);
+
+  /* viewport widget that manages the scrolling */
+  viewport                     = gtk_viewport_new(NULL, NULL);
+  gtk_viewport_set_shadow_type   (GTK_VIEWPORT(viewport), GTK_SHADOW_NONE);
+  gtk_container_add              (GTK_CONTAINER(viewport), eventbox);
+  gtk_widget_set_size_request    (viewport, 0, 0);
+  gtk_box_pack_start             (GTK_BOX(boxV), viewport, DOEXPAND, DOFILL, PADDING);
+
+  /* the progress bar */
+  pbar                         = gtk_progress_bar_new();
+  gtk_progress_bar_set_bar_style (GTK_PROGRESS_BAR(pbar), GTK_PROGRESS_CONTINUOUS);
+  gtk_widget_set_size_request    (pbar, 0, 6);
+  gtk_widget_set_events          (pbar, GDK_BUTTON_PRESS_MASK);
+  g_signal_connect               (G_OBJECT(pbar), "button_press_event",
+                                  G_CALLBACK(pbar_click), pd);
+  gtk_box_pack_start             (GTK_BOX(boxV), pbar, DOEXPAND, DOFILL, PADDING);
+       
+  pd->boxMain  = boxMain;
+  pd->boxV     = boxV;
+  pd->viewport = viewport;
+  pd->label    = label;
+  pd->pbar     = pbar;
+
+  /* box that contains the xmms control buttons */
+  box                          = gtk_hbox_new(FALSE, 0);
+  new_button_with_img(box, PREV, G_CALLBACK(prev), pd);
+  new_button_with_img(box, PLAY, G_CALLBACK(play), pd);
+  new_button_with_img(box, PAUS, G_CALLBACK(paus), pd);
+  new_button_with_img(box, STOP, G_CALLBACK(stop), pd);
+  new_button_with_img(box, NEXT, G_CALLBACK(next), pd);
+
+  gtk_box_pack_start             (GTK_BOX(boxV), box, DOEXPAND, DOFILL, PADDING);    
+  gtk_container_set_border_width (GTK_CONTAINER(boxMain), 2);  
+  
+  /* the volume progress bar */
+  vol_pbar                          = gtk_progress_bar_new();
+  gtk_progress_bar_set_orientation  (GTK_PROGRESS_BAR(vol_pbar)
+  					,GTK_PROGRESS_BOTTOM_TO_TOP);
+  gtk_progress_bar_set_bar_style    (GTK_PROGRESS_BAR(vol_pbar), 
+  					GTK_PROGRESS_CONTINUOUS);
+  gtk_widget_set_size_request       (vol_pbar, 6, 0);
+  xmms_remote_get_volume            (pd->xmms_session, &vl, &vr);
+  gtk_progress_bar_set_fraction     (GTK_PROGRESS_BAR(vol_pbar), 
+  					((double)(MAX(vl, vr)))/100);
+  rc =                              gtk_widget_get_modifier_style 
+  					(GTK_WIDGET (vol_pbar));
+
+  if (!rc)
+	rc = gtk_rc_style_new ();
+
+  gdk_color_parse ("#00c000", &color);
+
+  if (rc) {
+	rc->color_flags[GTK_STATE_PRELIGHT] |= GTK_RC_BG;
+	rc->bg[GTK_STATE_PRELIGHT] = color;
+  }
+
+  gtk_widget_modify_style (GTK_WIDGET (vol_pbar), rc);
+  pd->vol_pbar                      = vol_pbar;
+  
+  gtk_box_pack_start             (GTK_BOX(boxMain), boxV, TRUE, TRUE, 1);
+  gtk_box_pack_start             (GTK_BOX(boxMain), vol_pbar, FALSE, FALSE, 1);
+  
+  
+  gtk_container_add              (GTK_CONTAINER(plugin), boxMain);
+
+  xmms_plugin_read_config(pd);
+  apply_visibility_settings(pd);
+  adjust_vol_pbar(pd);
+  gtk_widget_show_all(boxMain);
+
+  pd->timeout                  = g_timeout_add(1000 / pd->scroll_speed, 						pbar_label_update, pd);
+
+  return(TRUE);
 }
-
-/* required! defined in panel/plugins.h */
-XFCE_PLUGIN_CHECK_INIT

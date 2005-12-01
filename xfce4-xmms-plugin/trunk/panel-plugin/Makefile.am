@@ -1,23 +1,42 @@
-INCLUDES =								\
-	-DPACKAGE_LOCALE_DIR=\"$(localedir)\"
+plugindir = $(libexecdir)/xfce4/panel-plugins
+plugin_PROGRAMS = xfce4-xmms-plugin
 
-plugindir = @XFCE4_PANEL_PLUGINSDIR@
+xfce4_xmms_plugin_SOURCES = 						\
+		xmms_plugin.c
 
-plugin_LTLIBRARIES =							\
-	libxmms_plugin.la
+xfce4_xmms_plugin_CFLAGS =						\
+	-I$(top_srcdir) 						\
+	@LIBXFCEGUI4_CFLAGS@ 						\
+	@LIBXFCE4UTIL_CFLAGS@ 						\
+	@LIBXFCE4PANEL_CFLAGS@ 						\
+	-DLOCALEDIR=\"$(localedir)\" 					\
+	-DDATA_DIR=\"$(datadir)/xfce4/xfce4-xmms-plugin\"		\
+	@CAIRO_CFLAGS@							\
+	@PLAYER_CFLAGS@
 
-libxmms_plugin_la_LDFLAGS =						\
-	-avoid-version							\
-	-module
+xfce4_xmms_plugin_LDFLAGS =						\
+	@LIBXFCE4PANEL_LIBS@ 						\
+	@LIBXFCE4UTIL_LIBS@ 						\
+	@LIBXFCEGUI4_LIBS@
+	
+xfce4_xmms_plugin_LDADD = 						\
+	@PLAYER_LIBS@							\
+	@CAIRO_LIBS@
 
-libxmms_plugin_la_SOURCES =						\
-	xmms_plugin.c
+desktop_in_in_files = xfce4-xmms-plugin.desktop.in.in
+desktop_in_files = $(desktop_in_in_files:.desktop.in.in=.desktop.in)
+	
+desktopdir = $(datadir)/xfce4/panel-plugins
+desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
+@INTLTOOL_DESKTOP_RULE@
 
-libxmms_plugin_la_CFLAGS =						\
-	@XFCE4_PANEL_CFLAGS@						\
-	@PLAYER_CFLAGS@							\
-        -DDATA_DIR=\"$(datadir)/xfce4/xmms-plugin\"
+EXTRA_DIST = 				\
+	$(desktop_in_in_files)
 
-libxmms_plugin_la_LIBADD = 						\
-	@XFCE4_PANEL_LIBS@						\
-	@PLAYER_LIBS@
+DISTCLEANFILES =			\
+	$(desktop_DATA) $(desktop_in_files)
+	
+# get full path into .desktop file
+%.desktop.in: %.desktop.in.in
+	sed -e "s^@EXTERNAL_PLUGIN_PATH@^$(libexecdir)/xfce4/panel-plugins^" \
+		$< > $@

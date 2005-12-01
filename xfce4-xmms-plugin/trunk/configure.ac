@@ -3,34 +3,50 @@ dnl
 dnl xfce4-xmms-plugin - XMMS Control plugin for xfce4 panel
 dnl
 dnl 2003 Patrick van Staveren <pvanstav@cs.wmich.edu>
-dnl
+dnl 2005 Kemal Ilgar Eroglu <kieroglu@math.washington.edu>
 
-AC_INIT([panel-plugin/xmms_plugin.c])
 
+dnl version info
+m4_define([xfce4_xmms_version], [0.4])
+
+dnl init autoconf
+AC_INIT([xfce4-xmms-plugin], [xfce4_xmms_version], [kieroglu@math.washington.edu])
+AC_PREREQ([2.50])
+
+dnl init automake
+XFCE4_XMMS_VERSION=xfce4_xmms_version
+AM_INIT_AUTOMAKE([xfce4-xmms-plugin], [$XFCE4_XMMS_VERSION])
 AM_CONFIG_HEADER([config.h])
-
-AM_INIT_AUTOMAKE([xfce4-xmms-plugin], [0.3.1])
-
 AM_MAINTAINER_MODE
 
-dnl Check for UNIX variants
-AC_AIX
-AC_ISC_POSIX
-AC_MINIX
-
-dnl Check for basic programs
+dnl Check for basic stuff
 AC_PROG_CC
+AC_HEADER_STDC
 AC_PROG_INSTALL
 AC_PROG_LIBTOOL
+AC_PROG_INTLTOOL()
 
-dnl Check for standard header files
+dnl check for standard header files
 AC_HEADER_STDC
+
+dnl Check for i18n support
+XDT_I18N([])
+
+dnl required
+XDT_CHECK_PACKAGE([GTHREAD], [gthread-2.0], [2.4.0])
+XDT_CHECK_PACKAGE([GTK], [gtk+-2.0], [2.4.0])
+XDT_CHECK_PACKAGE([LIBXFCEGUI4], [libxfcegui4-1.0], [4.2.0])
+XDT_CHECK_PACKAGE([LIBXFCE4PANEL], [libxfce4panel-1.0], [4.3.20])
+XDT_CHECK_PACKAGE([LIBXFCE4UTIL], [libxfce4util-1.0], [4.3.0])
 
 dnl Check for Pango >= 1.8.0
 PKG_CHECK_MODULES(PANGO, pango >= 1.8.0,,exit)
 
-dnl configure the panel plugin
-XFCE_PANEL_PLUGIN([XFCE4_PANEL], [4.0.0])
+dnl Check for Gtk 2.8. If yes, add Cairo flags
+dnl CAIRO_CF=`pkg-config --cflags cairo`
+dnl CAIRO_L=`pkg-config --libs cairo`
+dnl PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 3.8.0, CAIRO_CFLAGS = CAIRO_CF, AC_MSG_RESULT())
+dnl PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 3.8.0, CAIRO_LIBS = CAIRO_L, AC_MSG_RESULT())
 
 dnl check for player
 AC_MSG_CHECKING([what player to link with])
@@ -60,12 +76,8 @@ else
 fi
 AC_SUBST([PLAYER_CFLAGS])
 AC_SUBST([PLAYER_LIBS])
-
-dnl Check for i18n support
-BM_I18N([xfce4-xmms-plugin], [de ko lt])
-
-dnl Check for debugging support
-BM_DEBUG_SUPPORT
+AC_SUBST([CAIRO_CFLAGS])
+AC_SUBST([CAIRO_LIBS])
 
 AC_OUTPUT([
 Makefile
