@@ -236,14 +236,7 @@ xmmsicon_DATA = \
         xmms-plugin-play.png                                            \
         xmms-plugin-pause.png                                           \
         xmms-plugin-stop.png                                            \
-        xmms-plugin-next.png						\
-	xmms-plugin-menu-eject.png					\
-	xmms-plugin-menu-play.png					\
-	xmms-plugin-menu-pause.png					\
-	xmms-plugin-menu-stop.png					\
-	xmms-plugin-menu-prev.png					\
-	xmms-plugin-menu-next.png					\
-	xmms-plugin-menu-icon.png
+        xmms-plugin-next.png
 
 EXTRA_DIST = $(xmmsicon_DATA)
 all: all-am

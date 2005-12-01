@@ -556,7 +556,7 @@ sub Console_WriteError_InvalidOption
 
 sub GenerateHeaders
 {
-    my $EXTRACT = "/home/tux/Projects/xfce4-xmms-plugin-0.3.1/intltool-extract";
+    my $EXTRACT = "/home/tux/programlama/xmmsdir/xfce4-xmms-plugin/trunk/intltool-extract";
     chomp $EXTRACT;
 
     $EXTRACT = $ENV{"INTLTOOL_EXTRACT"} if $ENV{"INTLTOOL_EXTRACT"};
