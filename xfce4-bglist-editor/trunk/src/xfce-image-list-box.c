@@ -28,9 +28,8 @@
 #include "trace.h"
 
 #include <gtk/gtk.h>
-#include <libxfcegui4/xfce_scaled_image.h>
-#include <libxfcegui4/xfce-filechooser.h>
-#include <libxfce4util/i18n.h>
+#include <libxfcegui4/libxfcegui4.h>
+#include <libxfce4util/libxfce4util.h>
 
 #include "xfce-image-list-box.h"
 #include "xfce-cell-renderer-pixbuf-on-demand.h"
