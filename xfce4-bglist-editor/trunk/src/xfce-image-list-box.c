@@ -779,7 +779,7 @@ xfce_image_list_box_data_received_cb(GtkWidget *w, GdkDragContext *context, gint
 	
 	xdatas = data->data; /*gtk_selection_data_get_text (data);*/
 	if (xdatas)
-		xdata = g_strsplit (xdatas, "\n", 0);
+		xdata = g_strsplit ((gchar*) xdatas, "\n", 0);
 	else
 		xdata = NULL;
 		
