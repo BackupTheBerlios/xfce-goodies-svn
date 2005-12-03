@@ -5,14 +5,14 @@ dnl	2005 Masse Nicolas (masse_nicolas@yahoo.fr)
 dnl
 
 dnl version info
-m4_define([xfce4_quicklauncher_version],[1.9.0])
+m4_define([xfce4_quicklauncher_version],[1.9.1])
 
 dnl init autoconf
 AC_INIT([xfce4-quicklauncher-plugin], [xfce4_quicklauncher_version()], [masse_nicolas@yahoo.fr])
 AC_CONFIG_SRCDIR([configure])
 
 dnl init automake
-AM_INIT_AUTOMAKE([xfce4-quicklauncher-plugin], [1.9.0])
+AM_INIT_AUTOMAKE([xfce4-quicklauncher-plugin], [1.9.1])
 AM_CONFIG_HEADER([config.h])
 AM_MAINTAINER_MODE
 

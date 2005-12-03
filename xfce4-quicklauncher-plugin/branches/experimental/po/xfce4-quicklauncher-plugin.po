@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-05-07 19:29+0200\n"
+"POT-Creation-Date: 2005-12-04 00:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,22 +16,34 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: panel-plugin/main.c:555
+#: ../panel-plugin/main.c:158
 msgid "Quicklauncher"
 msgstr ""
 
-#: panel-plugin/callbacks.c:78
+#: ../panel-plugin/main.c:161
+msgid "Allows you to add launchers easily and display them on many lines."
+msgstr ""
+
+#: ../panel-plugin/main.c:163
+msgid "Other plugins available here"
+msgstr ""
+
+#: ../panel-plugin/callbacks.c:73
+msgid "Configure Quicklauncher"
+msgstr ""
+
+#: ../panel-plugin/callbacks.c:87
 msgid "Lines: "
 msgstr ""
 
-#: panel-plugin/callbacks.c:174
+#: ../panel-plugin/callbacks.c:186
 msgid "icone"
 msgstr ""
 
-#: panel-plugin/callbacks.c:180
+#: ../panel-plugin/callbacks.c:192
 msgid "commande"
 msgstr ""
 
-#: panel-plugin/callbacks.c:268
+#: ../panel-plugin/callbacks.c:288
 msgid "Open icon"
 msgstr ""

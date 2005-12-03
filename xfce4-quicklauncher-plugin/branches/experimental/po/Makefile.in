@@ -19,7 +19,7 @@
 
 GETTEXT_PACKAGE = fr
 PACKAGE = xfce4-quicklauncher-plugin
-VERSION = 1.9.0
+VERSION = 1.9.1
 
 SHELL = /bin/sh
 

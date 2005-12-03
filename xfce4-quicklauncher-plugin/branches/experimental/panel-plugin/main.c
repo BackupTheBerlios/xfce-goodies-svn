@@ -93,8 +93,9 @@ quicklauncher_construct (XfcePanelPlugin *plugin)
                       G_CALLBACK (quicklauncher_configure), quicklauncher);
 
    xfce_panel_plugin_menu_show_about(plugin);
-    g_signal_connect (plugin, "about", 
+   g_signal_connect (plugin, "about", 
                       G_CALLBACK (quicklauncher_about), quicklauncher);
+   
 }
 
 
@@ -147,17 +148,20 @@ quicklauncher_configure(XfcePanelPlugin *plugin, t_quicklauncher *quicklauncher)
 	xfce_panel_plugin_unblock_menu(plugin);
 }
 
-static void 
+
+void 
 quicklauncher_about(XfcePanelPlugin *plugin, t_quicklauncher *quicklauncher)
 {
 	GtkWidget *about;
+	gchar* authors[2] = {"Bountykiller <masse_nicolas@yahoo.fr>", NULL};
 	about = gtk_about_dialog_new();
-	gtk_about_dialog_set_name(GTK_ABOUT_DIALOG(about), _("About Quicklauncher"));
-	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about), "Bountykiller <masse_nicolas@yahoo.fr>");
+	gtk_about_dialog_set_name(GTK_ABOUT_DIALOG(about), _("Quicklauncher"));
+	gtk_about_dialog_set_logo(GTK_ABOUT_DIALOG(about), NULL);
+	gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(about), (gchar**) authors);
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about), _("Allows you to add launchers easily and display them on many lines."));
 	gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(about), "http://xfce-goodies.berlios.de");
 	gtk_about_dialog_set_website_label(GTK_ABOUT_DIALOG(about), _("Other plugins available here"));
-	gtk_about_dialog_run(GTK_ABOUT_DIALOG(about) );
+	gtk_dialog_run(GTK_DIALOG(about));
 	gtk_widget_destroy (about); 
 }
 
