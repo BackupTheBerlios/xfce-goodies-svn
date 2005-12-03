@@ -2,7 +2,7 @@ For Version 1.0:
 ***************
 -allow manually config of nblines ==> done
 -readd autosetting of nblines?
--translations (at least in french)
+-translations (at least in french) ==>done
 -use eventboxes and gdk_pixbuf instead of buttons ==> done
 -make icons growing when the mouse is on ==>done
 -add an icon for this plugin
@@ -12,11 +12,11 @@ For Version 1.0:
 
 For Vesrion 2.0==>will be done for the next panel
 **************
--Implent it as a widget 
+-Implent it as a widget  ==>done (not really a widget, but...)
 -add the possibility to display names
 
 other possible feature
 *********************
 -drag 'n drop support
 -use more themed icons
--allow multiple instances
+-allow multiple instances  ==>done 

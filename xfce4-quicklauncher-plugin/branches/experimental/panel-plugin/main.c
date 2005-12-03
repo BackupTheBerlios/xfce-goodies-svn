@@ -2,7 +2,7 @@
  *            main.c
  *
  *  Thu Jul 15 06:01:04 2004
- *  Last Update: 07/05/2005
+ *  Last Update: 03/12/2005
  *  Copyright  2004 - 2005  bountykiller
  *  Email: masse_nicolas@yahoo.fr
  ****************************************************************************/
@@ -28,7 +28,7 @@
 
 #include "types.h"
 #include "callbacks.h"
-
+#include <string.h>
 
 
 /* Quicklauncher funcs */
@@ -42,7 +42,7 @@ t_launcher* launcher_load_config(XfceRc *rcfile, gint num, t_quicklauncher *quic
 void launcher_save_config(t_launcher *launcher, XfceRc *rcfile, guint16 num);
 
 /* -------------------------------------------------------------------- *
- *                     Panel Plugin Interface                           *
+ *                     Panel Plugin Interface               *
  * -------------------------------------------------------------------- */
 
 static void 
@@ -65,6 +65,8 @@ quicklauncher_save(XfcePanelPlugin *plugin, t_quicklauncher *quicklauncher);
 static void 
 quicklauncher_configure(XfcePanelPlugin *plugin, t_quicklauncher *quicklauncher);
 
+static void 
+quicklauncher_about(XfcePanelPlugin *plugin, t_quicklauncher *quicklauncher);
 
 XFCE_PANEL_PLUGIN_REGISTER_INTERNAL(quicklauncher_construct);
 
@@ -89,6 +91,10 @@ quicklauncher_construct (XfcePanelPlugin *plugin)
     xfce_panel_plugin_menu_show_configure (plugin);
     g_signal_connect (plugin, "configure-plugin", 
                       G_CALLBACK (quicklauncher_configure), quicklauncher);
+
+   xfce_panel_plugin_menu_show_about(plugin);
+    g_signal_connect (plugin, "about", 
+                      G_CALLBACK (quicklauncher_about), quicklauncher);
 }
 
 
@@ -124,7 +130,7 @@ void quicklauncher_free_data(XfcePanelPlugin *plugin, t_quicklauncher *quicklaun
 void quicklauncher_save(XfcePanelPlugin *plugin, t_quicklauncher *quicklauncher)
 {
 	gchar *filename;
-	if(filename = xfce_panel_plugin_save_location(plugin))
+	if(filename = xfce_panel_plugin_save_location(plugin, TRUE))
 	{
 		quicklauncher_save_config(quicklauncher, filename);
 		g_free(filename);
@@ -141,6 +147,24 @@ quicklauncher_configure(XfcePanelPlugin *plugin, t_quicklauncher *quicklauncher)
 	xfce_panel_plugin_unblock_menu(plugin);
 }
 
+static void 
+quicklauncher_about(XfcePanelPlugin *plugin, t_quicklauncher *quicklauncher)
+{
+	GtkWidget *about;
+	about = gtk_about_dialog_new();
+	gtk_about_dialog_set_name(GTK_ABOUT_DIALOG(about), _("About Quicklauncher"));
+	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about), "Bountykiller <masse_nicolas@yahoo.fr>");
+	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about), _("Allows you to add launchers easily and display them on many lines."));
+	gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(about), "http://xfce-goodies.berlios.de");
+	gtk_about_dialog_set_website_label(GTK_ABOUT_DIALOG(about), _("Other plugins available here"));
+	gtk_about_dialog_run(GTK_ABOUT_DIALOG(about) );
+	gtk_widget_destroy (about); 
+}
+
+
+/* -------------------------------------------------------------------- *
+ *              quicklauncher utility funcs               *
+ * -------------------------------------------------------------------- */
 
 void
 quicklauncher_add_element(t_quicklauncher *quicklauncher, t_launcher *launcher)
@@ -220,7 +244,6 @@ quicklauncher_empty_widgets(t_quicklauncher *quicklauncher)
 void
 quicklauncher_empty(t_quicklauncher *quicklauncher)
 {
-	int i;	
 	quicklauncher_empty_widgets(quicklauncher);
 	if (quicklauncher->launchers)
 	{
@@ -265,18 +288,18 @@ quicklauncher_load_default(t_quicklauncher *quicklauncher)
 	launcher = launcher_new("xfhelp4", XFCE_ICON_CATEGORY_HELP, 
 							NULL, quicklauncher);
 	quicklauncher_add_element(quicklauncher, launcher);
-	g_assert(quicklauncher->nb_launcher == 4);
+	//g_assert(quicklauncher->nb_launcher == 4);
 }	
 
 
 t_quicklauncher *
 quicklauncher_new (XfcePanelPlugin *plugin)
 {
-	g_print("create quicklauncher\n");
+	DBG ("create quicklauncher");
 	t_quicklauncher *quicklauncher;
 	
 	quicklauncher = g_new0(t_quicklauncher, 1);
-	gchar *filename = xfce_panel_plugin_save_location(plugin);
+	gchar *filename = xfce_panel_plugin_save_location(plugin, TRUE);
 	
 	if((!filename) || (!quicklauncher_load_config(quicklauncher, filename) ) )
 		quicklauncher_load_default(quicklauncher);
@@ -298,7 +321,6 @@ quicklauncher_new (XfcePanelPlugin *plugin)
 void
 quicklauncher_free(t_quicklauncher *quicklauncher)
 {
-	int i;
 	g_list_foreach(quicklauncher->launchers, (GFunc) launcher_free, NULL);
 	g_list_free(quicklauncher->launchers);
 	
@@ -321,9 +343,11 @@ gboolean quicklauncher_load_config(t_quicklauncher *quicklauncher, const gchar* 
 		{
 			t_launcher *launcher = launcher_load_config(rcfile, i, quicklauncher);
 			quicklauncher_add_element(quicklauncher, launcher);
-			if(!i--) return TRUE;
+			i--;
+			if(!i)	
+				return TRUE;
 		}
-	} else
+	} 
 	return FALSE;
 }
 
@@ -347,7 +371,7 @@ quicklauncher_save_config(t_quicklauncher *quicklauncher, const gchar* filename)
 }
 
 /* -------------------------------------------------------------------- *
- *                        Launcher Interface                            *
+ *                        Launcher Interface                 *
  * -------------------------------------------------------------------- */
 
 //TO DO: support XFCE icon by name
@@ -504,7 +528,7 @@ launcher_free (t_launcher *launcher)
 	UNREF(launcher->def_img);
 	UNREF(launcher->zoomed_img);
 	UNREF(launcher->clicked_img); 
-	g_object_unref(launcher->tooltip);
+	//g_object_unref(launcher->tooltip);
 	g_object_unref(launcher->widget);
 	g_object_unref(launcher->image);
 	

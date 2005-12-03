@@ -25,6 +25,7 @@
 #endif
 
 #include <gtk/gtk.h>
+#include <string.h>
 
 #include "callbacks.h"
 #include "types.h"
@@ -65,8 +66,6 @@ _gtk_widget_get_parent_gtk_window(GtkWidget* widget)
 //******************************************************************************
 t_qck_launcher_opt_dlg* create_qck_launcher_dlg()
  {
-  GtkAdjustment *adjust;
-  
   g_assert( !(_dlg || _icon_window) );
   _icon_window = create_icon_window();
   _dlg = (t_qck_launcher_opt_dlg *) g_new0(t_qck_launcher_opt_dlg, 1);
@@ -384,7 +383,7 @@ void
 on_btn_remove_clicked (GtkButton  *button, gpointer user_data)
 {
 	GtkTreeModel *treemodel;
-	GtkTreeIter iter, previous;	
+	GtkTreeIter iter;	
 	GtkTreeSelection *sel;
 	GtkTreePath *path;
 	t_launcher *removed;
@@ -411,7 +410,7 @@ on_btn_up_clicked (GtkButton *button, gpointer user_data)
 	GtkTreeIter iter, previous;	
 	GtkTreeSelection *sel;
 	GtkTreePath *path;
-	gint i, *indice;
+	gint *indice;
 	GList *launcher;
 	
 	sel = gtk_tree_view_get_selection( GTK_TREE_VIEW(_dlg->treeview1) );
@@ -442,7 +441,7 @@ on_btn_down_clicked (GtkButton *button, gpointer user_data)
 	GtkTreeIter iter, next;	
 	GtkTreeSelection *sel;
 	GtkTreePath *path;
-	gint i, *indice;
+	gint *indice;
 	GList *launcher;
 	
 	sel = gtk_tree_view_get_selection( GTK_TREE_VIEW(_dlg->treeview1) );

@@ -97,7 +97,6 @@ typedef struct
 t_launcher;
 
 
-
 GdkPixbuf *
 _create_pixbuf(gint id, const gchar* name, gint size);
 
