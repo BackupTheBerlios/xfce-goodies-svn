@@ -1,0 +1,277 @@
+Lua-Graph plugin for XFce4 Panel.
+
+Content
+=======
+* About Lua-Graph-Plugin
+* Lua Details
+* Available Scripts
+* Writting your own Scripts
+* Script Examples
+* Debugging Lua Scripts
+* Installation Notes
+
+
+About Lua-Graph-Plugin
+======================
+This plugin is a generic Lua-host plugin, which allows a Lua script to set
+the plugin's content.
+
+With this plugin, you have quick & dirty solution for monitoring any kind of
+data on your computer, until a fully-fledged dedicated plugin is available.
+
+
+
+Lua Details
+======================
+Lua (http://www.lua.org) is a light-weight programming language designed for 
+extending applications. The Lua library is GPLed, ANSI compatible, portable 
+and easy to use.
+
+The current version of Lua (5.0) supports:
+* Hashes, Arrays, Linked-Lists
+* Strings and Binary buffers
+* I/O library for read and writing text/binary files
+* OS Functions: Date,Time,Exec,GetEnv
+
+Read the Lua manual for more information: http://www.lua.org/pil/index.html.
+
+Any information you can get with a lua script, is available to the plugin, 
+and can be easily displayed on your XFce4 panel.
+
+
+
+Available Scripts
+======================
+Three Lua scripts are supplied in the "scripts" sub-directory:
+
+1. counter.lua
+	This is a sample script which demonstrates updating a label
+	and a progress bar.
+	
+2. temperature.lua
+	This scripts read an ACPI temperature file
+	(/proc/acpi/thermal_zone/THM0/temperature) and displays the temperature
+	in either celcius or fahrenheit degrees.
+	
+3. battery.lua
+	This scripts read the first battery status file
+	(/proc/acpi/battery/BAT0/state) and the AC status file
+	(/proc/acpi/ac_adapter/AC/state) and displays the remaining battery charge.
+	
+These scripts aren't bullet-proof (e.g. ACPI files on your system might be different),
+But they can be used as templates for your own Lua scripts.
+
+
+Writting your own Scripts
+=========================
+Lua scripts are simple text files.
+To learn about Lua syntax, read the first chapter in "Programming in Lua":
+http://www.lua.org/pil/index.html#P1
+
+--Mandatory Script Functions--
+Lua scripts for this plugin should have two functions:
+"init" will be called when the plugin loads, and will create labels and progress bars.
+"update" will be called once every second (or other interval), and will update the 
+label's text and the progress bar's value and colors.
+
+--Functions References--
+Lua scripts for this plugin can call several functions (besides the Lua standard functions):
+
+* add_label( NAME, INITIAL_TEXT)
+	Creates a new label on the panel.
+	The new label will be added right of an previous label/progress bar.
+	NAME is a string referencing this label (it is used as an internal hash key).
+	INITIAL_TEXT is the text displayed on this label 
+	(see also 'pango markup text').
+
+* add_progressbar( NAME, R,G,B )
+	Creates a new progress bar on the panel.
+	The new progressbar will be added right of an previous label/progress bar.
+	NAME is a string referencing this progress bar (it is used as an internal hash key).
+	R,G,B are an RGB triplets (0 to 65535) which sets the initial color of the
+	progress bar.
+	
+* set_interval ( MS )
+	Sets the update interval of this plugin.
+	MS is the update interval in milliseconds.
+	update interval defaults to 1 second unless otherwise specified.
+
+The above three functions can be called ONLY from your 'init' function.
+The following functions can be called from either "update" or "init" functions:
+
+* set_label_text ( NAME, TEXT )
+	Updates the text of a previously created label.
+	NAME is the name of the label.
+	TEXT is the new text to be displayed.
+	(see also 'pango markup text').
+
+* set_progress_bar_value ( NAME, VALUE)
+	Updates the value (called 'fraction' in GTK+ speak) of the progress bar.
+	NAME is the name of the progress bar.
+	VALUE is a numeric value, 0 = minimnum, 100 = maximum.
+
+* set_progress_bar_color ( NAME, R,G,B )
+	Updates the progress bar's color.
+	NAME is the name of the progress bar.
+	R,G,B are an RGB triplets (0 to 65535) which sets the color of the
+	progress bar.
+	
+* get_status_color ( VALUE )
+	Returns an RGB-triplets (Lua functions can return multiple values), relative to the
+	value supplied.
+	VALUE is a numeric value (0 to 100).
+	for a VALUE of 0, the function will return red.
+	for a VALUE of 50, the function will return orange/yellow.
+	for a VALUE of 100, the function will return green.
+	(This function uses VALUE as the H paramter in an HSV to RGB convertion).
+	
+* small_text ( TEXT )
+	returns a pango-markup for small text, according the to panel's size.
+	Example:
+	* When the panel is medium sized, calling 'small_text("hello")' will return
+	  the string: '<span size="small">Hello</span>'.
+	* When the panel is large sized, calling 'small_text("hello")' will return
+	  the string: '<span size="large">Hello</span>'.
+	
+* large_text ( TEXT )
+	returns a pango-markup for large text, according the to panel's size.
+	Example:
+	* When the panel is medium sized, calling 'small_text("hello")' will return
+	  the string: '<span size="x-large">Hello</span>'.
+	* When the panel is large sized, calling 'small_text("hello")' will return
+	  the string: '<span size="xx-large">Hello</span>'.
+	
+--Pango Markup Text--
+Labels in this plugin use the pango markup text.
+It is a stripped-down version of an HTML markup.
+See http://developer.gimp.org/api/2.0/pango/PangoMarkupFormat.html
+
+
+Script Exmaples
+=================
+
+First Example
+-----------------
+The following Lua-script makes the plugin monitor the computer's temperature 
+(temperature is displayed as a number on the Xfce panel).
+
+This is a stripped-down version of the actual "temperature.lua" script.
+
+------begin temperature script -----
+function init()
+   add_label("lbl", "0")
+end
+
+function update()
+   value = read_numeric_value_from_file(
+	"/proc/acpi/thermal_zone/THM0/temperature",
+	"temperature")
+	
+   set_label_text( "lbl", string.format("%d c",value))
+end
+------ end temperature script -----
+
+As you can see, updating the text is very easy...
+'read_numeric_value_from_file' is a helper function, available in 'temperature.lua'
+'string.format' is a built-in lua function which behaves just like "printf".
+
+
+
+Second Example
+--------------
+Read Battery level and AC state,
+Display a colored progress bar and a label.
+
+------begin Battery script ------
+function init()
+   add_label("lbl", "")
+   add_progressbar("prg",0,0,0)
+   
+   max_bat_charge = read_numeric_value_from_file(
+	"/proc/acpi/battery/BAT0/info", "last full capacity");
+end
+
+function update()
+   local current_charge = read_numeric_value_from_file(
+	"/proc/acpi/battery/BAT0/state","remaining capacity");
+	
+   local ac = read_line_from_file("/proc/acpi/ac_adapter/AC/state");
+   local i = string.find(ac,"on");
+   local state = "<span background=\"#FF009D\">BAT</span>" ;
+   if i ~= nil then
+       state = "AC";
+   end;
+   percent = current_charge*100/max_bat_charge;
+   set_label_text( "lbl", state .. "\n" ..string.format("%d%%", percent)) ;
+   set_progress_bar_value( "prg", percent ) ;
+   set_progress_bar_color( "prg", get_status_color(percent) ) ;
+end
+----- end battery script -----
+
+'max_bat_charge' is a global variable, which contains the max. charge value for the battery.
+
+'local' is a Lua keyword which creates a local (=not global) variable.
+
+'ac' is a local variable (string), which should contain either "on-line" or "off-line".
+
+'i' is a local variable, which will contain a number if the 'ac' string had 'on' in it, or NIL 
+(NIL is the Lua equivalent of Perl's 'undef', not C's NULL).
+
+'state' is the desired text of the label. It detauls to a pinkish 'BAT' label, but if the 'ac' 
+variable had 'on' in it (meaning the AC is "online"), the 'state' will be changed to 'AC'.
+
+
+
+
+Debugging Lua Scripts
+=====================
+Current version (0.1) supports very minimal debugging facilities.
+Hopefully this will change in the near future.
+
+Your best strategy at the moment is to kill the currently running panel
+(killall -9 xfce4-panel), and then run a new panel from a console window 
+whose output you can see.
+
+Lua errors are sent to STDOUT, and they will be displayed on the console's window.
+
+A Lua script can print information to STDOUT using the built-in 'print' command.
+
+--The following are valid Lua statements:--
+print("Hello World")
+print("The Value of I is ", i)
+print( string.format("The Value of I is %d", i) )
+
+
+
+Installation Notes
+=====================
+
+* Required Libraries
+	To compile this plugin, you'll need the Lua library, and the Lua libraries Library.
+	("Lua Libraries" are extensions to lua which provide the I/O, OS, String functions).
+	Obviously, you'll need the development headers and libraries.
+	
+	On Debian, install (e.g. 'apt-get install') the following packages: 
+		liblua50-dev
+		liblualib50-dev
+		
+	On RPM-based systems, the package is called:
+		lua50-devel
+
+* Destination Folder
+	XFce4 panel plugins are usually stored in either:
+		/usr/lib/xfce4/panel-plugins/
+	or
+		/usr/local/lib/xfce4/panel-plugins/
+	
+	When you run "./configure", make sure you specify the corrent folder.
+	
+	for "/usr/lib/xfce4/panel-plugins/", run:
+		./configure --prefix=/usr
+		
+	for "/usr/local/lib/xfce4/panel-plugins/", run:
+		./configure --prefix=/usr/local
+		
+		
+
+Copyright © 2005 A. Gordon <agordon88@gmail.com>
