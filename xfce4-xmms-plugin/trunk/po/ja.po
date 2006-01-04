@@ -1,0 +1,32 @@
+# Japanese translations for xfce4-xmms-plugin package.
+# Copyright (C) 2005 Kemal Ilgar Eroglu.
+# This file is distributed under the same license as the xfce4-xmms-plugin package.
+# Daichi Kawahata <daichi@xfce.org>, 2006.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: xfce4-xmms-plugin 0.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-01-04 23:52+0900\n"
+"PO-Revision-Date: 2006-01-05 00:14+0900\n"
+"Last-Translator: Daichi Kawahata <daichi@xfce.org>\n"
+"Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../panel-plugin/xmms_plugin.c:749
+msgid "Properties"
+msgstr "プロパティ"
+
+#: ../panel-plugin/xmms_plugin.c:761
+msgid "Xfce4 XMMS Plugin Options"
+msgstr "Xfce4 XMMS プラグインオプション"
+
+#: ../panel-plugin/xfce4-xmms-plugin.desktop.in.in.h:1
+msgid "XMMS plugin for Xfce 4.4 panel"
+msgstr "このプラグインから XMMS を操作します。"
+
+#: ../panel-plugin/xfce4-xmms-plugin.desktop.in.in.h:2
+msgid "Xfce4 XMMS Plugin"
+msgstr "XMMS プラグイン"
