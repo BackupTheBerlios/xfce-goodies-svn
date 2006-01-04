@@ -8,7 +8,7 @@ msgstr ""
 "Last-Translator: Piotr Wolny <gildur@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=ISO-8859-2\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../src/websearch.c:314
@@ -17,7 +17,7 @@ msgstr "Ustawienia"
 
 #: ../src/websearch.c:323
 msgid "Browser command: "
-msgstr "Przegl±darka: "
+msgstr "PrzeglÄ…darka: "
 
 #: src/websearch.c:271
 msgid "Search engine: "
@@ -29,4 +29,4 @@ msgstr "Wyszukiwanie w sieci"
 
 #: ../src/websearch.desktop.in.in.h:1
 msgid "Search the Web directly from the Panel"
-msgstr "Przeszukuj sieæ bezpo¶rednio z panelu"
+msgstr "Przeszukuj sieÄ‡ bezpoÅ›rednio z panelu"
