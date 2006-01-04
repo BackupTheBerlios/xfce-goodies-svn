@@ -1,119 +1,105 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Korean translations for xfce4-xmms-plugin package.
+# Copyright (C) 2005 Kemal Ilgar Eroglu.
+# This file is distributed under the same license as the xfce4-xmms-plugin package.
+# ByungHyun Choi <byunghyun.choi@gmail.com>, 2005.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: xfce4-xmms-plugin\n"
+"Project-Id-Version: xfce4-xmms-plugin 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-03-20 13:23+0100\n"
+"POT-Creation-Date: 2006-01-04 23:52+0900\n"
 "PO-Revision-Date: 2005-01-19 17:38+0900\n"
-"Last-Translator: ByungHyun Choi<byunghyun.choi@gmail.com>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Last-Translator: ByungHyun Choi <byunghyun.choi@gmail.com>\n"
+"Language-Team: Korean <xfce4-users-kr-i18n@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#. OPTIONS
-#. defaults to show time remaining in song ; changeable in the options dialog
-#. adjusts the volume by three ; changeable in the options dialog
-#: panel-plugin/xmms_plugin.c:52
-msgid "(Paused)"
-msgstr "(일시정지)"
-
-#: panel-plugin/xmms_plugin.c:226
-msgid "Clear Playlist"
-msgstr "연주목록 삭제"
-
-#: panel-plugin/xmms_plugin.c:332
-#, c-format
-msgid "(Vol: %d)"
-msgstr "(볼륨: %d)"
-
-#. client isnt even on!
-#: panel-plugin/xmms_plugin.c:341
-msgid ""
-"XMMS NOT RUNNING\n"
-"(Middle click to launch)"
+#: ../panel-plugin/xmms_plugin.c:749
+msgid "Properties"
 msgstr ""
-"XMMS를 동작시키지 않았습니다.\n"
-"(가운데 버튼을 누르면 시작합니다.)"
 
-#: panel-plugin/xmms_plugin.c:441
-msgid "Eject"
-msgstr "꺼내기"
+#: ../panel-plugin/xmms_plugin.c:761
+msgid "Xfce4 XMMS Plugin Options"
+msgstr ""
 
-#: panel-plugin/xmms_plugin.c:445
-msgid "Backward"
-msgstr "뒤로"
+#: ../panel-plugin/xfce4-xmms-plugin.desktop.in.in.h:1
+msgid "XMMS plugin for Xfce 4.4 panel"
+msgstr ""
 
-#: panel-plugin/xmms_plugin.c:449
-msgid "Stop"
-msgstr "정지"
+#: ../panel-plugin/xfce4-xmms-plugin.desktop.in.in.h:2
+msgid "Xfce4 XMMS Plugin"
+msgstr ""
 
-#: panel-plugin/xmms_plugin.c:453
-msgid "Pause"
-msgstr "일시 정지"
+#~ msgid "(Paused)"
+#~ msgstr "(일시정지)"
 
-#: panel-plugin/xmms_plugin.c:457
-msgid "Play"
-msgstr "연주"
+#~ msgid "Clear Playlist"
+#~ msgstr "연주목록 삭제"
 
-#: panel-plugin/xmms_plugin.c:461
-msgid "Forward"
-msgstr "앞으로"
+#~ msgid "(Vol: %d)"
+#~ msgstr "(볼륨: %d)"
 
-#: panel-plugin/xmms_plugin.c:469
-msgid "Playlist"
-msgstr "연주목록"
+#~ msgid ""
+#~ "XMMS NOT RUNNING\n"
+#~ "(Middle click to launch)"
+#~ msgstr ""
+#~ "XMMS를 동작시키지 않았습니다.\n"
+#~ "(가운데 버튼을 누르면 시작합니다.)"
 
-#: panel-plugin/xmms_plugin.c:476
-msgid "Preferences"
-msgstr "설정"
+#~ msgid "Eject"
+#~ msgstr "꺼내기"
 
-#: panel-plugin/xmms_plugin.c:480
-msgid "Quit"
-msgstr "끝"
+#~ msgid "Backward"
+#~ msgstr "뒤로"
 
-#. TIME CONFIG
-#: panel-plugin/xmms_plugin.c:588
-msgid "Display time as:"
-msgstr "시간 표시 방법:"
+#~ msgid "Stop"
+#~ msgstr "정지"
 
-#: panel-plugin/xmms_plugin.c:592
-msgid "Remaining"
-msgstr "남은 시간"
+#~ msgid "Pause"
+#~ msgstr "일시 정지"
 
-#: panel-plugin/xmms_plugin.c:593
-msgid "Elapsed"
-msgstr "연주한 시간"
+#~ msgid "Play"
+#~ msgstr "연주"
 
-#: panel-plugin/xmms_plugin.c:607
-msgid "Increase Volume By:"
-msgstr "볼륨 조절 단계:"
+#~ msgid "Forward"
+#~ msgstr "앞으로"
 
-#: panel-plugin/xmms_plugin.c:618
-msgid "Display Volume"
-msgstr "볼륨 표시"
+#~ msgid "Playlist"
+#~ msgstr "연주목록"
 
-#: panel-plugin/xmms_plugin.c:622
-msgid "Always Display"
-msgstr "항상 보임"
+#~ msgid "Preferences"
+#~ msgstr "설정"
 
-#: panel-plugin/xmms_plugin.c:628
-msgid "Volume Display Timeout:"
-msgstr "볼륨 표시 시간:"
+#~ msgid "Quit"
+#~ msgstr "끝"
 
-#: panel-plugin/xmms_plugin.c:645
-msgid "Paused Text:"
-msgstr "일시 정시 글:"
+#~ msgid "Display time as:"
+#~ msgstr "시간 표시 방법:"
 
-#: panel-plugin/xmms_plugin.c:653
-msgid "Stopped Text:"
-msgstr "정지 글:"
+#~ msgid "Remaining"
+#~ msgstr "남은 시간"
 
-#: panel-plugin/xmms_plugin.c:776
-msgid "XMMS Control"
-msgstr "XMMS 리모콘"
+#~ msgid "Elapsed"
+#~ msgstr "연주한 시간"
+
+#~ msgid "Increase Volume By:"
+#~ msgstr "볼륨 조절 단계:"
+
+#~ msgid "Display Volume"
+#~ msgstr "볼륨 표시"
+
+#~ msgid "Always Display"
+#~ msgstr "항상 보임"
+
+#~ msgid "Volume Display Timeout:"
+#~ msgstr "볼륨 표시 시간:"
+
+#~ msgid "Paused Text:"
+#~ msgstr "일시 정시 글:"
+
+#~ msgid "Stopped Text:"
+#~ msgstr "정지 글:"
+
+#~ msgid "XMMS Control"
+#~ msgstr "XMMS 리모콘"

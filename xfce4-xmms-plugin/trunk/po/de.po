@@ -1,101 +1,102 @@
-#. OPTIONS
-#. defaults to show time remaining in song ; changeable in the options dialog
-#. adjusts the volume by three ; changeable in the options dialog
-#: panel-plugin/xmms_plugin.c:52
-msgid "(Paused)"
-msgstr "(Pausiert)"
-
-#: panel-plugin/xmms_plugin.c:226
-msgid "Clear Playlist"
-msgstr "Playliste löschen"
-
-#: panel-plugin/xmms_plugin.c:332
-#, c-format
-msgid "(Vol: %d)"
-msgstr "(Lautstärke: %d)"
-
-#. client isnt even on!
-#: panel-plugin/xmms_plugin.c:341
+# German translations for xfce4-xmms-plugin package.
+# Copyright (C) 2005 Kemal Ilgar Eroglu.
+# This file is distributed under the same license as the xfce4-xmms-plugin package.
+# Benedikt Meurer <benny@xfce.org>, 2004.
+#
 msgid ""
-"XMMS NOT RUNNING\n"
-"(Middle click to launch)"
 msgstr ""
-"XMMS LÄUFT NICHT\n"
-"(Mittle Maustaste drücken, zum starten)"
+"Project-Id-Version: xfce4-xmms-plugin 0.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-01-04 23:52+0900\n"
+"PO-Revision-Date: 2006-01-05 00:15+0900\n"
+"Last-Translator: Benedikt Meurer <benny@xfce.org>\n"
+"Language-Team: German <de@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 
-#: panel-plugin/xmms_plugin.c:441
-msgid "Eject"
-msgstr "Auswerfen"
-
-#: panel-plugin/xmms_plugin.c:445
-msgid "Backward"
-msgstr "Vorheriges"
-
-#: panel-plugin/xmms_plugin.c:449
-msgid "Stop"
-msgstr "Stoppen"
-
-#: panel-plugin/xmms_plugin.c:453
-msgid "Pause"
-msgstr "Pausieren"
-
-#: panel-plugin/xmms_plugin.c:457
-msgid "Play"
-msgstr "Abspielen"
-
-#: panel-plugin/xmms_plugin.c:461
-msgid "Forward"
-msgstr "Nächstes"
-
-#: panel-plugin/xmms_plugin.c:469
-msgid "Playlist"
-msgstr "Playliste"
-
-#: panel-plugin/xmms_plugin.c:476
-msgid "Preferences"
-msgstr "Einstellungen"
-
-#: panel-plugin/xmms_plugin.c:480
-msgid "Quit"
-msgstr "Beenden"
-
-#. TIME CONFIG
-#: panel-plugin/xmms_plugin.c:588
-msgid "Display time as:"
-msgstr "Zeit anzeigen als:"
-
-#: panel-plugin/xmms_plugin.c:592
-msgid "Remaining"
-msgstr "Verbleibend"
-
-#: panel-plugin/xmms_plugin.c:593
-msgid "Elapsed"
-msgstr "Verstrichen"
-
-#: panel-plugin/xmms_plugin.c:607
-msgid "Increase Volume By:"
-msgstr "Lautstärke erhöhen um"
-
-#: panel-plugin/xmms_plugin.c:618
-msgid "Display Volume"
-msgstr "Lautstärke anzeigen"
-
-#: panel-plugin/xmms_plugin.c:622
-msgid "Always Display"
-msgstr "Immer anzeigen"
-
-#: panel-plugin/xmms_plugin.c:628
-msgid "Volume Display Timeout:"
+#: ../panel-plugin/xmms_plugin.c:749
+msgid "Properties"
 msgstr ""
 
-#: panel-plugin/xmms_plugin.c:645
-msgid "Paused Text:"
-msgstr "Anzeige bei pausiert:"
+#: ../panel-plugin/xmms_plugin.c:761
+msgid "Xfce4 XMMS Plugin Options"
+msgstr ""
 
-#: panel-plugin/xmms_plugin.c:653
-msgid "Stopped Text:"
-msgstr "Anzeige bei gestoppt:"
+#: ../panel-plugin/xfce4-xmms-plugin.desktop.in.in.h:1
+msgid "XMMS plugin for Xfce 4.4 panel"
+msgstr ""
 
-#: panel-plugin/xmms_plugin.c:776
-msgid "XMMS Control"
-msgstr "XMMS Fernsteuerung"
+#: ../panel-plugin/xfce4-xmms-plugin.desktop.in.in.h:2
+msgid "Xfce4 XMMS Plugin"
+msgstr ""
+
+#~ msgid "(Paused)"
+#~ msgstr "(Pausiert)"
+
+#~ msgid "Clear Playlist"
+#~ msgstr "Playliste löschen"
+
+#~ msgid "(Vol: %d)"
+#~ msgstr "(Lautstärke: %d)"
+
+#~ msgid ""
+#~ "XMMS NOT RUNNING\n"
+#~ "(Middle click to launch)"
+#~ msgstr ""
+#~ "XMMS LÄUFT NICHT\n"
+#~ "(Mittle Maustaste drücken, zum starten)"
+
+#~ msgid "Eject"
+#~ msgstr "Auswerfen"
+
+#~ msgid "Backward"
+#~ msgstr "Vorheriges"
+
+#~ msgid "Stop"
+#~ msgstr "Stoppen"
+
+#~ msgid "Pause"
+#~ msgstr "Pausieren"
+
+#~ msgid "Play"
+#~ msgstr "Abspielen"
+
+#~ msgid "Forward"
+#~ msgstr "Nächstes"
+
+#~ msgid "Playlist"
+#~ msgstr "Playliste"
+
+#~ msgid "Preferences"
+#~ msgstr "Einstellungen"
+
+#~ msgid "Quit"
+#~ msgstr "Beenden"
+
+#~ msgid "Display time as:"
+#~ msgstr "Zeit anzeigen als:"
+
+#~ msgid "Remaining"
+#~ msgstr "Verbleibend"
+
+#~ msgid "Elapsed"
+#~ msgstr "Verstrichen"
+
+#~ msgid "Increase Volume By:"
+#~ msgstr "Lautstärke erhöhen um"
+
+#~ msgid "Display Volume"
+#~ msgstr "Lautstärke anzeigen"
+
+#~ msgid "Always Display"
+#~ msgstr "Immer anzeigen"
+
+#~ msgid "Paused Text:"
+#~ msgstr "Anzeige bei pausiert:"
+
+#~ msgid "Stopped Text:"
+#~ msgstr "Anzeige bei gestoppt:"
+
+#~ msgid "XMMS Control"
+#~ msgstr "XMMS Fernsteuerung"

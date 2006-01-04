@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-03-20 13:23+0100\n"
+"POT-Creation-Date: 2006-01-04 23:52+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,102 +16,18 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#. OPTIONS
-#. defaults to show time remaining in song ; changeable in the options dialog
-#. adjusts the volume by three ; changeable in the options dialog
-#: panel-plugin/xmms_plugin.c:52
-msgid "(Paused)"
+#: ../panel-plugin/xmms_plugin.c:749
+msgid "Properties"
 msgstr ""
 
-#: panel-plugin/xmms_plugin.c:226
-msgid "Clear Playlist"
+#: ../panel-plugin/xmms_plugin.c:761
+msgid "Xfce4 XMMS Plugin Options"
 msgstr ""
 
-#: panel-plugin/xmms_plugin.c:332
-#, c-format
-msgid "(Vol: %d)"
+#: ../panel-plugin/xfce4-xmms-plugin.desktop.in.in.h:1
+msgid "XMMS plugin for Xfce 4.4 panel"
 msgstr ""
 
-#. client isnt even on!
-#: panel-plugin/xmms_plugin.c:341
-msgid ""
-"XMMS NOT RUNNING\n"
-"(Middle click to launch)"
-msgstr ""
-
-#: panel-plugin/xmms_plugin.c:441
-msgid "Eject"
-msgstr ""
-
-#: panel-plugin/xmms_plugin.c:445
-msgid "Backward"
-msgstr ""
-
-#: panel-plugin/xmms_plugin.c:449
-msgid "Stop"
-msgstr ""
-
-#: panel-plugin/xmms_plugin.c:453
-msgid "Pause"
-msgstr ""
-
-#: panel-plugin/xmms_plugin.c:457
-msgid "Play"
-msgstr ""
-
-#: panel-plugin/xmms_plugin.c:461
-msgid "Forward"
-msgstr ""
-
-#: panel-plugin/xmms_plugin.c:469
-msgid "Playlist"
-msgstr ""
-
-#: panel-plugin/xmms_plugin.c:476
-msgid "Preferences"
-msgstr ""
-
-#: panel-plugin/xmms_plugin.c:480
-msgid "Quit"
-msgstr ""
-
-#. TIME CONFIG
-#: panel-plugin/xmms_plugin.c:588
-msgid "Display time as:"
-msgstr ""
-
-#: panel-plugin/xmms_plugin.c:592
-msgid "Remaining"
-msgstr ""
-
-#: panel-plugin/xmms_plugin.c:593
-msgid "Elapsed"
-msgstr ""
-
-#: panel-plugin/xmms_plugin.c:607
-msgid "Increase Volume By:"
-msgstr ""
-
-#: panel-plugin/xmms_plugin.c:618
-msgid "Display Volume"
-msgstr ""
-
-#: panel-plugin/xmms_plugin.c:622
-msgid "Always Display"
-msgstr ""
-
-#: panel-plugin/xmms_plugin.c:628
-msgid "Volume Display Timeout:"
-msgstr ""
-
-#: panel-plugin/xmms_plugin.c:645
-msgid "Paused Text:"
-msgstr ""
-
-#: panel-plugin/xmms_plugin.c:653
-msgid "Stopped Text:"
-msgstr ""
-
-#: panel-plugin/xmms_plugin.c:776
-msgid "XMMS Control"
+#: ../panel-plugin/xfce4-xmms-plugin.desktop.in.in.h:2
+msgid "Xfce4 XMMS Plugin"
 msgstr ""

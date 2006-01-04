@@ -1,0 +1,23 @@
+2006-01-04  Daichi Kawahata <daichi@xfce.org>
+
+	* POTFILES.in: Added a missing file.
+	* de.po, ko.po, lt.po: Updated.
+
+2005-12-01  Kemal Ilgar Eroglu <kieroglu@math.washington.edu>
+
+	* Makefile.in.in: Fix Makefile
+
+2005-02-13  Jean-Francois Wauthy <pollux@xfce.org>
+
+	* lt.po: add LT translations
+
+2005-01-25  Jean-Francois Wauthy <pollux@xfce.org>
+
+	* ko.po: add KO translations
+
+2004-03-20  Benedikt Meurer <benny@xfce.org>
+
+	* ChangeLog, Makefile.in.in, POTFILES.in, de.gmo, de.po,
+	  xfce4-xmms-plugin.pot: Added i18n support. Rearranged some
+	  stuff.
+
