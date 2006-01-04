@@ -1,14 +1,14 @@
-# translation of xfce4-toys.po to Persian
-# Persian translation of xfce4-toys.
-# Copyright (C) 2003 THE xfce4-toys'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the xfce4-toys package.
+# translation of xfce4-eyes.po to Persian
+# Persian translation of xfce4-eyes.
+# Copyright (C) 2003 THE xfce4-eyes'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the xfce4-eyes package.
 # Abbas Izad <abbasizad@hotmail.com>, 2003.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xfce4-toys\n"
+"Project-Id-Version: xfce4-eyes 4.3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-08-08 20:14+0200\n"
+"POT-Creation-Date: 2006-01-04 19:42+0900\n"
 "PO-Revision-Date: 2003-12-24 15:45+0330\n"
 "Last-Translator: Abbas Izad <abbasizad@hotmail.com>\n"
 "Language-Team: Persian <fa@li.org>\n"
@@ -17,7 +17,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.0.2\n"
 
-#: xfce4-eyes/panel-plugin/eyes.c:550
+#: panel-plugin/eyes.c:555
 msgid "Eyes"
 msgstr "چشم‌ها"
-

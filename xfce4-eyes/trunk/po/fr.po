@@ -1,14 +1,14 @@
-# French translation to xfce4-toys.
+# French translation to xfce4-eyes.
 # Copyright (C) Free Software Foundation
-# This file is distributed under the same license as the PACKAGE package.
+# This file is distributed under the same license as the xfce4-eyes package.
 # François Le Clainche <fleclainche@wanadoo.fr>, 2003.
 # 
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: xfce4-toys\n"
+"Project-Id-Version: xfce4-eyes 4.3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-08-08 20:14+0200\n"
+"POT-Creation-Date: 2006-01-04 19:42+0900\n"
 "PO-Revision-Date: 2004-08-08 20:14+0200\n"
 "Last-Translator: François Le Clainche <fleclainche@wanadoo.fr>\n"
 "Language-Team: none\n"
@@ -16,7 +16,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: xfce4-eyes/panel-plugin/eyes.c:550
+#: panel-plugin/eyes.c:555
 msgid "Eyes"
 msgstr "Yeux"
-

@@ -1,11 +1,12 @@
-# Copyright (C) 2003 THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the xfce4-toys package.
+# Copyright (C) 2003 THE xfce4-eyes'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the xfce4-eyes package.
 # umm <umm@pchome.com.tw>, 2003.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xfce4-toys\n"
-"POT-Creation-Date: 2004-08-08 20:14+0200\n"
+"Project-Id-Version: xfce4-eyes 4.3.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-01-04 19:42+0900\n"
 "PO-Revision-Date: 2003-08-29 11:02+0800\n"
 "Last-Translator: umm <umm@pchome.com.tw>\n"
 "Language-Team:  <>\n"
@@ -13,7 +14,6 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: xfce4-eyes/panel-plugin/eyes.c:550
+#: panel-plugin/eyes.c:555
 msgid "Eyes"
 msgstr "眼睛"
-

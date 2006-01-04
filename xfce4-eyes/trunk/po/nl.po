@@ -1,13 +1,13 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# Copyright (C) YEAR THE xfce4-eyes'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the xfce4-eyes package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2004-08-08 20:14+0200\n"
+"Project-Id-Version: xfce4-eyes 4.3.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-01-04 19:42+0900\n"
 "PO-Revision-Date: 2004-08-25 08:35+0200\n"
 "Last-Translator: Jasper Huijsmans <jasper@xfce.org>\n"
 "Language-Team: Nederlands <nl@li.org>\n"
@@ -15,7 +15,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: xfce4-eyes/panel-plugin/eyes.c:550
+#: panel-plugin/eyes.c:555
 msgid "Eyes"
 msgstr "Ogen"
-

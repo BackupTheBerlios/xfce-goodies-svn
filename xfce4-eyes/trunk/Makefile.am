@@ -1,3 +1,4 @@
 SUBDIRS =								\
 	panel-plugin							\
-	themes
+	themes								\
+	po

@@ -1,12 +1,13 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# Copyright (C) YEAR THE xfce4-eyes'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the xfce4-eyes package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: XFCE4-Toys 4.0\n"
-"POT-Creation-Date: 2004-08-08 20:14+0200\n"
+"Project-Id-Version: xfce4-eyes 4.3.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-01-04 19:42+0900\n"
 "PO-Revision-Date: 2003-09-26 19:36-0600\n"
 "Last-Translator: Dinesh Nadarajah <dinesh_list@sbcglobal.net>\n"
 "Language-Team: Tamil <tamilinix@yahoogroups.com>\n"
@@ -14,7 +15,6 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: xfce4-eyes/panel-plugin/eyes.c:550
+#: panel-plugin/eyes.c:555
 msgid "Eyes"
 msgstr "கண்கள்"
-

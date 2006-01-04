@@ -1,14 +1,15 @@
 # translation of cs.po to Czech
 # Czech translation for xfdesktop
-# This file is distributed under the same license as the PACKAGE package.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER.
+# This file is distributed under the same license as the xfce4-eyes package.
+# Copyright (C) YEAR THE xfce4-eyes'S COPYRIGHT HOLDER.
 # Lukáš Konarovský <daeltar@daeltar.org>, 2003.
 # Alois Nespor <Alois.Nespor@seznam.cz>, 2004.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: cs\n"
-"POT-Creation-Date: 2004-08-08 20:14+0200\n"
+"Project-Id-Version: xfce4-eyes 4.3.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-01-04 19:42+0900\n"
 "PO-Revision-Date: 2004-10-28 12:34+0000\n"
 "Last-Translator: Alois Nespor <Alois.Nespor@seznam.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -17,7 +18,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.3\n"
 
-#: xfce4-eyes/panel-plugin/eyes.c:550
+#: panel-plugin/eyes.c:555
 msgid "Eyes"
 msgstr "Oči"
-

@@ -1,13 +1,13 @@
-# translation of xfce4-toys.po to Bangla INDIA
-# This file is distributed under the same license as the xfce4-toys package.
+# translation of xfce4-eyes.po to Bangla INDIA
+# This file is distributed under the same license as the xfce4-eyes package.
 # Copyright (C)  2005 Free Software Foundation.
 # Runa Bhattacharjee <runab@redhat.com>, 2005.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xfce4-toys\n"
+"Project-Id-Version: xfce4-eyes 4.3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-08-08 20:14+0200\n"
+"POT-Creation-Date: 2006-01-04 19:42+0900\n"
 "PO-Revision-Date: 2005-04-06 16:42+0530\n"
 "Last-Translator: Runa Bhattacharjee <runab@redhat.com>\n"
 "Language-Team: Bangla INDIA <LL@li.org>\n"
@@ -16,7 +16,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
 
-#: xfce4-eyes/panel-plugin/eyes.c:550
+#: panel-plugin/eyes.c:555
 msgid "Eyes"
 msgstr "Eyes"
-

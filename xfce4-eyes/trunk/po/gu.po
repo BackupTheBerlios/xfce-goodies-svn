@@ -1,12 +1,13 @@
-# translation of xfce4-toys.po to Gujarati
-# This file is distributed under the same license as the PACKAGE package.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER.
+# translation of xfce4-eyes.po to Gujarati
+# This file is distributed under the same license as the xfce4-eyes package.
+# Copyright (C) YEAR THE xfce4-eyes'S COPYRIGHT HOLDER.
 # Ankit Patel <ankit@redhat.com>, 2004.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xfce4-toys\n"
-"POT-Creation-Date: 2004-08-08 20:14+0200\n"
+"Project-Id-Version: xfce4-eyes 4.3.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-01-04 19:42+0900\n"
 "PO-Revision-Date: 2004-09-22 16:51+0530\n"
 "Last-Translator: Ankit Patel <ankit@redhat.com>\n"
 "Language-Team: Gujarati\n"
@@ -17,7 +18,6 @@ msgstr ""
 "Plural-Forms: Plural-Forms: nplurals=2; plural=(n!=1);\n"
 "\n"
 
-#: xfce4-eyes/panel-plugin/eyes.c:550
+#: panel-plugin/eyes.c:555
 msgid "Eyes"
 msgstr "આંખો"
-

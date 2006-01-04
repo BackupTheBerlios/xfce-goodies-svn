@@ -1,13 +1,13 @@
-# Portuguese translation of xfce4-toys.
-# Copyright (C) 2003 THE xfce4-toys'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the xfce4-toys package.
+# Portuguese translation of xfce4-eyes.
+# Copyright (C) 2003 THE xfce4-eyes'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the xfce4-eyes package.
 # Nuno Donato <nunodonato@gmail.com>, 2004.
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: xfce4-toys 4.2\n"
+"Project-Id-Version: xfce4-eyes 4.3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-08-08 20:14+0200\n"
+"POT-Creation-Date: 2006-01-04 19:42+0900\n"
 "PO-Revision-Date: 2004-10-09 22:44+0100\n"
 "Last-Translator: Nuno Donato <nunodonato@gmail.com>\n"
 "Language-Team: Portuguese <pt@li.org>\n"
@@ -15,7 +15,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: xfce4-eyes/panel-plugin/eyes.c:550
+#: panel-plugin/eyes.c:555
 msgid "Eyes"
 msgstr "Olhos"
-

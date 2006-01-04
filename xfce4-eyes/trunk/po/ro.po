@@ -1,14 +1,13 @@
-# Romanian translation of xfce4-toys
+# Romanian translation of xfce4-eyes
 # Copyright (C) 2004 Free Software Foundation.
-# This file is distributed under the same license as the xfce4-toys package.
+# This file is distributed under the same license as the xfce4-eyes package.
 # Mişu Moldovan <dumol@go.ro>, 2004.
 #
-
 msgid ""
 msgstr ""
-"Project-Id-Version: xfce4-toys 4.2 rc1\n"
+"Project-Id-Version: xfce4-eyes 4.3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-11-10 07:57+0100\n"
+"POT-Creation-Date: 2006-01-04 19:42+0900\n"
 "PO-Revision-Date: 2004-11-14 19:01+0200\n"
 "Last-Translator: Mişu Moldovan <dumol@go.ro>\n"
 "Language-Team: Romanian <gnomero-list@lists.sourceforge.net>\n"
@@ -17,7 +16,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
-#: xfce4-eyes/panel-plugin/eyes.c:550
+#: panel-plugin/eyes.c:555
 msgid "Eyes"
 msgstr "Ochi"
-

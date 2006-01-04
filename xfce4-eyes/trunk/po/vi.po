@@ -1,13 +1,13 @@
-# xfce4-toys for XFCE
-# Copyright (C) 2003 THE PACKAGE'S COPYRIGHT HOLDER
+# xfce4-eyes for XFCE
+# Copyright (C) 2003 THE xfce4-eyes'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the xfwm4 package.
 # Lâm Vĩnh Niên <nienvl@yahoo.ca>, 2004.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xfwm4 1.0.0\n"
+"Project-Id-Version: xfce4-eyes 4.3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-08-08 20:14+0200\n"
+"POT-Creation-Date: 2006-01-04 19:42+0900\n"
 "PO-Revision-Date: 2004-09-08 15:40+9\n"
 "Last-Translator: Lâm Vĩnh Niên <nienvl@yahoo.ca>\n"
 "Language-Team: none <LL@li.org>\n"
@@ -15,7 +15,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: xfce4-eyes/panel-plugin/eyes.c:550
+#: panel-plugin/eyes.c:555
 msgid "Eyes"
 msgstr "Cặp mắt"
-
