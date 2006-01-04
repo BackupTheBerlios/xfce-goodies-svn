@@ -1,0 +1,19 @@
+2006-01-04  Daichi Kawahata <daichi@xfce.org>
+
+	* de.po, pl.po: Updated.
+	* pl.po: Changed local charset to UTF-8.
+
+2005-10-16  Piotr Wolny <gildur@gmail.com>
+
+	* POTFILES.in, pl.po, xfce4-websearch-plugin.pot: Plugin ported
+	  to v. 4.4 panel interface.
+
+2005-07-29  Piotr Wolny <gildur@gmail.com>
+
+	* de.po: German translation added.
+
+2005-07-25  Piotr Wolny <gildur@gmail.com>
+
+	* ChangeLog, POTFILES.in, pl.po, xfce4-websearch-plugin.pot:
+	  Initial import.
+
