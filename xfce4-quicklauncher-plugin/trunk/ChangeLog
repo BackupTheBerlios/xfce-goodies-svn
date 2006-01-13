@@ -1,3 +1,4 @@
++fix a little bug who crashed the panel
 +fix what seems to be a bug with gcc4
 +remove useless vars
 +fix a warning when removing a launcher.  

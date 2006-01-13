@@ -412,7 +412,7 @@ launcher_clicked (GtkWidget *event_box, GdkEventButton *event, t_launcher *launc
 	}
 	else if (event->type == GDK_BUTTON_RELEASE)
 	{
-		g_assert(launcher->clicked_img);
+		//g_assert(launcher->clicked_img);
 		if (event->x > 0 && event->x < size && event->y > 0 && event->y < size)
 			xfce_exec(launcher->command, FALSE, FALSE, NULL);
 		gtk_image_set_from_pixbuf (GTK_IMAGE(launcher->image), launcher->def_img);
