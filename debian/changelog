@@ -1,0 +1,20 @@
+xfce4-screenshooter-plugin (0.0.8) unstable; urgency=low
+
+  * Added FreeBSD shar port.
+  * Correct mispelled message.
+ 
+ -- Daniel Bobadilla <dbobadil@dcc.uchile.cl>  Sat, 14 Jan 2006 03:01:00 -0500
+ 
+xfce4-screenshooter-plugin (0.0.7) unstable; urgency=low
+
+  * Clean Version.
+  * Some improvements in core code.
+ 
+ -- Daniel Bobadilla <dbobadil@dcc.uchile.cl>  Thu, 16 Jul 2005 05:21:00 -0500
+
+xfce4-screenshooter-plugin (0.0.4) unstable; urgency=low
+
+  * Initial Release.
+  * First Debian packaging effort.
+
+ -- Daniel Bobadilla <dbobadil@dcc.uchile.cl>  Thu, 26 Jun 2005 13:13:02 -0500
