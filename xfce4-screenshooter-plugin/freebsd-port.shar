@@ -1,0 +1,68 @@
+# This is a shell archive.  Save it in a file, remove anything before
+# this line, and then unpack it by entering "sh file".  Note, it may
+# create directories; files and directories will be owned by you and
+# have default permissions.
+#
+# This archive contains:
+#
+#	xfce4-screenshooter-plugin
+#	xfce4-screenshooter-plugin/distinfo
+#	xfce4-screenshooter-plugin/Makefile
+#	xfce4-screenshooter-plugin/pkg-descr
+#	xfce4-screenshooter-plugin/pkg-plist
+#
+echo c - xfce4-screenshooter-plugin
+mkdir -p xfce4-screenshooter-plugin > /dev/null 2>&1
+echo x - xfce4-screenshooter-plugin/distinfo
+sed 's/^X//' >xfce4-screenshooter-plugin/distinfo << 'END-of-xfce4-screenshooter-plugin/distinfo'
+XMD5 (xfce4/xfce4-screenshooter-plugin-0.0.7.tar.gz) = def4e0afc5efa8e68764a735a85c97dd
+XSHA256 (xfce4/xfce4-screenshooter-plugin-0.0.7.tar.gz) = 94da421df3601592726b5165fee671d07a72d017f0313a9d39fdee6d3f077922
+XSIZE (xfce4/xfce4-screenshooter-plugin-0.0.7.tar.gz) = 313087
+END-of-xfce4-screenshooter-plugin/distinfo
+echo x - xfce4-screenshooter-plugin/Makefile
+sed 's/^X//' >xfce4-screenshooter-plugin/Makefile << 'END-of-xfce4-screenshooter-plugin/Makefile'
+X# New ports collection makefile for:   xfc4-screenshooter-plugin
+X# Date created:        5 December 1994
+X# Whom:                dbl
+X#
+X# $FreeBSD$
+X#
+X
+XPORTNAME=	xfce4-screenshooter-plugin
+XPORTVERSION=	0.0.7
+XCATEGORIES=	x11 xfce
+XMASTER_SITES=	http://chileforge.cl/frs/download.php/191/\
+X		http://cipres.cec.uchile.cl/~dbobadil/
+XDIST_SUBDIR=	xfce4
+X
+XMAINTAINER=	dbobadil@gmail.com
+XCOMMENT=	A simple screenshoot app for the xfce4-panel
+X
+XBUILD_DEPENDS=	xfce4-panel:${PORTSDIR}/x11-wm/xfce4-panel
+XLIB_DEPENDS=	xfce4util.1:${PORTSDIR}/x11/libxfce4util \
+X		xfcegui4.3:${PORTSDIR}/x11-toolkits/libxfce4gui
+XRUN_DEPENDS=	xfce4-panel:${PORTSDIR}/x11-wm/xfce4-panel
+X
+XUSE_GNOME=	gtk20 libxml2
+XUSE_X_PREFIX=	yes
+X
+XGNU_CONFIGURE=	yes
+XUSE_GMAKE=	yes
+X
+X.include <bsd.port.mk>
+END-of-xfce4-screenshooter-plugin/Makefile
+echo x - xfce4-screenshooter-plugin/pkg-descr
+sed 's/^X//' >xfce4-screenshooter-plugin/pkg-descr << 'END-of-xfce4-screenshooter-plugin/pkg-descr'
+Xxfce4-screenshooter-plugin a simple screenshoot app for the xfce4-panel
+X.
+XAuthor:	Daniel Bobadilla L. <dbobadil@gmail.com>
+XWWW:	http://xfce-goodies.berlios.de/
+END-of-xfce4-screenshooter-plugin/pkg-descr
+echo x - xfce4-screenshooter-plugin/pkg-plist
+sed 's/^X//' >xfce4-screenshooter-plugin/pkg-plist << 'END-of-xfce4-screenshooter-plugin/pkg-plist'
+X@comment $FreeBSD: ports/x11/xfce4-clipman-plugin/pkg-plist,v 1.2 2005/01/27 16:41:39 oliver Exp $
+Xlib/xfce4/panel-plugins/libscreenshooter.so
+X@unexec rmdir %D/lib/xfce4/panel-plugins 2>/dev/null || true
+END-of-xfce4-screenshooter-plugin/pkg-plist
+exit
+

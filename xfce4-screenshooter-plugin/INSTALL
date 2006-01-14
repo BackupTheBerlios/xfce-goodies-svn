@@ -1,0 +1,31 @@
+Copyright (C) 1994, 1995, 1996, 1999, 2000, 2001, 2002 Free Software
+Foundation, Inc.
+
+
+Basic Installation
+==================
+
+	To compile this, you need the development packages (files) of 
+xfce4-panel, if xfce4 has been installed from source yo probably need
+anything. A C compiler (gcc, for example), gmake (gnu-make), and the 
+gnu-toolchain (autoconf, automake,etc..) to build screenshooter from 
+svn or cvs imports.
+
+From CVS o SVN
+==========================
+
+You need run in the xfce4-screenshooter-plugin directory.
+
+$ sh autogen.sh
+
+The following instructions must be applied to sources from cvs origin or tarball origin.
+
+$./configure
+
+$gmake or (make)
+
+$make install
+
+For Debian and FreeBSD users there are a debian and FreeBSD directory to make a package, 
+from sources.
+
