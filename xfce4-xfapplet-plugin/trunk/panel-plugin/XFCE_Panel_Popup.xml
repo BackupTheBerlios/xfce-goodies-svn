@@ -1,0 +1,16 @@
+<Root>
+  <popups>
+    <popup name="button3">
+      <placeholder delimit="top">
+	<menuitem name="xfapplet" label="XfApplet" sensitive="0"/>
+	<separator/>
+	<menuitem name="move" verb="Move" _label="Move" pixtype="stock" pixname="gtk-go-forward"/>
+	<separator/>
+	<menuitem name="remove" verb="Remove" _label="Remove" pixtype="stock" pixname="gtk-remove"/>
+	<separator/>
+	<menuitem name="add" verb="Add" _label="Add New Item" pixtype="stock" pixname="gtk-add"/>
+	<menuitem name="configure" verb="CustomizePanel" _label="Customize Panel" pixtype="stock" pixname="gtk-preferences"/>
+      </placeholder>
+    </popup>
+  </popups>
+</Root>

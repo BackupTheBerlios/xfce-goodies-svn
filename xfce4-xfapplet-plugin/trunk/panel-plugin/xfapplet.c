@@ -16,23 +16,71 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <gtk/gtk.h>
 #include <libbonoboui.h>
 #include <libxfce4panel/xfce-panel-plugin.h>
 
+#define MOVE_MENU_ITEM_ORDER            4
+#define REMOVE_MENU_ITEM_ORDER          6
+#define ADD_MENU_ITEM_ORDER             8
+#define CUSTOMIZE_MENU_ITEM_ORDER       9
+
 typedef struct  {
 
 	XfcePanelPlugin   *plugin;
+	GtkWidget         *bonobo_widget;
 	GtkWidget         *combo;
 	GtkWidget         *eb;
+
+	/* Menu items in the panel popup menu */
+	GtkMenuItem       *customize;
+	GtkMenuItem       *add;
+	GtkMenuItem       *remove;
+	GtkMenuItem       *move;
+	
 	gulong             configure_signal;
 	
 } XfAppletPlugin;
 
 static void
+xfapplet_menu_item_activated (BonoboUIComponent *uic, gpointer mi, const char *cname)
+{
+	gtk_menu_item_activate (GTK_MENU_ITEM(mi));
+}
+
+static void
+xfapplet_get_menu_items (XfAppletPlugin *xap)
+{
+        GList *list;
+        GtkWidget *menu;
+
+	/*
+	 * The menu items order inside the menu is defined in
+	 * xfce_panel_plugin_create_menu() in the file
+	 * xfce-panel-plugin-iface.c from the libxfce4panel sources.
+	 */
+
+        menu = g_object_get_data (G_OBJECT(xap->plugin), "xfce-panel-plugin-menu");
+	if (!menu)
+		return;
+        list = gtk_container_get_children (GTK_CONTAINER (menu));
+
+	xap->customize = GTK_MENU_ITEM (g_list_nth_data(list, CUSTOMIZE_MENU_ITEM_ORDER));
+	xap->add = GTK_MENU_ITEM (g_list_nth_data(list, ADD_MENU_ITEM_ORDER));
+	xap->remove = GTK_MENU_ITEM (g_list_nth_data(list, REMOVE_MENU_ITEM_ORDER));
+	xap->move = GTK_MENU_ITEM (g_list_nth_data(list, MOVE_MENU_ITEM_ORDER));
+}
+
+static void
 xfapplet_load_applet (XfAppletPlugin *xap)
 {
 	GtkWidget *bw, *eb;
+	BonoboControlFrame *frame;
+	BonoboUIComponent *uic;
 	gchar *applet;
 
 	g_signal_handler_disconnect (xap->plugin, xap->configure_signal);
@@ -40,22 +88,32 @@ xfapplet_load_applet (XfAppletPlugin *xap)
 
 	applet = gtk_combo_box_get_active_text (GTK_COMBO_BOX(xap->combo));
 	bw = bonobo_widget_new_control (applet, CORBA_OBJECT_NIL);
-	gtk_widget_show(bw);
-	
-	eb = gtk_event_box_new();
-	gtk_container_add(GTK_CONTAINER(eb), bw);
-	gtk_event_box_set_above_child(GTK_EVENT_BOX(eb), TRUE);
-	gtk_widget_show(eb);
-	
-	gtk_container_add (GTK_CONTAINER (xap->plugin), eb);
-	xfce_panel_plugin_add_action_widget (xap->plugin, eb);
-
 	g_free (applet);
+
+	frame = bonobo_widget_get_control_frame (BONOBO_WIDGET(bw));
+        uic = bonobo_control_frame_get_popup_component (frame, CORBA_OBJECT_NIL);
+        bonobo_ui_util_set_ui (uic, PKGDATADIR "/ui", "XFCE_Panel_Popup.xml",
+			       "xfce4-xfapplet-plugin", CORBA_OBJECT_NIL);
+
+	if (xap->move)
+		bonobo_ui_component_add_verb (uic, "Move", xfapplet_menu_item_activated, xap->move);
+	if (xap->remove)
+		bonobo_ui_component_add_verb (uic, "Remove", xfapplet_menu_item_activated, xap->remove);
+	if (xap->add)
+		bonobo_ui_component_add_verb (uic, "Add", xfapplet_menu_item_activated, xap->add);
+	if (xap->customize)
+		bonobo_ui_component_add_verb (uic, "CustomizePanel", xfapplet_menu_item_activated, xap->customize);
+
+	xap->bonobo_widget = bw;
+	gtk_widget_show(bw);
+	gtk_container_add(GTK_CONTAINER(xap->plugin), bw);
 }
 
 static void
 xfapplet_free(XfcePanelPlugin *plugin, XfAppletPlugin *xap)
 {
+	if (xap->bonobo_widget)
+		gtk_widget_destroy(xap->bonobo_widget);
 	g_free (xap);
 }
 
@@ -83,7 +141,6 @@ xfapplet_create_applet_list(XfAppletPlugin *xap)
 
 	CORBA_free (applets);
 }
-
 
 static void
 xfapplet_options_response (GtkWidget *dialog, int response, XfAppletPlugin *xap)
@@ -130,6 +187,9 @@ xfapplet_new (XfcePanelPlugin *plugin)
 
 	xap = g_new0 (XfAppletPlugin, 1);
 	xap->plugin = plugin;
+	xap->bonobo_widget = NULL;
+
+	xfapplet_get_menu_items (xap);
 
 	ask = gtk_label_new (" ?? ");
 	gtk_widget_show (ask);
@@ -149,7 +209,7 @@ static void
 xfapplet_construct (XfcePanelPlugin *plugin)
 {
 	int argc = 1;
-	char *argv[] = { "gapplet-plugin", };
+	char *argv[] = { "xfce4-xfapplet-plugin", };
 	XfAppletPlugin *xap;
 
 	bonobo_ui_init (argv[0], "0.0.1", &argc, argv);
@@ -165,4 +225,3 @@ xfapplet_construct (XfcePanelPlugin *plugin)
 }
 
 XFCE_PANEL_PLUGIN_REGISTER_EXTERNAL(xfapplet_construct)
-

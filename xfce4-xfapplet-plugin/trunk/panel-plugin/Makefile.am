@@ -7,12 +7,17 @@ xfce4_xfapplet_plugin_SOURCES = \
 xfce4_xfapplet_plugin_CFLAGS = \
 	@LIBBONOBOUI_CFLAGS@ \
 	@LIBXFCE4PANEL_CFLAGS@ \
-	-DDATADIR=\"$(datadir)\" \
+	-DPKGDATADIR=\"$(pkgdatadir)\" \
 	-DLOCALEDIR=\"$(localedir)\"
 
 xfce4_xfapplet_plugin_LDFLAGS = \
 	@LIBBONOBOUI_LIBS@ \
 	@LIBXFCE4PANEL_LIBS@ 
+
+uidir = $(pkgdatadir)/ui
+ui_DATA = \
+	XFCE_Panel_Popup.xml
+EXTRA_DIST = $(ui_DATA)
 
 # .desktop file
 #
@@ -28,7 +33,7 @@ desktopdir = $(datadir)/xfce4/panel-plugins
 desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
 @INTLTOOL_DESKTOP_RULE@
 
-EXTRA_DIST = $(desktop_in_in_files)
+EXTRA_DIST += $(desktop_in_in_files)
 
 DISTCLEANFILES = \
 	$(desktop_DATA) $(desktop_in_files)
