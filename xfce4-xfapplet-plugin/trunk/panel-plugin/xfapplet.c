@@ -32,16 +32,8 @@
 typedef struct  {
 
 	XfcePanelPlugin   *plugin;
-	GtkWidget         *bonobo_widget;
 	GtkWidget         *combo;
 	GtkWidget         *eb;
-
-	/* Menu items in the panel popup menu */
-	GtkMenuItem       *customize;
-	GtkMenuItem       *add;
-	GtkMenuItem       *remove;
-	GtkMenuItem       *move;
-	
 	gulong             configure_signal;
 	
 } XfAppletPlugin;
@@ -53,10 +45,11 @@ xfapplet_menu_item_activated (BonoboUIComponent *uic, gpointer mi, const char *c
 }
 
 static void
-xfapplet_get_menu_items (XfAppletPlugin *xap)
+xfapplet_setup_menu_items (XfcePanelPlugin *plugin, BonoboUIComponent *uic)
 {
-        GList *list;
-        GtkWidget *menu;
+	GtkWidget *menu;
+	GList     *list;
+	gpointer   data;
 
 	/*
 	 * The menu items order inside the menu is defined in
@@ -64,56 +57,71 @@ xfapplet_get_menu_items (XfAppletPlugin *xap)
 	 * xfce-panel-plugin-iface.c from the libxfce4panel sources.
 	 */
 
-        menu = g_object_get_data (G_OBJECT(xap->plugin), "xfce-panel-plugin-menu");
+        menu = g_object_get_data (G_OBJECT(plugin), "xfce-panel-plugin-menu");
 	if (!menu)
 		return;
         list = gtk_container_get_children (GTK_CONTAINER (menu));
 
-	xap->customize = GTK_MENU_ITEM (g_list_nth_data(list, CUSTOMIZE_MENU_ITEM_ORDER));
-	xap->add = GTK_MENU_ITEM (g_list_nth_data(list, ADD_MENU_ITEM_ORDER));
-	xap->remove = GTK_MENU_ITEM (g_list_nth_data(list, REMOVE_MENU_ITEM_ORDER));
-	xap->move = GTK_MENU_ITEM (g_list_nth_data(list, MOVE_MENU_ITEM_ORDER));
+	/* "Customize Panel" menu item */
+	data = g_list_nth_data (list, CUSTOMIZE_MENU_ITEM_ORDER);
+	if (GTK_IS_MENU_ITEM (data))
+		bonobo_ui_component_add_verb (uic, "CustomizePanel",
+					      xfapplet_menu_item_activated, data);
+
+	/* "Add New Item" menu item */
+	data = g_list_nth_data (list, ADD_MENU_ITEM_ORDER);
+	if (GTK_IS_MENU_ITEM (data))
+		bonobo_ui_component_add_verb (uic, "Add",
+					      xfapplet_menu_item_activated, data);
+
+	/* "Remove" menu item */
+	data = g_list_nth_data (list, REMOVE_MENU_ITEM_ORDER);
+	if (GTK_IS_MENU_ITEM (data))
+		bonobo_ui_component_add_verb (uic, "Remove",
+					      xfapplet_menu_item_activated, data);
+
+	/* "Move" menu item */
+	data = g_list_nth_data (list, MOVE_MENU_ITEM_ORDER);
+	if (GTK_IS_MENU_ITEM (data))
+		bonobo_ui_component_add_verb (uic, "Move",
+					      xfapplet_menu_item_activated, data);
+}
+
+static void
+xfapplet_applet_activated (BonoboWidget *bw, CORBA_Environment *ev, gpointer data)
+{
+	BonoboControlFrame  *frame;
+	BonoboUIComponent   *uic;
+	XfAppletPlugin      *xap = (XfAppletPlugin*) data;
+
+	frame = bonobo_widget_get_control_frame (bw);
+        uic = bonobo_control_frame_get_popup_component (frame, CORBA_OBJECT_NIL);
+        bonobo_ui_util_set_ui (uic, PKGDATADIR "/ui", "XFCE_Panel_Popup.xml",
+			       "xfce4-xfapplet-plugin", CORBA_OBJECT_NIL);
+
+	xfapplet_setup_menu_items (xap->plugin, uic);
+	
+	gtk_widget_show (GTK_WIDGET(bw));
+	gtk_container_add(GTK_CONTAINER(xap->plugin), GTK_WIDGET(bw));
 }
 
 static void
 xfapplet_load_applet (XfAppletPlugin *xap)
 {
-	GtkWidget *bw, *eb;
-	BonoboControlFrame *frame;
-	BonoboUIComponent *uic;
 	gchar *applet;
 
 	g_signal_handler_disconnect (xap->plugin, xap->configure_signal);
 	gtk_widget_destroy (xap->eb);
 
 	applet = gtk_combo_box_get_active_text (GTK_COMBO_BOX(xap->combo));
-	bw = bonobo_widget_new_control (applet, CORBA_OBJECT_NIL);
+	bonobo_widget_new_control_async (applet, CORBA_OBJECT_NIL, xfapplet_applet_activated, xap);
+
 	g_free (applet);
-
-	frame = bonobo_widget_get_control_frame (BONOBO_WIDGET(bw));
-        uic = bonobo_control_frame_get_popup_component (frame, CORBA_OBJECT_NIL);
-        bonobo_ui_util_set_ui (uic, PKGDATADIR "/ui", "XFCE_Panel_Popup.xml",
-			       "xfce4-xfapplet-plugin", CORBA_OBJECT_NIL);
-
-	if (xap->move)
-		bonobo_ui_component_add_verb (uic, "Move", xfapplet_menu_item_activated, xap->move);
-	if (xap->remove)
-		bonobo_ui_component_add_verb (uic, "Remove", xfapplet_menu_item_activated, xap->remove);
-	if (xap->add)
-		bonobo_ui_component_add_verb (uic, "Add", xfapplet_menu_item_activated, xap->add);
-	if (xap->customize)
-		bonobo_ui_component_add_verb (uic, "CustomizePanel", xfapplet_menu_item_activated, xap->customize);
-
-	xap->bonobo_widget = bw;
-	gtk_widget_show(bw);
-	gtk_container_add(GTK_CONTAINER(xap->plugin), bw);
 }
 
 static void
 xfapplet_free(XfcePanelPlugin *plugin, XfAppletPlugin *xap)
 {
-	if (xap->bonobo_widget)
-		gtk_widget_destroy(xap->bonobo_widget);
 	g_free (xap);
 }
 
@@ -187,9 +195,6 @@ xfapplet_new (XfcePanelPlugin *plugin)
 
 	xap = g_new0 (XfAppletPlugin, 1);
 	xap->plugin = plugin;
-	xap->bonobo_widget = NULL;
-
-	xfapplet_get_menu_items (xap);
 
 	ask = gtk_label_new (" ?? ");
 	gtk_widget_show (ask);
