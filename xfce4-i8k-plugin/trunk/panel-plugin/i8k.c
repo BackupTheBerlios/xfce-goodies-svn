@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004 Antonio SJ Musumeci <bile@landofbile.com>
+ * Copyright (c) 2004,2005 Antonio SJ Musumeci <bile@landofbile.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -189,7 +189,10 @@ update_i8k(i8k_t* i8k)
   ofs[I8K_FAN_RIGHT] = i8k_get_fan(i8k, I8K_FAN_RIGHT);
 
   cpu_temp = i8k_get_cpu_temp(i8k);
-  snprintf(temp_string, 16, "%d C", cpu_temp);
+  if(cpu_temp < 0)
+    strcpy(temp_string, "Disabled");
+  else
+    snprintf(temp_string, 16, "%d C", cpu_temp);
   gtk_label_set_text(GTK_LABEL(i8k->temp_label), temp_string);
   if(i8k->automatic)
     {
@@ -229,6 +232,7 @@ static i8k_t*
 i8k_new(void)
 {
   int i;
+  int cpu_temp;
   i8k_t* i8k;
   gchar temp_string[16];
   
@@ -238,7 +242,11 @@ i8k_new(void)
 
   i8k->plugin = gtk_vbox_new(FALSE, 1);
   {
-    snprintf(temp_string, 16, "%d C", i8k_get_cpu_temp(i8k));
+    cpu_temp = i8k_get_cpu_temp(i8k);
+    if(cpu_temp < 0)
+      strcpy(temp_string, "Disabled");
+    else
+      snprintf(temp_string, 16, "%d C", cpu_temp);
     i8k->temp_label = gtk_label_new(temp_string);
     gtk_container_add(GTK_CONTAINER(i8k->plugin), i8k->temp_label);
     

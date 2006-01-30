@@ -9,7 +9,7 @@ AC_INIT([panel-plugin/i8k.c])
 
 AM_CONFIG_HEADER([config.h])
 
-AM_INIT_AUTOMAKE([xfce4-i8k-plugin], [0.0.1])
+AM_INIT_AUTOMAKE([xfce4-i8k-plugin], [0.0.2])
 
 AM_MAINTAINER_MODE
 
