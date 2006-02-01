@@ -42,6 +42,7 @@ XDT_CHECK_PACKAGE([GOBJECT], [gobject-2.0], [2.4.0])
 XDT_CHECK_PACKAGE([GTK], [gtk+-2.0], [2.4.0])
 XDT_CHECK_PACKAGE([LIBBONOBOUI], [libbonoboui-2.0], [2.1.1])
 XDT_CHECK_PACKAGE([LIBXFCE4PANEL], [libxfce4panel-1.0], [4.3.20])
+XDT_CHECK_PACKAGE([LIBXFCE4UTIL], [libxfce4util-1.0], [4.2.0])
 
 dnl check for debugging support
 XDT_FEATURE_DEBUG
