@@ -7,7 +7,8 @@ backdrops_DATA =							\
 	xfce-gradiented.png						\
 	xfce-transparent.png						\
 	xfce-rio.png							\
-	paltanen.jpg
+	paltanen.jpg							\
+	Szarkakoi_fa.jpg
 
 EXTRA_DIST = $(backdrops_DATA)
 
