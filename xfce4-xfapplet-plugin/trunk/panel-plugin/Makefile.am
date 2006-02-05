@@ -2,7 +2,9 @@ plugindir = $(libexecdir)/xfce4/panel-plugins
 plugin_PROGRAMS = xfce4-xfapplet-plugin
 
 xfce4_xfapplet_plugin_SOURCES = \
-	xfapplet.c
+	xfapplet.h \
+	xfapplet.c \
+	chooser.c
 
 xfce4_xfapplet_plugin_CFLAGS = \
 	@LIBBONOBOUI_CFLAGS@ \
