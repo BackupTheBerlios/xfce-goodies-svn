@@ -26,10 +26,20 @@
 #include <libxfce4panel/xfce-panel-plugin.h>
 #include "xfapplet.h"
 
+/* Relevant menu items order in the xfce panel popup menu. */
 #define MOVE_MENU_ITEM_ORDER            4
 #define REMOVE_MENU_ITEM_ORDER          6
 #define ADD_MENU_ITEM_ORDER             8
 #define CUSTOMIZE_MENU_ITEM_ORDER       9
+
+/* Gnome panel sizes. */
+#define GNOME_PANEL_SIZE_XX_SMALL       12
+#define GNOME_PANEL_SIZE_X_SMALL        24
+#define GNOME_PANEL_SIZE_SMALL          36
+#define GNOME_PANEL_SIZE_MEDIUM         48
+#define GNOME_PANEL_SIZE_LARGE          64
+#define GNOME_PANEL_SIZE_X_LARGE        80
+#define GNOME_PANEL_SIZE_XX_LARGE       128
 
 static void
 xfapplet_menu_item_activated (BonoboUIComponent *uic, gpointer mi, const char *cname)
@@ -101,21 +111,108 @@ xfapplet_applet_activated (BonoboWidget *bw, CORBA_Environment *ev, gpointer dat
 static void
 xfapplet_free(XfcePanelPlugin *plugin, XfAppletPlugin *xap)
 {
-	if (xap->moniker)
-		g_free (xap->moniker);
+	g_free (xap->iid);
+	g_free (xap->gconf_key);
 	g_free (xap);
+}
+
+static const gchar*
+xfapplet_get_size_string (XfcePanelPlugin *plugin)
+{
+	gint size;
+	const gchar *retval = NULL;
+
+	size = xfce_panel_plugin_get_size (plugin);
+
+        if (size <= GNOME_PANEL_SIZE_XX_SMALL)
+                retval = "xx-small";
+        else if (size <= GNOME_PANEL_SIZE_X_SMALL)
+                retval = "x-small";
+        else if (size <= GNOME_PANEL_SIZE_SMALL)
+                retval = "small";
+        else if (size <= GNOME_PANEL_SIZE_MEDIUM)
+                retval = "medium";
+        else if (size <= GNOME_PANEL_SIZE_LARGE)
+                retval = "large";
+        else if (size <= GNOME_PANEL_SIZE_X_LARGE)
+                retval = "x-large";
+        else
+                retval = "xx-large";
+
+        return retval;
+}
+
+static const gchar*
+xfapplet_get_orient_string (XfcePanelPlugin *plugin)
+{
+        XfceScreenPosition  pos;
+        const gchar        *retval = NULL;
+
+        pos = xfce_panel_plugin_get_screen_position (plugin);
+
+        switch (pos) {
+        case XFCE_SCREEN_POSITION_NW_H:   /* top */
+	case XFCE_SCREEN_POSITION_N:
+	case XFCE_SCREEN_POSITION_NE_H:
+                retval = "down";
+                break;
+        case XFCE_SCREEN_POSITION_SW_H:   /* bottom */
+	case XFCE_SCREEN_POSITION_S:
+	case XFCE_SCREEN_POSITION_SE_H:
+                retval = "up";
+                break;
+        case XFCE_SCREEN_POSITION_NW_V:   /* left */
+	case XFCE_SCREEN_POSITION_W:
+	case XFCE_SCREEN_POSITION_SW_V:
+                retval = "right";
+                break;
+        case XFCE_SCREEN_POSITION_NE_V:   /* right */
+	case XFCE_SCREEN_POSITION_E:
+	case XFCE_SCREEN_POSITION_SE_V:
+                retval = "left";
+                break;
+	case XFCE_SCREEN_POSITION_FLOATING_H:
+		retval = "down";
+		break;
+	case XFCE_SCREEN_POSITION_FLOATING_V:
+		retval = "right";
+		break;
+        default:
+                g_assert_not_reached ();
+                break;
+        }
+
+        return retval;
+}
+
+static gchar*
+xfapplet_construct_moniker (XfAppletPlugin *xap)
+{
+	gchar *moniker;
+
+	/* We (still) do not support "background" and "locked_down" options. */
+	moniker = g_strdup_printf ("%s!prefs_key=/apps/xfce4-panel/xfapplets/%s/prefs;"
+				   "orient=%s;size=%s",
+				   xap->iid, xap->gconf_key,
+				   xfapplet_get_orient_string (xap->plugin),
+				   xfapplet_get_size_string (xap->plugin));
+
+	return moniker;
 }
 
 gboolean
 xfapplet_setup_full (XfAppletPlugin *xap)
 {
 	GList     *list;
+	gchar     *moniker;
 
 	list = gtk_container_get_children (GTK_CONTAINER (xap->plugin));
 	if (list && list->data)
 		gtk_widget_destroy (GTK_WIDGET (list->data));
 
-	bonobo_widget_new_control_async (xap->moniker, CORBA_OBJECT_NIL, xfapplet_applet_activated, xap);
+	moniker = xfapplet_construct_moniker (xap);
+	bonobo_widget_new_control_async (moniker, CORBA_OBJECT_NIL, xfapplet_applet_activated, xap);
+	g_free (moniker);
 }
 
 static gboolean
@@ -144,7 +241,7 @@ xfapplet_save_configuration (XfcePanelPlugin *plugin, gpointer data)
 	gchar          *path;
 	XfAppletPlugin *xap = data;
 
-	if (!xap->moniker)
+	if (!xap->iid)
 		return;
 
 	path = xfce_panel_plugin_lookup_rc_file (plugin);
@@ -162,8 +259,11 @@ xfapplet_save_configuration (XfcePanelPlugin *plugin, gpointer data)
 
 	xfce_rc_set_group (config, "xfapplet");
 
-	/* Moniker for bonobo control */
-	xfce_rc_write_entry (config, "moniker", xap->moniker);
+	/* iid for bonobo control */
+	xfce_rc_write_entry (config, "iid", xap->iid);
+
+	/* gconf key for applet preferences */
+	xfce_rc_write_entry (config, "gconfkey", xap->gconf_key);
 
 	xfce_rc_close (config);
 }
@@ -173,7 +273,8 @@ xfapplet_read_configuration (XfAppletPlugin *xap)
 {
 	XfceRc       *config;
 	gchar        *path;
-	const gchar  *moniker;
+	const gchar  *iid;
+	const gchar  *gconf_key;
 
 	path = xfce_panel_plugin_lookup_rc_file (xap->plugin);
 	if (!path)
@@ -187,13 +288,19 @@ xfapplet_read_configuration (XfAppletPlugin *xap)
 
 	xfce_rc_set_group (config, "xfapplet");
 
-	/* Moniker for bonobo control */
-	moniker = xfce_rc_read_entry (config, "moniker", NULL);
-	if (!moniker) {
+	/* iid for bonobo control */
+	iid = xfce_rc_read_entry (config, "iid", NULL);
+
+	/* gconf key for applet preferences */
+	gconf_key = xfce_rc_read_entry (config, "gconfkey", NULL);
+
+	if (!iid || !gconf_key) {
 		xfce_rc_close (config);
 		return FALSE;
 	}
-	xap->moniker = g_strdup (moniker);
+	
+	xap->iid = g_strdup (iid);
+	xap->gconf_key = g_strdup (gconf_key);
 
 	xfce_rc_close (config);
 
@@ -207,7 +314,10 @@ xfapplet_new (XfcePanelPlugin *plugin)
 
 	xap = g_new0 (XfAppletPlugin, 1);
 	xap->plugin = plugin;
-	xap->moniker = NULL;
+	xap->iid = NULL;
+	xap->gconf_key = NULL;
+	xap->tv = NULL;
+	xap->applets = NULL;
 
 	return xap;
 }

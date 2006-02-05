@@ -21,6 +21,7 @@
 #endif
 
 #include <gtk/gtk.h>
+#include <gconf/gconf.h>
 #include <libbonobo.h>
 #include "xfapplet.h"
 
@@ -255,7 +256,8 @@ xfapplet_chooser_dialog_response (GtkWidget *dialog, int response, XfAppletPlugi
 		gtk_tree_selection_get_selected (sel, &model, &iter);
 		gtk_tree_model_get (model, &iter, 0, &applet, -1);
 
-		xap->moniker = g_strdup (applet->iid);
+		xap->iid = g_strdup (applet->iid);
+		xap->gconf_key = gconf_unique_key ();
 		xfapplet_setup_full (xap);
 	}
 	
