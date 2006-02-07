@@ -21,7 +21,11 @@
 #endif
 
 #include <gtk/gtk.h>
-#include <libbonoboui.h>
+#include <bonobo/bonobo-widget.h>
+#include <bonobo/bonobo-ui-component.h>
+#include <bonobo/bonobo-control-frame.h>
+#include <bonobo/bonobo-ui-util.h>
+#include <bonobo/bonobo-ui-main.h>
 #include <libxfce4util/libxfce4util.h>
 #include <libxfce4panel/xfce-panel-plugin.h>
 #include "xfapplet.h"
@@ -200,7 +204,7 @@ xfapplet_construct_moniker (XfAppletPlugin *xap)
 	return moniker;
 }
 
-gboolean
+void
 xfapplet_setup_full (XfAppletPlugin *xap)
 {
 	GList     *list;
@@ -215,7 +219,7 @@ xfapplet_setup_full (XfAppletPlugin *xap)
 	g_free (moniker);
 }
 
-static gboolean
+static void
 xfapplet_setup_empty (XfAppletPlugin *xap)
 {
 	GtkWidget *ask, *eb;

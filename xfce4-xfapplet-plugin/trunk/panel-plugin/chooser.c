@@ -20,9 +20,11 @@
 #include <config.h>
 #endif
 
+#include <string.h>
 #include <gtk/gtk.h>
 #include <gconf/gconf.h>
-#include <libbonobo.h>
+#include <bonobo/bonobo-exception.h>
+#include <bonobo-activation/bonobo-activation.h>
 #include "xfapplet.h"
 
 static const char applets_requirements [] =

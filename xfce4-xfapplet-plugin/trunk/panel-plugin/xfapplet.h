@@ -39,6 +39,6 @@ typedef struct {
 
 void          xfapplet_chooser_dialog (XfcePanelPlugin*, XfAppletPlugin*);
 
-gboolean      xfapplet_setup_full     (XfAppletPlugin*);
+void          xfapplet_setup_full     (XfAppletPlugin*);
 
 #endif /* XFAPPLET_PLUGIN_H */
