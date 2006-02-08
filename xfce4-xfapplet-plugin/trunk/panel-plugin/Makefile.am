@@ -10,13 +10,15 @@ xfce4_xfapplet_plugin_CFLAGS = \
 	@LIBBONOBOUI_CFLAGS@ \
 	@LIBXFCE4PANEL_CFLAGS@ \
 	@LIBXFCE4UTIL_CFLAGS@ \
+	@LIBXFCEGUI4_CFLAGS@ \
 	-DPKGDATADIR=\"$(pkgdatadir)\" \
 	-DLOCALEDIR=\"$(localedir)\"
 
 xfce4_xfapplet_plugin_LDFLAGS = \
 	@LIBBONOBOUI_LIBS@ \
 	@LIBXFCE4PANEL_LIBS@ \
-	@LIBXFCE4UTIL_LIBS@
+	@LIBXFCE4UTIL_LIBS@ \
+	@LIBXFCEGUI4_LIBS@
 
 uidir = $(pkgdatadir)/ui
 ui_DATA = \

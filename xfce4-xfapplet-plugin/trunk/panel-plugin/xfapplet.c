@@ -28,6 +28,7 @@
 #include <bonobo/bonobo-ui-main.h>
 #include <libxfce4util/libxfce4util.h>
 #include <libxfce4panel/xfce-panel-plugin.h>
+#include <libxfcegui4/libxfcegui4.h>
 #include "xfapplet.h"
 
 /* Relevant menu items order in the xfce panel popup menu. */
@@ -44,6 +45,46 @@
 #define GNOME_PANEL_SIZE_LARGE          64
 #define GNOME_PANEL_SIZE_X_LARGE        80
 #define GNOME_PANEL_SIZE_XX_LARGE       128
+
+static void
+xfapplet_about_dialog (XfcePanelPlugin *plugin, gpointer data)
+{
+	XfceAboutInfo  *info;
+	GtkWidget      *dialog;
+	guint           i;
+	static const XfAppletTranslators translators[] = {
+		{"Adriano Winter Bess", "awbess@gmail.com", "pt_BR",},
+	};
+
+	info = xfce_about_info_new ("XfApplet", VERSION " (r" REVISION ")",
+				    "Display Gnome applets on the Xfce4 Panel",
+				    XFCE_COPYRIGHT_TEXT ("2006", "Adriano Winter Bess"), XFCE_LICENSE_GPL);
+	xfce_about_info_set_homepage (info, "http://xfce-goodies.berlios.de");
+	xfce_about_info_add_credit (info, "Adriano Winter Bess", "awbess@gmail.com", "Author/Maintainer");
+
+	for (i = 0; translators[i].name != NULL; i++) {
+		gchar *s;
+		s = g_strdup_printf ("Translator (%s)", translators[i].language);
+		xfce_about_info_add_credit (info, translators[i].name, translators[i].email, s);
+		g_free (s);
+	}
+
+	dialog = xfce_about_dialog_new (GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (plugin))),
+					info, NULL);
+	gtk_window_set_position (GTK_WINDOW (dialog), GTK_WIN_POS_CENTER);
+	gtk_dialog_run (GTK_DIALOG (dialog));
+
+	gtk_widget_destroy (dialog);
+	xfce_about_info_free (info);
+}
+
+static void
+xfapplet_about_item_activated (BonoboUIComponent *uic, gpointer data, const char *cname)
+{
+	XfAppletPlugin *xap = (XfAppletPlugin*) data;
+
+	xfapplet_about_dialog (xap->plugin, xap);
+}
 
 static void
 xfapplet_menu_item_activated (BonoboUIComponent *uic, gpointer mi, const char *cname)
@@ -107,7 +148,8 @@ xfapplet_applet_activated (BonoboWidget *bw, CORBA_Environment *ev, gpointer dat
 			       "xfce4-xfapplet-plugin", CORBA_OBJECT_NIL);
 
 	xfapplet_setup_menu_items (xap->plugin, uic);
-	
+	bonobo_ui_component_add_verb (uic, "About", xfapplet_about_item_activated, xap);
+
 	gtk_widget_show (GTK_WIDGET(bw));
 	gtk_container_add(GTK_CONTAINER(xap->plugin), GTK_WIDGET(bw));
 }
@@ -234,8 +276,10 @@ xfapplet_setup_empty (XfAppletPlugin *xap)
 	gtk_container_add (GTK_CONTAINER(xap->plugin), eb);
 	xfce_panel_plugin_add_action_widget (xap->plugin, eb);
 	xfce_panel_plugin_menu_show_configure (xap->plugin);
+	xfce_panel_plugin_menu_show_about (xap->plugin);
 
 	g_signal_connect (xap->plugin, "configure-plugin", G_CALLBACK (xfapplet_chooser_dialog), xap);
+	g_signal_connect (xap->plugin, "about", G_CALLBACK (xfapplet_about_dialog), xap);
 }
 
 static void

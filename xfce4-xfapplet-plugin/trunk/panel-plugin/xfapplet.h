@@ -37,6 +37,12 @@ typedef struct {
 	gchar     *iid;	
 } GnomeAppletInfo;
 
+typedef struct {
+	gchar  *name;
+	gchar  *email;
+	gchar  *language;
+} XfAppletTranslators;
+
 void          xfapplet_chooser_dialog (XfcePanelPlugin*, XfAppletPlugin*);
 
 void          xfapplet_setup_full     (XfAppletPlugin*);
