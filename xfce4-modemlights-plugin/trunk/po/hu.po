@@ -1,0 +1,66 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2006-02-11 17:35+0100\n"
+"Last-Translator: SZERVÑC Attila <sas@321.hu>\n"
+"Language-Team: hu\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Hungarian\n"
+"X-Poedit-Country: HUNGARY\n"
+
+#: panel-plugin/modemlights-plugin.c:109
+#: panel-plugin/modemlights-plugin.c:255
+msgid "No connection"
+msgstr "Nincs kapcsolat"
+
+#: panel-plugin/modemlights-plugin.c:117
+msgid "Connection Established"
+msgstr "A kapcsolat létrejött"
+
+#: panel-plugin/modemlights-plugin.c:126
+msgid "Dialing"
+msgstr "Hívás"
+
+#: panel-plugin/modemlights-plugin.c:459
+msgid "Select lock file"
+msgstr "Válassz lock fájlt"
+
+#: panel-plugin/modemlights-plugin.c:479
+msgid "Lockfile:"
+msgstr "Lockfile:"
+
+#: panel-plugin/modemlights-plugin.c:516
+msgid "Select icon"
+msgstr "Válassz ikont"
+
+#: panel-plugin/modemlights-plugin.c:614
+msgid "_Connection Command:"
+msgstr "_Kapcsolódás parancs:"
+
+#: panel-plugin/modemlights-plugin.c:621
+msgid "_Disconnection Command:"
+msgstr "_Lekapcsolódási parancs:"
+
+#: panel-plugin/modemlights-plugin.c:627
+msgid "De_vice:"
+msgstr "_Eszköz:"
+
+#: panel-plugin/modemlights-plugin.c:642
+msgid "Icon (Disconnected):"
+msgstr "Ikon (leválasztotva)"
+
+#: panel-plugin/modemlights-plugin.c:650
+msgid "Icon (Connecting):"
+msgstr "Ikon (Kapcsolódás):"
+
+#: panel-plugin/modemlights-plugin.c:657
+msgid "Icon (Connected):"
+msgstr "Ikon (Kapcsolódva):"
+
+#: panel-plugin/modemlights-plugin.c:733
+msgid "Modem Lights"
+msgstr "Modem Lámpák"
+

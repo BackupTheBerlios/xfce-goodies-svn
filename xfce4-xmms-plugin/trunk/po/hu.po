@@ -1,0 +1,29 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2006-02-11 18:16+0100\n"
+"Last-Translator: SZERVÑC Attila <sas@321.hu>\n"
+"Language-Team: hu\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Hungarian\n"
+"X-Poedit-Country: HUNGARY\n"
+
+#: ../panel-plugin/xmms_plugin.c:749
+msgid "Properties"
+msgstr "Tulajdonságok"
+
+#: ../panel-plugin/xmms_plugin.c:761
+msgid "Xfce4 XMMS Plugin Options"
+msgstr "Xfce4 XMMS Plugin beállítások"
+
+#: ../panel-plugin/xfce4-xmms-plugin.desktop.in.in.h:1
+msgid "XMMS plugin for Xfce 4.4 panel"
+msgstr "XMMS plugin az Xfce 4.4 panelhez"
+
+#: ../panel-plugin/xfce4-xmms-plugin.desktop.in.in.h:2
+msgid "Xfce4 XMMS Plugin"
+msgstr "Xfce4 XMMS Plugin"
+
