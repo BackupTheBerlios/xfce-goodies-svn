@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-04 00:22+0000\n"
+"POT-Creation-Date: 2006-02-12 14:41+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,34 +16,38 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../panel-plugin/main.c:158
-msgid "Quicklauncher"
-msgstr "Lancement rapide"
-
-#: ../panel-plugin/main.c:161
-msgid "Allows you to add launchers easily and display them on many lines."
-msgstr "Vous pemet de rajouter des lanceurs facilement et de les afficher sur différentes lignes"
-
-#: ../panel-plugin/main.c:163
-msgid "Other plugins available here"
-msgstr "D'autres plugins sont disponibles ici"
-
 #: ../panel-plugin/callbacks.c:73
 msgid "Configure Quicklauncher"
-msgstr "Configuration"
+msgstr ""
 
 #: ../panel-plugin/callbacks.c:87
 msgid "Lines: "
-msgstr "Lignes: "
+msgstr ""
 
 #: ../panel-plugin/callbacks.c:186
 msgid "icone"
-msgstr "icone"
+msgstr ""
 
 #: ../panel-plugin/callbacks.c:192
 msgid "commande"
-msgstr "commande"
+msgstr ""
 
 #: ../panel-plugin/callbacks.c:288
 msgid "Open icon"
-msgstr "Ouvrir une icone"
+msgstr ""
+
+#: ../panel-plugin/main.c:158 ../panel-plugin/quicklauncher.desktop.in.in.h:2
+msgid "Quicklauncher"
+msgstr ""
+
+#: ../panel-plugin/main.c:161
+msgid "Allows you to add launchers easily and display them on many lines."
+msgstr ""
+
+#: ../panel-plugin/main.c:163
+msgid "Other plugins available here"
+msgstr ""
+
+#: ../panel-plugin/quicklauncher.desktop.in.in.h:1
+msgid "Program with several launchers"
+msgstr ""
