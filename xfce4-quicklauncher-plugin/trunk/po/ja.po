@@ -1,0 +1,53 @@
+# Japanese translations for xfce4-quicklauncher-plugin package.
+# Copyright (C) 2005-2006 Masse Nicolas.
+# This file is distributed under the same license as
+#   the xfce4-quicklauncher-plugin package.
+# Daichi Kawahata <daichi@xfce.org>, 2006.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: xfce4-quicklauncher-plugin 1.9.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-02-12 14:41+0900\n"
+"PO-Revision-Date: 2006-02-12 16:07+0900\n"
+"Last-Translator: Daichi Kawahata <daichi@xfce.org>\n"
+"Language-Team: Japanese <xfce-users-jp@ml.fdiary.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../panel-plugin/callbacks.c:73
+msgid "Configure Quicklauncher"
+msgstr "クイックランチャーの設定"
+
+#: ../panel-plugin/callbacks.c:87
+msgid "Lines: "
+msgstr "行数: "
+
+#: ../panel-plugin/callbacks.c:186
+msgid "icone"
+msgstr "アイコン"
+
+#: ../panel-plugin/callbacks.c:192
+msgid "commande"
+msgstr "コマンド"
+
+#: ../panel-plugin/callbacks.c:288
+msgid "Open icon"
+msgstr "アイコンを選択して下さい"
+
+#: ../panel-plugin/main.c:158 ../panel-plugin/quicklauncher.desktop.in.in.h:2
+msgid "Quicklauncher"
+msgstr "クイックランチャー"
+
+#: ../panel-plugin/main.c:161
+msgid "Allows you to add launchers easily and display them on many lines."
+msgstr "ランチャーを追加して複数行に表示します。"
+
+#: ../panel-plugin/main.c:163
+msgid "Other plugins available here"
+msgstr "ここに他のプラグインがあります"
+
+#: ../panel-plugin/quicklauncher.desktop.in.in.h:1
+msgid "Program with several launchers"
+msgstr "複数のランチャーを一まとめに表示します。"
