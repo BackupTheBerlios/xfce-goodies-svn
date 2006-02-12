@@ -14,7 +14,7 @@ libquicklauncher_la_SOURCES =							\
 	
 
 libquicklauncher_la_CFLAGS =							\
-	-DLOCALEDIR=\"$(localedir)\"				\
+	-DPACKAGE_LOCALE_DIR=\"$(localedir)\"				\
 	@LIBXFCE4PANEL_CFLAGS@
 
 libquicklauncher_la_LIBADD = 							\

@@ -75,6 +75,7 @@ static void
 quicklauncher_construct (XfcePanelPlugin *plugin)
 {
     t_quicklauncher *quicklauncher = quicklauncher_new(plugin);
+    xfce_textdomain(GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR, "UTF-8");
 
     g_signal_connect (plugin, "orientation-changed", 
                       G_CALLBACK (quicklauncher_orientation_changed), quicklauncher);
