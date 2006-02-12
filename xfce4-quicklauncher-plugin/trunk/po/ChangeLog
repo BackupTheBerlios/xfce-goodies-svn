@@ -1,0 +1,37 @@
+2006-02-11  Szervac Attila <sas@321.hu>
+
+	* hu.po: Add Hungarian Translations
+
+2006-01-13  Masse Nicolas <nicolas@yahoo.fr>
+
+	* Makefile, Makefile.in: fix a bug who crashed the panel
+
+2005-12-03  Masse Nicolas <nicolas@yahoo.fr>
+
+	* Makefile, Makefile.in, fr.po, xfce4-quicklauncher-plugin.po,
+	  xfce4-quicklauncher-plugin.pot: update version to 1.9.1 and
+	  update gettext stuff
+
+2005-12-03  Masse Nicolas <nicolas@yahoo.fr>
+
+	* Makefile, Makefile.in, Makefile.in.in: fixes some issues and
+	  adding a dialog box
+
+2005-09-29  Masse Nicolas <nicolas@yahoo.fr>
+
+	* Makefile, Makefile.in, Makefile.in.in,
+	  xfce4-quicklauncher-plugin.po: fixes some autoconf & friends
+	  stuff
+
+2005-09-28  Masse Nicolas <nicolas@yahoo.fr>
+
+	* fr.po: hopefully works with new panel == need some tests ==
+
+2005-09-25  Masse Nicolas <nicolas@yahoo.fr>
+
+	* Makefile, Makefile.in, Makefile.in.in, Makevars, POTFILES,
+	  POTFILES.in, Rules-quot, boldquot.sed, en@boldquot.header,
+	  en@quot.header, fr.gmo, fr.po, insert-header.sin, quot.sed,
+	  remove-potcdate.sin, xfce4-quicklauncher-plugin.pot: port
+	  to the new panel
+

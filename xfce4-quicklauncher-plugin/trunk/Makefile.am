@@ -18,10 +18,7 @@ rpm: dist
 	@rm -f $(PACKAGE)-$(VERSION).tar.gz
 	
 EXTRA_DIST =	\
-	ChangeLog \
-	TODO	\
-	config.rpath \
-	mkinstalldirs
+	intltool-extract.in	\
+	intltool-merge.in	\
+	intltool-update.in
 	
-ACLOCAL_AMFLAGS = -I m4
-

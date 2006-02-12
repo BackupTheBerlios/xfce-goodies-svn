@@ -1,4 +1,7 @@
 # List of source files containing translatable strings.
 
-panel-plugin/main.c
 panel-plugin/callbacks.c
+panel-plugin/main.c
+
+# files added by intltool-prepare.
+panel-plugin/quicklauncher.desktop.in.in

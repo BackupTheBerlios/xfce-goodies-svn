@@ -38,7 +38,7 @@ dnl Check for debugging support
 XDT_FEATURE_DEBUG()
 
 dnl For internationalisation
-XDT_I18N([xfce4-quicklauncher-plugin], [fr])
+XDT_I18N([fr hu])
 
 AC_OUTPUT([  
 panel-plugin/Makefile
