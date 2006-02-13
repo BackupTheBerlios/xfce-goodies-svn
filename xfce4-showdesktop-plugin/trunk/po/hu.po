@@ -1,0 +1,53 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2006-02-14 00:38+0100\n"
+"Last-Translator: SZERVÑC Attila <sas@321.hu>\n"
+"Language-Team: hu\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Hungarian\n"
+"X-Poedit-Country: HUNGARY\n"
+
+#: panel-plugin/showdesktop.c:619
+msgid "Enable this option, if your panel is located on top or on the right."
+msgstr "Használd e lehetőséget, ha a panel fent vagy jobb oldalon van."
+
+#: panel-plugin/showdesktop.c:620
+msgid "Normally, the first mouse button is connected to the windowmanager showdesktop feature, if the WM supports it, and the middle mouse button is connected to the plugin internal showdesktop feature. You can reverse it with this option."
+msgstr "Általában az 1. egér gomb kezeli az ablakkezelő hasonló funkcióját, ha az támogatja azt és a középső gomb működteti ezt. Ezt válthatod e lehetőséggel."
+
+#: panel-plugin/showdesktop.c:621
+msgid "If this option is enabled, the plugin consumes less space on the panel."
+msgstr "E lehetőséggel kisebb helyre elfér"
+
+#: panel-plugin/showdesktop.c:622
+msgid "display one button only"
+msgstr "csak 1 gomb megjelenítése"
+
+#: panel-plugin/showdesktop.c:629
+msgid "swap commands"
+msgstr "csere parancsok"
+
+#: panel-plugin/showdesktop.c:634
+msgid "alternate button mode"
+msgstr "változó gomb mód"
+
+#: panel-plugin/showdesktop.c:639
+msgid "reduce size"
+msgstr "kisebb méret"
+
+#: panel-plugin/showdesktop.c:644
+msgid "one toggle button"
+msgstr "1 váltógomb"
+
+#: panel-plugin/showdesktop.c:650
+msgid "Options"
+msgstr "Lehetőségek"
+
+#: panel-plugin/showdesktop.c:671
+msgid "Show Desktop"
+msgstr "Asztalra váltás"
+
