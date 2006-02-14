@@ -36,11 +36,11 @@
 #define UNREF(x)				if((x)) {g_object_unref((x));}
 
 
-static char *icons_categories_names[XFCE_N_BUILTIN_ICON_CATEGORIES+2] = 
+/*static char *icons_categories_names[XFCE_N_BUILTIN_ICON_CATEGORIES+2] = 
 	{"Unknown", "Editor", "Filemanager", "Utilities", "Games", "Help", "Multimedia", \
 	"Internet", "Graphics", "Printer", "Productivity", "Sound", "Terminal", \
 	"Development", "Settings", "System", "Wine", "Stock", "Extern"};
-
+*/
 
 
 typedef struct

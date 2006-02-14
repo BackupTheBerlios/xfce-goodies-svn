@@ -86,17 +86,17 @@ AUTOCONF = ${SHELL} /home/nic/nic/Projects/XFCE-Goodies/dev/quicklauncher/xfce4-
 AUTOHEADER = ${SHELL} /home/nic/nic/Projects/XFCE-Goodies/dev/quicklauncher/xfce4-quicklauncher-plugin/missing --run autoheader
 AUTOMAKE = ${SHELL} /home/nic/nic/Projects/XFCE-Goodies/dev/quicklauncher/xfce4-quicklauncher-plugin/missing --run automake-1.9
 AWK = gawk
-CATALOGS =  xfce4-quicklauncher-plugin.gmo
+CATALOGS =  fr.gmo hu.gmo ja.gmo
 CATOBJEXT = .gmo
 CC = gcc
 CCDEPMODE = depmode=gcc3
-CFLAGS = -g -O2
+CFLAGS = -g -O2 -g3 -Werror -Wall -DG_DISABLE_DEPRECATED -DXFCE_DISABLE_DEPRECATED
 CPP = gcc -E
 CPPFLAGS = 
 CXX = g++
 CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -g -O2
+CXXFLAGS = -g -O2 -g3 -Werror -Wall -DG_DISABLE_DEPRECATED -DXFCE_DISABLE_DEPRECATED
 CYGPATH_W = echo
 DATADIRNAME = share
 DEFS = -DHAVE_CONFIG_H
@@ -109,8 +109,8 @@ EGREP = grep -E
 EXEEXT = 
 F77 = gfortran
 FFLAGS = -g -O2
-GETTEXT_PACKAGE = fr
-GMOFILES =  xfce4-quicklauncher-plugin.gmo
+GETTEXT_PACKAGE = xfce4-quicklauncher-plugin
+GMOFILES =  fr.gmo hu.gmo ja.gmo
 GMSGFMT = /usr/bin/gmsgfmt
 HAVE_CYGWIN_FALSE = 
 HAVE_CYGWIN_TRUE = #
@@ -152,7 +152,7 @@ LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIBXFCE4PANEL_CFLAGS = -I/usr/include/xfce4/ -I/usr/include/xfce4 -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/pango-1.0 -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/atk-1.0  
 LIBXFCE4PANEL_LIBS = -lxfce4panel -lxfcegui4 -lgtk-x11-2.0 -lxfce4util -lgdk-x11-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lm -lpangocairo-1.0 -lpango-1.0 -lcairo -lgobject-2.0 -lgmodule-2.0 -ldl -lglib-2.0  
 LIBXFCE4PANEL_REQUIRED_VERSION = 4.3.20
-LIBXFCE4PANEL_VERSION = 4.3.27
+LIBXFCE4PANEL_VERSION = 4.3.28
 LN_S = ln -s
 LTLIBOBJS = 
 MAINT = 
@@ -170,7 +170,7 @@ PACKAGE_TARNAME = xfce4-quicklauncher-plugin
 PACKAGE_VERSION = 1.9.1
 PATH_SEPARATOR = :
 PKG_CONFIG = /usr/bin/pkg-config
-POFILES =  xfce4-quicklauncher-plugin.po
+POFILES =  fr.po hu.po ja.po
 POSUB = po
 PO_IN_DATADIR_FALSE = 
 PO_IN_DATADIR_TRUE = 
@@ -220,7 +220,7 @@ localstatedir = ${prefix}/var
 mandir = ${prefix}/man
 mkdir_p = mkdir -p --
 oldincludedir = /usr/include
-prefix = /usr/local
+prefix = /usr
 program_transform_name = s,x,x,
 sbindir = ${exec_prefix}/sbin
 sharedstatedir = ${prefix}/com
@@ -239,7 +239,7 @@ libquicklauncher_la_SOURCES = \
 	main.c						
 
 libquicklauncher_la_CFLAGS = \
-	-DLOCALEDIR=\"$(localedir)\"				\
+	-DPACKAGE_LOCALE_DIR=\"$(localedir)\"				\
 	-I/usr/include/xfce4/ -I/usr/include/xfce4 -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/pango-1.0 -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/atk-1.0  
 
 libquicklauncher_la_LIBADD = \

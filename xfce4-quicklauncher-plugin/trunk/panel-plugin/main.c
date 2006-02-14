@@ -28,6 +28,7 @@
 
 #include "types.h"
 #include "callbacks.h"
+#include <glib/gprintf.h>
 #include <string.h>
 
 
@@ -112,14 +113,16 @@ void quicklauncher_orientation_changed(XfcePanelPlugin *plugin,
 gboolean quicklauncher_set_size(XfcePanelPlugin *plugin, gint size,
 							t_quicklauncher *quicklauncher)
 {
+	DBG ("setting size %d", size);
 	GList *liste;
-	quicklauncher->icon_size = (int)size/quicklauncher->nb_lines;
+	quicklauncher->icon_size = (int) (0.75 * size/quicklauncher->nb_lines);
 	for(liste = quicklauncher->launchers;
 		liste ; liste = g_list_next(liste) )
 	{
 		launcher_update_icon((t_launcher*)liste->data, quicklauncher->icon_size);		
 		gtk_container_set_border_width( GTK_CONTAINER( ( (t_launcher*)liste->data)->widget), 
 										(int)quicklauncher->icon_size/8);
+		//printf("%d %d \n",(int) 0.75 * size/quicklauncher->nb_lines, (int)quicklauncher->icon_size/8);
 	}
 	return TRUE;
 }
@@ -132,7 +135,8 @@ void quicklauncher_free_data(XfcePanelPlugin *plugin, t_quicklauncher *quicklaun
 void quicklauncher_save(XfcePanelPlugin *plugin, t_quicklauncher *quicklauncher)
 {
 	gchar *filename;
-	if(filename = xfce_panel_plugin_save_location(plugin, TRUE))
+	filename = xfce_panel_plugin_save_location(plugin, TRUE);
+	if(filename)
 	{
 		quicklauncher_save_config(quicklauncher, filename);
 		g_free(filename);
@@ -154,11 +158,11 @@ void
 quicklauncher_about(XfcePanelPlugin *plugin, t_quicklauncher *quicklauncher)
 {
 	GtkWidget *about;
-	gchar* authors[2] = {"Bountykiller <masse_nicolas@yahoo.fr>", NULL};
+	const gchar* authors[2] = {"Bountykiller <masse_nicolas@yahoo.fr>", NULL};
 	about = gtk_about_dialog_new();
 	gtk_about_dialog_set_name(GTK_ABOUT_DIALOG(about), _("Quicklauncher"));
 	gtk_about_dialog_set_logo(GTK_ABOUT_DIALOG(about), NULL);
-	gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(about), (gchar**) authors);
+	gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(about), (const gchar**) authors);
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about), _("Allows you to add launchers easily and display them on many lines."));
 	gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(about), "http://xfce-goodies.berlios.de");
 	gtk_about_dialog_set_website_label(GTK_ABOUT_DIALOG(about), _("Other plugins available here"));
@@ -195,6 +199,7 @@ quicklauncher_remove_element(t_quicklauncher *quicklauncher, gint num)
 void
 quicklauncher_organize(t_quicklauncher *quicklauncher)
 {
+	DBG ("Organize quicklauncher");
 	gint i, j, launch_per_line, nb_lines;
 	GList *toplace;
 	
@@ -309,7 +314,7 @@ quicklauncher_new (XfcePanelPlugin *plugin)
 	if((!filename) || (!quicklauncher_load_config(quicklauncher, filename) ) )
 		quicklauncher_load_default(quicklauncher);
 	
-	quicklauncher->icon_size = (gint) xfce_panel_plugin_get_size(plugin)/2;
+	quicklauncher->icon_size = (gint) 0.75 * xfce_panel_plugin_get_size(plugin)/2;
 	quicklauncher->orientation = xfce_panel_plugin_get_orientation(plugin);
 	quicklauncher->plugin = plugin;
 	quicklauncher->table = g_object_ref(gtk_table_new(2, 2, TRUE));
@@ -338,7 +343,7 @@ gboolean quicklauncher_load_config(t_quicklauncher *quicklauncher, const gchar* 
 {
 	
 	XfceRc* rcfile;
-	if( rcfile = xfce_rc_simple_open(filename, TRUE) )
+	if( (rcfile = xfce_rc_simple_open(filename, TRUE) ))
 	{
 		xfce_rc_set_group(rcfile, NULL);
 		quicklauncher->nb_lines = xfce_rc_read_int_entry(rcfile, "nb_lines", 1);
@@ -383,6 +388,7 @@ quicklauncher_save_config(t_quicklauncher *quicklauncher, const gchar* filename)
 GdkPixbuf *
 _create_pixbuf(gint id, const gchar* name, gint size)
 {
+	DBG ("creating pixbuf %d", size);
 	GdkPixbuf  *pixbuf;
 	if(id != XFCE_ICON_CATEGORY_EXTERN)
 		pixbuf = xfce_icon_theme_load_category(DEFAULT_ICON_THEME, id, size);
@@ -448,6 +454,7 @@ launcher_passthrought(GtkWidget *widget, GdkEventCrossing *event, t_launcher *la
 void 
 launcher_update_icon(t_launcher *launcher, gint size) 
 {
+	DBG ("size: %d", size);
 	UNREF(launcher->def_img);
 	UNREF(launcher->zoomed_img); launcher->zoomed_img = NULL;
 	UNREF(launcher->clicked_img); launcher->clicked_img = NULL;
@@ -549,7 +556,7 @@ launcher_load_config(XfceRc *rcfile, gint num, t_quicklauncher *quicklauncher)
 {
 	char group[15];
 	t_launcher *launcher;
-	g_sprintf(group, "launcher_%d\0", num); 
+	g_sprintf(group, "launcher_%d%c", num,0); 
 	xfce_rc_set_group(rcfile, group);
 	
 	launcher = g_new0 (t_launcher, 1);
@@ -566,7 +573,7 @@ void
 launcher_save_config(t_launcher *launcher, XfceRc *rcfile, guint16 num)
 {
 	char group[15];
-	g_sprintf(group, "launcher_%d\0", num); 
+	g_sprintf(group, "launcher_%d%c", num,0); 
 	xfce_rc_set_group(rcfile, group);
 	xfce_rc_write_entry(rcfile, "command", launcher->command);
 	if(launcher->icon_name)

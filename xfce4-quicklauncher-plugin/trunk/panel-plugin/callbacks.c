@@ -326,7 +326,7 @@ btn_clicked(GtkButton *button, gpointer icon_id)
 	GtkTreeIter iter;	
 	GdkPixbuf *pixbuf;
 	GtkTreeSelection *sel;
-	gchar *icon_name;
+	gchar *icon_name = NULL;
 	t_launcher *launcher;
 	
 	sel = gtk_tree_view_get_selection( GTK_TREE_VIEW(_dlg->treeview1) );

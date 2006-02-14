@@ -17,7 +17,7 @@
 # We have the following line for use by intltoolize:
 # INTLTOOL_MAKEFILE
 
-GETTEXT_PACKAGE = fr
+GETTEXT_PACKAGE = xfce4-quicklauncher-plugin
 PACKAGE = xfce4-quicklauncher-plugin
 VERSION = 1.9.1
 
@@ -29,7 +29,7 @@ top_srcdir = ..
 top_builddir = ..
 
 
-prefix = /usr/local
+prefix = /usr
 exec_prefix = ${prefix}
 datadir = ${prefix}/share
 datarootdir = @datarootdir@
@@ -56,7 +56,7 @@ MSGMERGE = XGETTEXT_ARGS="$(XGETTEXT_ARGS)" INTLTOOL_EXTRACT=$(INTLTOOL_EXTRACT)
 GENPOT   = XGETTEXT_ARGS="$(XGETTEXT_ARGS)" INTLTOOL_EXTRACT=$(INTLTOOL_EXTRACT) srcdir=$(srcdir) $(INTLTOOL_UPDATE) --gettext-package $(GETTEXT_PACKAGE) --pot
 
 DEFS = -DHAVE_CONFIG_H
-CFLAGS = -g -O2
+CFLAGS = -g -O2 -g3 -Werror -Wall -DG_DISABLE_DEPRECATED -DXFCE_DISABLE_DEPRECATED
 CPPFLAGS = 
 
 INCLUDES = -I.. -I$(top_srcdir)/intl
@@ -64,17 +64,18 @@ INCLUDES = -I.. -I$(top_srcdir)/intl
 COMPILE = $(CC) -c $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS) $(XCFLAGS)
 
 SOURCES = 
-POFILES =  xfce4-quicklauncher-plugin.po
-GMOFILES =  xfce4-quicklauncher-plugin.gmo
+POFILES =  fr.po hu.po ja.po
+GMOFILES =  fr.gmo hu.gmo ja.gmo
 DISTFILES = ChangeLog Makefile.in.in POTFILES.in \
 $(POFILES) $(SOURCES)
 EXTRA_DISTFILES = POTFILES.skip Makevars LINGUAS
 
 POTFILES = \
+	../panel-plugin/callbacks.c \
 	../panel-plugin/main.c \
-	../panel-plugin/callbacks.c
+	../panel-plugin/quicklauncher.desktop.in.in
 
-CATALOGS =  xfce4-quicklauncher-plugin.gmo
+CATALOGS =  fr.gmo hu.gmo ja.gmo
 CATOBJEXT = .gmo
 INSTOBJEXT = .mo
 
