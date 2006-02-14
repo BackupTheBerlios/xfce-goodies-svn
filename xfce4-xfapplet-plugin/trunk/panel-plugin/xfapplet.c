@@ -155,11 +155,14 @@ xfapplet_applet_activated (BonoboWidget *bw, CORBA_Environment *ev, gpointer dat
 
 	gtk_widget_show (GTK_WIDGET(bw));
 	gtk_container_add(GTK_CONTAINER(xap->plugin), GTK_WIDGET(bw));
+	xap->bw = GTK_WIDGET(bw);
 }
 
 static void
 xfapplet_free(XfcePanelPlugin *plugin, XfAppletPlugin *xap)
 {
+	if (xap->bw)
+		gtk_widget_destroy (xap->bw);
 	g_free (xap->iid);
 	g_free (xap->gconf_key);
 	g_free (xap);
@@ -367,6 +370,7 @@ xfapplet_new (XfcePanelPlugin *plugin)
 	xap->plugin = plugin;
 	xap->iid = NULL;
 	xap->gconf_key = NULL;
+	xap->bw = NULL;
 	xap->tv = NULL;
 	xap->applets = NULL;
 

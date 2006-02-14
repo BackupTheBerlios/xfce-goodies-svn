@@ -26,6 +26,7 @@ typedef struct  {
 	XfcePanelPlugin   *plugin;
 	gchar             *iid;
 	gchar             *gconf_key;
+	GtkWidget         *bw;
 	GtkWidget         *tv;
 	GSList            *applets;
 } XfAppletPlugin;
