@@ -1,0 +1,8 @@
+2006-02-12  Daichi Kawahata <daichi@xfce.org>
+
+	* ja.po: Added Japanese translations.
+
+2006-01-28  Adriano Winter Bess <awbess@gmail.com>
+
+	* ChangeLog, POTFILES.in: Imported project into repository.
+

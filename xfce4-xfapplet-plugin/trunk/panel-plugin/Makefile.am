@@ -12,7 +12,8 @@ xfce4_xfapplet_plugin_CFLAGS = \
 	@LIBXFCE4UTIL_CFLAGS@ \
 	@LIBXFCEGUI4_CFLAGS@ \
 	-DPKGDATADIR=\"$(pkgdatadir)\" \
-	-DLOCALEDIR=\"$(localedir)\"
+	-DPACKAGE_LOCALE_DIR=\"$(localedir)\" \
+	-DLIBXFCE4PANEL_LOCALE_DIR=\"@LIBXFCE4PANEL_LOCALE_DIR@\"
 
 xfce4_xfapplet_plugin_LDFLAGS = \
 	@LIBBONOBOUI_LIBS@ \

@@ -31,7 +31,7 @@ dnl check for standard header files
 AC_HEADER_STDC
 
 dnl Check for i18n support
-XDT_I18N([])
+XDT_I18N([ja])
 
 dnl Check for X11 installed
 XDT_CHECK_LIBX11_REQUIRE
@@ -42,6 +42,19 @@ XDT_CHECK_PACKAGE([GOBJECT], [gobject-2.0], [2.4.0])
 XDT_CHECK_PACKAGE([GTK], [gtk+-2.0], [2.4.0])
 XDT_CHECK_PACKAGE([LIBBONOBOUI], [libbonoboui-2.0], [2.1.1])
 XDT_CHECK_PACKAGE([LIBXFCE4PANEL], [libxfce4panel-1.0], [4.3.20])
+
+dnl check special variable localedir for libxfce4panel
+AC_MSG_CHECKING([for libxfce4panel-1.0 localedir])
+LIBXFCE4PANEL_LOCALE_DIR=`$PKG_CONFIG --variable=localedir libxfce4panel-1.0`
+if test "none$LIBXFCE4PANEL_LOCALE_DIR" = "none"; then
+   AC_MSG_RESULT([not found])
+   echo '*** You need a bleeding edge version of xfce4-panel svn to ***'
+   echo '*** compile xfce4-xfapplet-plugin.                         ***'
+   exit 1
+fi
+AC_MSG_RESULT([$LIBXFCE4PANEL_LOCALE_DIR])
+AC_SUBST([LIBXFCE4PANEL_LOCALE_DIR])
+
 XDT_CHECK_PACKAGE([LIBXFCE4UTIL], [libxfce4util-1.0], [4.2.0])
 XDT_CHECK_PACKAGE([LIBXFCEGUI4], [libxfcegui4-1.0], [4.2.0])
 

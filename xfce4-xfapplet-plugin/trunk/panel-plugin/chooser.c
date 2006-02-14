@@ -294,7 +294,7 @@ xfapplet_chooser_dialog (XfcePanelPlugin *plugin, XfAppletPlugin *xap)
 
 	xfce_panel_plugin_block_menu (plugin);
 
-	dialog = gtk_dialog_new_with_buttons ("Choose an applet",
+	dialog = gtk_dialog_new_with_buttons (_("Choose an applet"),
 					      GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (plugin))),
 					      GTK_DIALOG_DESTROY_WITH_PARENT,
 					      GTK_STOCK_CANCEL,
@@ -307,7 +307,7 @@ xfapplet_chooser_dialog (XfcePanelPlugin *plugin, XfAppletPlugin *xap)
 	g_signal_connect (dialog, "response", G_CALLBACK (xfapplet_chooser_dialog_response), xap);
 	gtk_window_set_position (GTK_WINDOW (dialog), GTK_WIN_POS_CENTER);
 
-	label = gtk_label_new ("Choose an applet:");
+	label = gtk_label_new (_("Choose an applet:"));
 	gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
 	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), label, FALSE, FALSE, 2);
 	

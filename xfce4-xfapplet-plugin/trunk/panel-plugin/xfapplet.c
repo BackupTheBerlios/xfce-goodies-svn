@@ -53,18 +53,19 @@ xfapplet_about_dialog (XfcePanelPlugin *plugin, gpointer data)
 	GtkWidget      *dialog;
 	guint           i;
 	static const XfAppletTranslators translators[] = {
+		{"Daichi Kawahata", "daichi@xfce.org", "ja",},
 		{"Adriano Winter Bess", "awbess@gmail.com", "pt_BR",},
 	};
 
 	info = xfce_about_info_new ("XfApplet", VERSION " (r" REVISION ")",
-				    "Display Gnome applets on the Xfce4 Panel",
+				    _("Display Gnome applets on the Xfce4 Panel"),
 				    XFCE_COPYRIGHT_TEXT ("2006", "Adriano Winter Bess"), XFCE_LICENSE_GPL);
 	xfce_about_info_set_homepage (info, "http://xfce-goodies.berlios.de");
-	xfce_about_info_add_credit (info, "Adriano Winter Bess", "awbess@gmail.com", "Author/Maintainer");
+	xfce_about_info_add_credit (info, "Adriano Winter Bess", "awbess@gmail.com", _("Author/Maintainer"));
 
 	for (i = 0; translators[i].name != NULL; i++) {
 		gchar *s;
-		s = g_strdup_printf ("Translator (%s)", translators[i].language);
+		s = g_strdup_printf (_("Translator (%s)"), translators[i].language);
 		xfce_about_info_add_credit (info, translators[i].name, translators[i].email, s);
 		g_free (s);
 	}
@@ -144,8 +145,10 @@ xfapplet_applet_activated (BonoboWidget *bw, CORBA_Environment *ev, gpointer dat
 
 	frame = bonobo_widget_get_control_frame (bw);
         uic = bonobo_control_frame_get_popup_component (frame, CORBA_OBJECT_NIL);
+	xfce_textdomain("xfce4-panel", LIBXFCE4PANEL_LOCALE_DIR, "UTF-8");
         bonobo_ui_util_set_ui (uic, PKGDATADIR "/ui", "XFCE_Panel_Popup.xml",
 			       "xfce4-xfapplet-plugin", CORBA_OBJECT_NIL);
+	xfce_textdomain(GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR, "UTF-8");
 
 	xfapplet_setup_menu_items (xap->plugin, uic);
 	bonobo_ui_component_add_verb (uic, "About", xfapplet_about_item_activated, xap);
@@ -376,6 +379,8 @@ xfapplet_construct (XfcePanelPlugin *plugin)
 	int argc = 1;
 	char *argv[] = { "xfce4-xfapplet-plugin", };
 	XfAppletPlugin *xap;
+
+	xfce_textdomain(GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR, "UTF-8");
 
 	bonobo_ui_init (argv[0], "0.0.1", &argc, argv);
 

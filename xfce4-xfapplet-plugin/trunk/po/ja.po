@@ -1,0 +1,71 @@
+# Japanese translations for xfce4-xfapplet-plugin package.
+# Copyright (C) 2006 Adriano Winter Bess.
+# This file is distributed under the same license as the
+#   xfce4-xfapplet-plugin package.
+# Daichi Kawahata <daichi@xfce.org>, 2006.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: xfce4-xfapplet-plugin 0.0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-02-12 19:37+0900\n"
+"PO-Revision-Date: 2006-02-12 19:38+0900\n"
+"Last-Translator: Daichi Kawahata <daichi@xfce.org>\n"
+"Language-Team: Japanese <xfce-users-jp@ml.fdiary.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../panel-plugin/XFCE_Panel_Popup.xml.in.h:1
+msgid "About"
+msgstr "このプログラムについて"
+
+#: ../panel-plugin/XFCE_Panel_Popup.xml.in.h:2
+msgid "Add New Item"
+msgstr "アイテムを追加"
+
+#: ../panel-plugin/XFCE_Panel_Popup.xml.in.h:3
+msgid "Customize Panel"
+msgstr "パネルの設定"
+
+#: ../panel-plugin/XFCE_Panel_Popup.xml.in.h:4
+msgid "Move"
+msgstr "移動"
+
+#: ../panel-plugin/XFCE_Panel_Popup.xml.in.h:5
+msgid "Remove"
+msgstr "削除"
+
+#: ../panel-plugin/chooser.c:130
+#, c-format
+msgid "query returned exception %s\n"
+msgstr "問い合わせが例外 %s を返しました\n"
+
+#: ../panel-plugin/chooser.c:297
+msgid "Choose an applet"
+msgstr "アプレットを選択して下さい"
+
+#: ../panel-plugin/chooser.c:310
+msgid "Choose an applet:"
+msgstr "アプレットを選択して下さい:"
+
+#: ../panel-plugin/xfapplet.c:61
+msgid "Display Gnome applets on the Xfce4 Panel"
+msgstr "Xfce4 のパネルに GNOME アプレットを表示します"
+
+#: ../panel-plugin/xfapplet.c:64
+msgid "Author/Maintainer"
+msgstr "著作者/メインテナー"
+
+#: ../panel-plugin/xfapplet.c:68
+#, c-format
+msgid "Translator (%s)"
+msgstr "翻訳者 (%s)"
+
+#: ../panel-plugin/xfapplet.desktop.in.in.h:1
+msgid "Display Gnome applets"
+msgstr "GNOME のアプレットを表示します。"
+
+#: ../panel-plugin/xfapplet.desktop.in.in.h:2
+msgid "XfApplet"
+msgstr "Xfce アプレット"
