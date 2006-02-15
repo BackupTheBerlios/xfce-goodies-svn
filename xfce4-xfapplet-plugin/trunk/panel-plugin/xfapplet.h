@@ -20,13 +20,14 @@
 #define XFAPPLET_PLUGIN_H
 
 #include <gtk/gtk.h>
+#include <bonobo/bonobo-ui-component.h>
 #include <libxfce4panel/xfce-panel-plugin.h>
 
 typedef struct  {
 	XfcePanelPlugin   *plugin;
 	gchar             *iid;
 	gchar             *gconf_key;
-	GtkWidget         *bw;
+	BonoboUIComponent *uic;
 	GtkWidget         *tv;
 	GSList            *applets;
 } XfAppletPlugin;

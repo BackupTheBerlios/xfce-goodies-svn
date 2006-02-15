@@ -144,7 +144,7 @@ xfapplet_applet_activated (BonoboWidget *bw, CORBA_Environment *ev, gpointer dat
 	XfAppletPlugin      *xap = (XfAppletPlugin*) data;
 
 	frame = bonobo_widget_get_control_frame (bw);
-        uic = bonobo_control_frame_get_popup_component (frame, CORBA_OBJECT_NIL);
+        xap->uic = uic = bonobo_control_frame_get_popup_component (frame, CORBA_OBJECT_NIL);
 	xfce_textdomain("xfce4-panel", LIBXFCE4PANEL_LOCALE_DIR, "UTF-8");
         bonobo_ui_util_set_ui (uic, PKGDATADIR "/ui", "XFCE_Panel_Popup.xml",
 			       "xfce4-xfapplet-plugin", CORBA_OBJECT_NIL);
@@ -155,7 +155,6 @@ xfapplet_applet_activated (BonoboWidget *bw, CORBA_Environment *ev, gpointer dat
 
 	gtk_widget_show (GTK_WIDGET(bw));
 	gtk_container_add(GTK_CONTAINER(xap->plugin), GTK_WIDGET(bw));
-	xap->bw = GTK_WIDGET(bw);
 }
 
 static gboolean 
@@ -173,8 +172,8 @@ xfapplet_size_changed (XfcePanelPlugin *plugin, int size, gpointer dummy)
 static void
 xfapplet_free(XfcePanelPlugin *plugin, XfAppletPlugin *xap)
 {
-	if (xap->bw)
-		gtk_widget_destroy (xap->bw);
+	if (xap->uic)
+		bonobo_object_unref (BONOBO_OBJECT (xap->uic));
 	g_free (xap->iid);
 	g_free (xap->gconf_key);
 	g_free (xap);
@@ -382,7 +381,6 @@ xfapplet_new (XfcePanelPlugin *plugin)
 	xap->plugin = plugin;
 	xap->iid = NULL;
 	xap->gconf_key = NULL;
-	xap->bw = NULL;
 	xap->tv = NULL;
 	xap->applets = NULL;
 
