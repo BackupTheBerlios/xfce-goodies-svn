@@ -158,6 +158,18 @@ xfapplet_applet_activated (BonoboWidget *bw, CORBA_Environment *ev, gpointer dat
 	xap->bw = GTK_WIDGET(bw);
 }
 
+static gboolean 
+xfapplet_size_changed (XfcePanelPlugin *plugin, int size, gpointer dummy)
+{
+	if (xfce_panel_plugin_get_orientation (plugin) ==
+	    GTK_ORIENTATION_HORIZONTAL)
+		gtk_widget_set_size_request (GTK_WIDGET (plugin), -1, size);
+	else
+		gtk_widget_set_size_request (GTK_WIDGET (plugin), size, -1);
+
+	return TRUE;
+}
+
 static void
 xfapplet_free(XfcePanelPlugin *plugin, XfAppletPlugin *xap)
 {
@@ -398,6 +410,7 @@ xfapplet_construct (XfcePanelPlugin *plugin)
 
 	g_signal_connect (plugin, "free-data", G_CALLBACK (xfapplet_free), xap);
 	g_signal_connect (plugin, "save", G_CALLBACK (xfapplet_save_configuration), xap);
+	g_signal_connect (plugin, "size-changed", G_CALLBACK (xfapplet_size_changed), NULL);
 }
 
 XFCE_PANEL_PLUGIN_REGISTER_EXTERNAL(xfapplet_construct)
