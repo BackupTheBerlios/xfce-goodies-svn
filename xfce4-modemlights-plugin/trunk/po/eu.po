@@ -1,0 +1,69 @@
+# Basque translations for PACKAGE package.
+# Copyright (C) 2006 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Piarres Beobide <pi@beobide.net>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: xfce4-modemlights-plugin 0.1.2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-05-18 09:25+0200\n"
+"PO-Revision-Date: 2006-02-13 19:15+0100\n"
+"Last-Translator: Piarres Beobide <pi@beobide.net>\n"
+"Language-Team: Librezale <librezale@librezale.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Pootle 0.6.3.20060126\n"
+
+#: panel-plugin/modemlights-plugin.c:109 panel-plugin/modemlights-plugin.c:255
+msgid "No connection"
+msgstr "Konexio gabe"
+
+#: panel-plugin/modemlights-plugin.c:117
+msgid "Connection Established"
+msgstr "Konexioa Sortua"
+
+#: panel-plugin/modemlights-plugin.c:126
+msgid "Dialing"
+msgstr "Markatzen"
+
+#: panel-plugin/modemlights-plugin.c:459
+msgid "Select lock file"
+msgstr "Blokeo fitxategia hautatu"
+
+#: panel-plugin/modemlights-plugin.c:479
+msgid "Lockfile:"
+msgstr "Blokeo-fitxategia:"
+
+#: panel-plugin/modemlights-plugin.c:516
+msgid "Select icon"
+msgstr "Ikonoa hautatu"
+
+#: panel-plugin/modemlights-plugin.c:614
+msgid "_Connection Command:"
+msgstr "_Konexio komandoa:"
+
+#: panel-plugin/modemlights-plugin.c:621
+msgid "_Disconnection Command:"
+msgstr "_Deskonexio komandoa:"
+
+#: panel-plugin/modemlights-plugin.c:627
+msgid "De_vice:"
+msgstr "Gai_lua:"
+
+#: panel-plugin/modemlights-plugin.c:642
+msgid "Icon (Disconnected):"
+msgstr "Ikonoa (deskonektaturik):"
+
+#: panel-plugin/modemlights-plugin.c:650
+msgid "Icon (Connecting):"
+msgstr "Ikonoa (konektatzen):"
+
+#: panel-plugin/modemlights-plugin.c:657
+msgid "Icon (Connected):"
+msgstr "Ikonoa (Konektaturik):"
+
+#: panel-plugin/modemlights-plugin.c:733
+msgid "Modem Lights"
+msgstr "Modem argiak"
