@@ -55,6 +55,7 @@ xfapplet_about_dialog (XfcePanelPlugin *plugin, gpointer data)
 	static const XfAppletTranslators translators[] = {
 		{"Daichi Kawahata", "daichi@xfce.org", "ja",},
 		{"Adriano Winter Bess", "awbess@gmail.com", "pt_BR",},
+		{NULL,}
 	};
 
 	info = xfce_about_info_new ("XfApplet", VERSION " (r" REVISION ")",
@@ -70,8 +71,8 @@ xfapplet_about_dialog (XfcePanelPlugin *plugin, gpointer data)
 		g_free (s);
 	}
 
-	dialog = xfce_about_dialog_new (GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (plugin))),
-					info, NULL);
+	dialog = xfce_about_dialog_new_with_values (GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (plugin))),
+						    info, NULL);
 	gtk_window_set_position (GTK_WINDOW (dialog), GTK_WIN_POS_CENTER);
 	gtk_dialog_run (GTK_DIALOG (dialog));
 
