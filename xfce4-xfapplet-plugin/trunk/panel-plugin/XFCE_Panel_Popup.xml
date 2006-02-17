@@ -4,6 +4,7 @@
       <placeholder delimit="top">
 	<menuitem name="xfapplet" label="XfApplet" sensitive="0"/>
 	<separator/>
+	<menuitem name="properties" verb="Properties" _label="Properties" pixtype="stock" pixname="gtk-properties"/>
 	<menuitem name="about" verb="About" _label="About" pixtype="stock" pixname="gtk-about"/>
 	<menuitem name="move" verb="Move" _label="Move" pixtype="stock" pixname="gtk-go-forward"/>
 	<separator/>

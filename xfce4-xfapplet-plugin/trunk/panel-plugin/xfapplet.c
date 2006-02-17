@@ -21,6 +21,7 @@
 #endif
 
 #include <gtk/gtk.h>
+#include <bonobo/bonobo-moniker-util.h>
 #include <bonobo/bonobo-widget.h>
 #include <bonobo/bonobo-ui-component.h>
 #include <bonobo/bonobo-control-frame.h>
@@ -45,6 +46,80 @@
 #define GNOME_PANEL_SIZE_LARGE          64
 #define GNOME_PANEL_SIZE_X_LARGE        80
 #define GNOME_PANEL_SIZE_XX_LARGE       128
+
+static gboolean
+xfapplet_save_configuration (XfAppletPlugin *xap)
+{
+	XfceRc         *config;
+	gchar          *path;
+
+	if (!xap->iid)
+		return FALSE;
+
+	path = xfce_panel_plugin_lookup_rc_file (xap->plugin);
+	if (!path)
+		path = xfce_panel_plugin_save_location (xap->plugin, TRUE);
+
+	if (!path)
+		return FALSE;
+
+        config = xfce_rc_simple_open (path, FALSE);
+	g_free (path);
+
+	if (!config)
+		return FALSE;
+
+	xfce_rc_set_group (config, "xfapplet");
+
+	/* iid for bonobo control */
+	xfce_rc_write_entry (config, "iid", xap->iid);
+
+	/* gconf key for applet preferences */
+	xfce_rc_write_entry (config, "gconfkey", xap->gconf_key);
+
+	xfce_rc_close (config);
+
+	return TRUE;
+}
+
+static gboolean
+xfapplet_read_configuration (XfAppletPlugin *xap)
+{
+	XfceRc       *config;
+	gchar        *path;
+	const gchar  *iid;
+	const gchar  *gconf_key;
+
+	path = xfce_panel_plugin_lookup_rc_file (xap->plugin);
+	if (!path)
+		return FALSE;
+
+	config = xfce_rc_simple_open (path, TRUE);
+	g_free (path);
+
+	if (!config)
+		return FALSE;
+
+	xfce_rc_set_group (config, "xfapplet");
+
+	/* iid for bonobo control */
+	iid = xfce_rc_read_entry (config, "iid", NULL);
+
+	/* gconf key for applet preferences */
+	gconf_key = xfce_rc_read_entry (config, "gconfkey", NULL);
+
+	if (!iid || !gconf_key) {
+		xfce_rc_close (config);
+		return FALSE;
+	}
+	
+	xap->iid = g_strdup (iid);
+	xap->gconf_key = g_strdup (gconf_key);
+
+	xfce_rc_close (config);
+
+	return TRUE;
+}
 
 static void
 xfapplet_about_dialog (XfcePanelPlugin *plugin, gpointer data)
@@ -78,6 +153,14 @@ xfapplet_about_dialog (XfcePanelPlugin *plugin, gpointer data)
 
 	gtk_widget_destroy (dialog);
 	xfce_about_info_free (info);
+}
+
+static void
+xfapplet_properties_item_activated (BonoboUIComponent *uic, gpointer data, const char *cname)
+{
+	XfAppletPlugin *xap = (XfAppletPlugin*) data;
+
+	xfapplet_chooser_dialog (xap->plugin, xap);
 }
 
 static void
@@ -138,14 +221,22 @@ xfapplet_setup_menu_items (XfcePanelPlugin *plugin, BonoboUIComponent *uic)
 }
 
 static void
-xfapplet_applet_activated (BonoboWidget *bw, CORBA_Environment *ev, gpointer data)
+xfapplet_applet_activated (Bonobo_Unknown object, CORBA_Environment *ev, gpointer data)
 {
+	GList *list;
+	GtkWidget           *bw;
 	BonoboControlFrame  *frame;
 	BonoboUIComponent   *uic;
 	XfAppletPlugin      *xap = (XfAppletPlugin*) data;
 
-	frame = bonobo_widget_get_control_frame (bw);
-        xap->uic = uic = bonobo_control_frame_get_popup_component (frame, CORBA_OBJECT_NIL);
+	bw = bonobo_widget_new_control_from_objref (object, CORBA_OBJECT_NIL);
+	bonobo_object_release_unref (object, NULL);
+	
+	frame = bonobo_widget_get_control_frame (BONOBO_WIDGET (bw));
+        uic = bonobo_control_frame_get_popup_component (frame, CORBA_OBJECT_NIL);
+
+	bonobo_ui_component_freeze (uic, CORBA_OBJECT_NIL);
+	
 	xfce_textdomain("xfce4-panel", LIBXFCE4PANEL_LOCALE_DIR, "UTF-8");
         bonobo_ui_util_set_ui (uic, PKGDATADIR "/ui", "XFCE_Panel_Popup.xml",
 			       "xfce4-xfapplet-plugin", CORBA_OBJECT_NIL);
@@ -153,9 +244,24 @@ xfapplet_applet_activated (BonoboWidget *bw, CORBA_Environment *ev, gpointer dat
 
 	xfapplet_setup_menu_items (xap->plugin, uic);
 	bonobo_ui_component_add_verb (uic, "About", xfapplet_about_item_activated, xap);
+	bonobo_ui_component_add_verb (uic, "Properties", xfapplet_properties_item_activated, xap);
 
-	gtk_widget_show (GTK_WIDGET(bw));
-	gtk_container_add(GTK_CONTAINER(xap->plugin), GTK_WIDGET(bw));
+	bonobo_ui_component_thaw (uic, CORBA_OBJECT_NIL);
+
+	gtk_widget_show (bw);
+
+	if (xap->uic)
+		bonobo_object_unref (BONOBO_OBJECT (xap->uic));
+	xap->uic = uic;
+
+	list = gtk_container_get_children (GTK_CONTAINER (xap->plugin));
+	if (list && list->data)
+		gtk_widget_destroy (GTK_WIDGET (list->data));
+
+	gtk_container_add (GTK_CONTAINER(xap->plugin), bw);
+
+	if (!xfapplet_save_configuration (xap))
+		g_warning (_("Could not save XfApplet configuration."));
 }
 
 static gboolean 
@@ -267,15 +373,14 @@ xfapplet_construct_moniker (XfAppletPlugin *xap)
 void
 xfapplet_setup_full (XfAppletPlugin *xap)
 {
-	GList     *list;
-	gchar     *moniker;
+	CORBA_Environment   ev;
+	gchar              *moniker;
 
-	list = gtk_container_get_children (GTK_CONTAINER (xap->plugin));
-	if (list && list->data)
-		gtk_widget_destroy (GTK_WIDGET (list->data));
+	CORBA_exception_init (&ev);
 
 	moniker = xfapplet_construct_moniker (xap);
-	bonobo_widget_new_control_async (moniker, CORBA_OBJECT_NIL, xfapplet_applet_activated, xap);
+	bonobo_get_object_async (moniker, "IDL:Bonobo/Control:1.0", &ev,
+				 xfapplet_applet_activated, xap);
 	g_free (moniker);
 }
 
@@ -298,79 +403,6 @@ xfapplet_setup_empty (XfAppletPlugin *xap)
 
 	g_signal_connect (xap->plugin, "configure-plugin", G_CALLBACK (xfapplet_chooser_dialog), xap);
 	g_signal_connect (xap->plugin, "about", G_CALLBACK (xfapplet_about_dialog), xap);
-}
-
-static void
-xfapplet_save_configuration (XfcePanelPlugin *plugin, gpointer data)
-{
-	XfceRc         *config;
-	gchar          *path;
-	XfAppletPlugin *xap = data;
-
-	if (!xap->iid)
-		return;
-
-	path = xfce_panel_plugin_lookup_rc_file (plugin);
-	if (!path)
-		path = xfce_panel_plugin_save_location (plugin, TRUE);
-
-	if (!path)
-		return;
-
-        config = xfce_rc_simple_open (path, FALSE);
-	g_free (path);
-
-	if (!config)
-		return;
-
-	xfce_rc_set_group (config, "xfapplet");
-
-	/* iid for bonobo control */
-	xfce_rc_write_entry (config, "iid", xap->iid);
-
-	/* gconf key for applet preferences */
-	xfce_rc_write_entry (config, "gconfkey", xap->gconf_key);
-
-	xfce_rc_close (config);
-}
-
-static gboolean
-xfapplet_read_configuration (XfAppletPlugin *xap)
-{
-	XfceRc       *config;
-	gchar        *path;
-	const gchar  *iid;
-	const gchar  *gconf_key;
-
-	path = xfce_panel_plugin_lookup_rc_file (xap->plugin);
-	if (!path)
-		return FALSE;
-
-	config = xfce_rc_simple_open (path, TRUE);
-	g_free (path);
-
-	if (!config)
-		return FALSE;
-
-	xfce_rc_set_group (config, "xfapplet");
-
-	/* iid for bonobo control */
-	iid = xfce_rc_read_entry (config, "iid", NULL);
-
-	/* gconf key for applet preferences */
-	gconf_key = xfce_rc_read_entry (config, "gconfkey", NULL);
-
-	if (!iid || !gconf_key) {
-		xfce_rc_close (config);
-		return FALSE;
-	}
-	
-	xap->iid = g_strdup (iid);
-	xap->gconf_key = g_strdup (gconf_key);
-
-	xfce_rc_close (config);
-
-	return TRUE;
 }
 
 static XfAppletPlugin*
@@ -408,7 +440,6 @@ xfapplet_construct (XfcePanelPlugin *plugin)
 		xfapplet_setup_empty (xap);
 
 	g_signal_connect (plugin, "free-data", G_CALLBACK (xfapplet_free), xap);
-	g_signal_connect (plugin, "save", G_CALLBACK (xfapplet_save_configuration), xap);
 	g_signal_connect (plugin, "size-changed", G_CALLBACK (xfapplet_size_changed), NULL);
 }
 

@@ -258,8 +258,11 @@ xfapplet_chooser_dialog_response (GtkWidget *dialog, int response, XfAppletPlugi
 		gtk_tree_selection_get_selected (sel, &model, &iter);
 		gtk_tree_model_get (model, &iter, 0, &applet, -1);
 
+		g_free (xap->iid);
+		g_free (xap->gconf_key);
 		xap->iid = g_strdup (applet->iid);
 		xap->gconf_key = gconf_unique_key ();
+
 		xfapplet_setup_full (xap);
 	}
 	
