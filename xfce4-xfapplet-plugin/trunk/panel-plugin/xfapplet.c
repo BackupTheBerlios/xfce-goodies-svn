@@ -361,8 +361,7 @@ xfapplet_construct_moniker (XfAppletPlugin *xap)
 	gchar *moniker;
 
 	/* We (still) do not support "background" and "locked_down" options. */
-	moniker = g_strdup_printf ("%s!prefs_key=/apps/xfce4-panel/xfapplets/%s/prefs;"
-				   "orient=%s;size=%s",
+	moniker = g_strdup_printf ("%s!prefs_key=%s/prefs;orient=%s;size=%s",
 				   xap->iid, xap->gconf_key,
 				   xfapplet_get_orient_string (xap->plugin),
 				   xfapplet_get_size_string (xap->plugin));

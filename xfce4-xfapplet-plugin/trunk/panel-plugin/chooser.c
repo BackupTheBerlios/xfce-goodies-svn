@@ -22,7 +22,7 @@
 
 #include <string.h>
 #include <gtk/gtk.h>
-#include <gconf/gconf.h>
+#include <gconf/gconf-client.h>
 #include <bonobo/bonobo-exception.h>
 #include <bonobo-activation/bonobo-activation.h>
 #include "xfapplet.h"
@@ -36,6 +36,30 @@ static char *applets_sort_criteria [] = {
 	"name",
 	NULL
 };
+
+static gchar *
+xfapplet_find_unique_key ()
+{
+	GConfClient *client;
+	gchar       *key = NULL;
+	gchar       *in_use;
+	int          i = 0;
+
+	client = gconf_client_get_default ();
+
+	do {
+		g_free (key);
+		key = g_strdup_printf ("/apps/xfapplet/applet_%d", i++);
+	} while (gconf_client_dir_exists (client, key, NULL));
+
+	in_use = g_strdup_printf ("%s/in_use", key);
+	gconf_client_set_bool (client, in_use, TRUE, NULL);
+	g_free (in_use);
+
+	g_object_unref (client);
+
+	return key;
+}
 
 /*
  * This one was borrowed (almost) entirely from the Gnome panel. Since
@@ -261,7 +285,7 @@ xfapplet_chooser_dialog_response (GtkWidget *dialog, int response, XfAppletPlugi
 		g_free (xap->iid);
 		g_free (xap->gconf_key);
 		xap->iid = g_strdup (applet->iid);
-		xap->gconf_key = gconf_unique_key ();
+		xap->gconf_key = xfapplet_find_unique_key ();
 
 		xfapplet_setup_full (xap);
 	}
