@@ -38,8 +38,21 @@
 #include <panel/xfce_support.h>
 
 static radio_gui* create_gui() {
+	g_printf("create_gui\n");
 	radio_gui* gui;
 	gui = g_new(radio_gui, 1);
+
+	gui->ebox = gtk_event_box_new();
+	gtk_widget_show(gui->ebox);
+
+	gui->box = gtk_vbox_new(FALSE, 0);
+	gtk_widget_show(gui->box);
+
+	gui->label = gtk_label_new("- off -");
+	gtk_widget_show(gui->label);
+	gtk_container_add(GTK_CONTAINER(gui->box), gui->label);
+
+	gtk_container_add(GTK_CONTAINER(gui->ebox), gui->box);
 
 	return gui;
 }
@@ -55,6 +68,8 @@ static void plugin_free(Control *ctrl) {
 static gboolean plugin_control_new(Control *ctrl) {
 	radio_gui* plugin_data = create_gui();
 	ctrl->data = (gpointer) plugin_data;
+
+	gtk_container_add(GTK_CONTAINER(ctrl->base), plugin_data->ebox);
 
 	return TRUE;
 }

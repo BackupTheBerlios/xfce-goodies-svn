@@ -28,5 +28,7 @@
 #include <gtk/gtk.h>
 
 typedef struct {
-	GtkWidget	*foo;
+	GtkWidget*	box;
+	GtkWidget*	ebox;
+	GtkWidget*	label;
 } radio_gui;
