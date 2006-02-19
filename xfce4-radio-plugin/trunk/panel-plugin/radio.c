@@ -25,34 +25,45 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef ENABLE_NLS
-#include <libintl.h>
-#endif
-
 #include <ctype.h>
 
-#include <radio.h>
+#include "radio.h"
 
 #include <gtk/gtk.h>
 
-// #include <libxfce4util/i18n.h>
 #include <libxfcegui4/dialogs.h>
 #include <panel/global.h>
 #include <panel/controls.h>
 #include <panel/plugins.h>
 #include <panel/xfce_support.h>
 
-static gboolean radio_control_new(Control *ctrl) {
+static radio_gui* create_gui() {
+	radio_gui* gui;
+	gui = g_new(radio_gui, 1);
+
+	return gui;
+}
+
+static void plugin_free(Control *ctrl) {
+	g_return_if_fail(ctrl != NULL);
+	g_return_if_fail(ctrl->data != NULL);
+
+	radio_gui* gui = ctrl->data;
+	g_free(gui);
+}
+
+static gboolean plugin_control_new(Control *ctrl) {
+	radio_gui* plugin_data = create_gui();
+	ctrl->data = (gpointer) plugin_data;
+
 	return TRUE;
 }
 
-static void radio_free(Control *ctrl) { }
 static void radio_read_config(Control *ctrl, xmlNodePtr parent) { }
 static void radio_write_config(Control *ctrl, xmlNodePtr parent) { }
 static void radio_set_size(Control *ctrl, int size) { }
 static void radio_attach_callback(Control *ctrl, const gchar *signal,
 						GCallback cb, gpointer data) {}
-static void radio_set_orientation(Control *ctrl, int orientation) { }
 static void radio_create_options(Control *ctrl, GtkContainer *container,
 							GtkWidget *done) { }
 
@@ -60,15 +71,12 @@ G_MODULE_EXPORT void xfce_control_class_init(ControlClass *cc) {
 	cc->name = "radio";
 	cc->caption = _("Radio player");
 
-	cc->create_control = (CreateControlFunc) radio_control_new;
-
-	cc->free = radio_free;
+	cc->create_control = plugin_control_new;
+	cc->free = plugin_free;
 	cc->read_config = radio_read_config;
 	cc->write_config = radio_write_config;
 	cc->attach_callback = radio_attach_callback;
-
 	cc->set_size = radio_set_size;
-	cc->set_orientation = radio_set_orientation;
 	cc->create_options = radio_create_options;
 }
 
