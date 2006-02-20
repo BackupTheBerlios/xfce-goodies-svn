@@ -37,23 +37,94 @@
 #include <panel/plugins.h>
 #include <panel/xfce_support.h>
 
+static void update_label(radio_gui* data) {
+	char* label = malloc(MAX_LABEL_LENGTH + 1);
+	if (data->on) {
+		sprintf(label, "%5.2f", ((float) data->freq) / 100);
+	} else {
+		strcpy(label, "- off -");
+	}
+	gtk_label_set_label(GTK_LABEL(data->label), label);
+	free(label);
+}
+
+static void radio_start(radio_gui* data) {
+	struct video_tuner tuner;
+	struct video_audio vid_aud;
+
+	// TODO: report errors
+	data->fd = open("/dev/radio0", O_RDONLY);
+
+	if (0 == ioctl(data->fd, VIDIOCGTUNER, &tuner) &&
+		(tuner.flags & VIDEO_TUNER_LOW))
+		data->freqfact = 16000;
+
+	ioctl(data->fd, VIDIOCSAUDIO, &vid_aud);
+	vid_aud.volume = 65535;
+	vid_aud.flags &= ~VIDEO_AUDIO_MUTE;
+	ioctl(data->fd, VIDIOCSAUDIO, &vid_aud);
+
+	radio_tune(data);
+}
+
+static void radio_stop(radio_gui* data) {
+	close(data->fd);
+
+	// TODO: hack
+	xfce_exec("/home/stefan/muteradio.sh", FALSE, FALSE, NULL);
+}
+
+static gboolean mouse_click(GtkWidget* src, GdkEventButton *event, radio_gui*
+									data) {
+	if (event->button == 1) {
+		data->on = !data->on;
+		if (data->on) {
+			radio_start(data);
+		} else {
+			radio_stop(data);
+		}
+	}
+	update_label(data);
+	return event->button != 3;
+}
+
+static void radio_tune(radio_gui* data) {
+	int freq = (data->freq * data->freqfact) / 100;
+	ioctl(data->fd, VIDIOCSFREQ, &freq);
+	update_label(data);
+}
+
+static void mouse_scroll(GtkWidget* src, GdkEventScroll *event, radio_gui* 
+									data) {
+	if (data->on) {
+		int direction = event->direction == GDK_SCROLL_UP ? -1 : 1;
+		data->freq += direction * FREQ_STEP;
+		if (data->freq > FREQ_MAX) data->freq = FREQ_MIN;
+		if (data->freq < FREQ_MIN) data->freq = FREQ_MAX;
+		radio_tune(data);
+	}
+}
+
 static radio_gui* create_gui() {
-	g_printf("create_gui\n");
 	radio_gui* gui;
 	gui = g_new(radio_gui, 1);
 
 	gui->ebox = gtk_event_box_new();
 	gtk_widget_show(gui->ebox);
+	g_signal_connect(GTK_WIDGET(gui->ebox), "button_press_event",
+						G_CALLBACK(mouse_click), gui);
+	g_signal_connect(GTK_WIDGET(gui->ebox), "scroll_event", 
+						G_CALLBACK(mouse_scroll), gui);
 
 	gui->box = gtk_vbox_new(FALSE, 0);
 	gtk_widget_show(gui->box);
 
-	gui->label = gtk_label_new("- off -");
+	gui->label = gtk_label_new("");
 	gtk_widget_show(gui->label);
 	gtk_container_add(GTK_CONTAINER(gui->box), gui->label);
 
 	gtk_container_add(GTK_CONTAINER(gui->ebox), gui->box);
-
+	
 	return gui;
 }
 
@@ -68,6 +139,12 @@ static void plugin_free(Control *ctrl) {
 static gboolean plugin_control_new(Control *ctrl) {
 	radio_gui* plugin_data = create_gui();
 	ctrl->data = (gpointer) plugin_data;
+	
+	plugin_data->on = FALSE;
+	plugin_data->freq = FREQ_INIT;
+	plugin_data->freqfact = 16;
+
+	update_label(plugin_data);
 
 	gtk_container_add(GTK_CONTAINER(ctrl->base), plugin_data->ebox);
 

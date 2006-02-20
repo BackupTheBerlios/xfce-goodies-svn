@@ -26,9 +26,25 @@
  */
 
 #include <gtk/gtk.h>
+#include <fcntl.h>
+
+#include <sys/ioctl.h>
+#include <linux/videodev.h>
+
+#define FREQ_MIN		8750
+#define FREQ_MAX		10800
+#define FREQ_INIT		10795
+#define FREQ_STEP		5
+#define MAX_LABEL_LENGTH	7
 
 typedef struct {
 	GtkWidget*	box;
 	GtkWidget*	ebox;
 	GtkWidget*	label;
+	gboolean	on;
+	int		freq;
+	int		fd;
+	int		freqfact;
 } radio_gui;
+
+static void radio_tune(radio_gui*);
