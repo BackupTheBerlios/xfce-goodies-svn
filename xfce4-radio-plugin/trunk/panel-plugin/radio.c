@@ -71,7 +71,6 @@ static void radio_stop(radio_gui* data) {
 	close(data->fd);
 
 	// TODO: check if blank
-	g_printf("%s\n", data->command);
 	xfce_exec(data->command, FALSE, FALSE, NULL);
 }
 
