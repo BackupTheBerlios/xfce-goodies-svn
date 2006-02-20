@@ -47,6 +47,7 @@ typedef struct {
 	int		fd;
 	int		freqfact;
 	char		device[MAX_DEVICE_NAME_LENGTH + 1];
+	char*		command;
 } radio_gui;
 
 static void radio_tune(radio_gui*);

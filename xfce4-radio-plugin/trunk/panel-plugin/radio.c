@@ -70,8 +70,8 @@ static void radio_start(radio_gui* data) {
 static void radio_stop(radio_gui* data) {
 	close(data->fd);
 
-	// TODO: hack
-	xfce_exec("/home/stefan/muteradio.sh", FALSE, FALSE, NULL);
+	// TODO: check if blank
+	xfce_exec(data->command, FALSE, FALSE, NULL);
 }
 
 static gboolean mouse_click(GtkWidget* src, GdkEventButton *event, radio_gui*
@@ -133,6 +133,9 @@ static void plugin_free(Control *ctrl) {
 	g_return_if_fail(ctrl->data != NULL);
 
 	radio_gui* gui = ctrl->data;
+
+	if (gui->on) radio_stop(gui);
+
 	g_free(gui);
 }
 
@@ -144,6 +147,7 @@ static gboolean plugin_control_new(Control *ctrl) {
 	plugin_data->freq = FREQ_INIT;
 	plugin_data->freqfact = 16;
 	strcpy(plugin_data->device, "/dev/radio0");
+	plugin_data->command = "/home/stefan/muteradio.sh";
 
 	update_label(plugin_data);
 
@@ -153,9 +157,11 @@ static gboolean plugin_control_new(Control *ctrl) {
 }
 
 void radio_command_changed(GtkEditable* editable, gpointer data) { }
-void radio_device_changed(GtkEditable* editable, gpointer data) {
+
+void radio_device_changed(GtkEditable* editable, void *pointer) {
+	radio_gui* data = (radio_gui*) pointer;
 	char* device = gtk_entry_get_text(GTK_ENTRY(editable));
-	g_printf("device: %s\n", device);
+	strncpy(data->device, device, MAX_DEVICE_NAME_LENGTH);
 }
 
 static void radio_create_options(Control *ctrl, GtkContainer *container,
@@ -229,9 +235,9 @@ static void radio_create_options(Control *ctrl, GtkContainer *container,
 				(GtkAttachOptions) (0), 0, 0);
 
 	g_signal_connect ((gpointer) command, "changed",
-				G_CALLBACK (radio_command_changed), NULL);
+				G_CALLBACK (radio_command_changed), data);
 	g_signal_connect ((gpointer) device, "changed",
-				G_CALLBACK (radio_device_changed), NULL);
+				G_CALLBACK (radio_device_changed), data);
 }
 
 
