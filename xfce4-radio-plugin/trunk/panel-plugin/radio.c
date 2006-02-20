@@ -71,6 +71,7 @@ static void radio_stop(radio_gui* data) {
 	close(data->fd);
 
 	// TODO: check if blank
+	g_printf("%s\n", data->command);
 	xfce_exec(data->command, FALSE, FALSE, NULL);
 }
 
@@ -147,7 +148,7 @@ static gboolean plugin_control_new(Control *ctrl) {
 	plugin_data->freq = FREQ_INIT;
 	plugin_data->freqfact = 16;
 	strcpy(plugin_data->device, "/dev/radio0");
-	plugin_data->command = "/home/stefan/muteradio.sh";
+	strcpy(plugin_data->command, "/home/stefan/muteradio.sh");
 
 	update_label(plugin_data);
 
@@ -156,7 +157,11 @@ static gboolean plugin_control_new(Control *ctrl) {
 	return TRUE;
 }
 
-void radio_command_changed(GtkEditable* editable, gpointer data) { }
+void radio_command_changed(GtkEditable* editable, void *pointer) {
+	radio_gui* data = (radio_gui*) pointer;
+	char* command = gtk_entry_get_text(GTK_ENTRY(editable));
+	strncpy(data->command, command, MAX_COMMAND_LENGTH);
+}
 
 void radio_device_changed(GtkEditable* editable, void *pointer) {
 	radio_gui* data = (radio_gui*) pointer;
@@ -221,7 +226,9 @@ static void radio_create_options(Control *ctrl, GtkContainer *container,
 	gtk_table_attach (GTK_TABLE (table1), executeLabel, 0, 1, 2, 3,
 		(GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 0, 0);
         gtk_misc_set_alignment (GTK_MISC (executeLabel), 0, 0.5);
+
 	command = gtk_entry_new ();
+	gtk_entry_set_text(GTK_ENTRY(command), data->command);
 	gtk_widget_show (command);
 	gtk_table_attach (GTK_TABLE (table1), command, 1, 2, 2, 3,
 				(GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
