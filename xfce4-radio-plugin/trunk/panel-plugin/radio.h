@@ -36,6 +36,7 @@
 #define FREQ_INIT		10795
 #define FREQ_STEP		5
 #define MAX_LABEL_LENGTH	7
+#define MAX_DEVICE_NAME_LENGTH	32
 
 typedef struct {
 	GtkWidget*	box;
@@ -45,6 +46,7 @@ typedef struct {
 	int		freq;
 	int		fd;
 	int		freqfact;
+	char		device[MAX_DEVICE_NAME_LENGTH + 1];
 } radio_gui;
 
 static void radio_tune(radio_gui*);

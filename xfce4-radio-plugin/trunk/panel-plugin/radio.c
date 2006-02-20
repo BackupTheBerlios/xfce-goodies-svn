@@ -53,7 +53,7 @@ static void radio_start(radio_gui* data) {
 	struct video_audio vid_aud;
 
 	// TODO: report errors
-	data->fd = open("/dev/radio0", O_RDONLY);
+	data->fd = open(data->device, O_RDONLY);
 
 	if (0 == ioctl(data->fd, VIDIOCGTUNER, &tuner) &&
 		(tuner.flags & VIDEO_TUNER_LOW))
@@ -143,6 +143,7 @@ static gboolean plugin_control_new(Control *ctrl) {
 	plugin_data->on = FALSE;
 	plugin_data->freq = FREQ_INIT;
 	plugin_data->freqfact = 16;
+	strcpy(plugin_data->device, "/dev/radio0");
 
 	update_label(plugin_data);
 
@@ -151,13 +152,95 @@ static gboolean plugin_control_new(Control *ctrl) {
 	return TRUE;
 }
 
+void radio_command_changed(GtkEditable* editable, gpointer data) { }
+void radio_device_changed(GtkEditable* editable, gpointer data) {
+	char* device = gtk_entry_get_text(GTK_ENTRY(editable));
+	g_printf("device: %s\n", device);
+}
+
+static void radio_create_options(Control *ctrl, GtkContainer *container,
+							GtkWidget *done) {
+	radio_gui* data = ctrl->data;
+
+	GtkWidget *table1;
+	GtkWidget *deviceLabel;
+	GtkWidget *qualityLabel;
+	GtkWidget *hbox1;
+	GSList *showSignal_group = NULL;
+	GtkWidget *showSignal;
+	GtkWidget *executeLabel;
+	GtkWidget *command;
+	GtkWidget *device;
+
+	table1 = gtk_table_new (3, 2, FALSE);
+	gtk_widget_show (table1);
+	gtk_container_add (GTK_CONTAINER (container), table1);
+
+	deviceLabel = gtk_label_new (_("V4L device"));
+	gtk_widget_show (deviceLabel);
+	gtk_table_attach (GTK_TABLE (table1), deviceLabel, 0, 1, 0, 1,
+		(GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 0, 0);
+	gtk_misc_set_alignment (GTK_MISC (deviceLabel), 0, 0.5);
+
+	qualityLabel = gtk_label_new (_("Display signal strength"));
+	gtk_widget_show (qualityLabel);
+	gtk_table_attach (GTK_TABLE (table1), qualityLabel, 0, 1, 1, 2,
+		(GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 0, 0);
+	gtk_misc_set_alignment (GTK_MISC (qualityLabel), 0, 0.5);
+
+	hbox1 = gtk_hbox_new (FALSE, 0);
+	gtk_widget_show (hbox1);
+	gtk_table_attach (GTK_TABLE (table1), hbox1, 1, 2, 1, 2,
+	(GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (GTK_FILL), 0, 0);
+
+	showSignal = gtk_radio_button_new_with_mnemonic (NULL, _("yes"));
+	gtk_widget_show (showSignal);
+	gtk_box_pack_start (GTK_BOX (hbox1), showSignal, FALSE, FALSE, 0);
+	gtk_radio_button_set_group (GTK_RADIO_BUTTON (showSignal), 
+							showSignal_group);
+	showSignal_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON
+								(showSignal));
+
+	showSignal = gtk_radio_button_new_with_mnemonic (NULL, _("no"));
+	gtk_widget_show (showSignal);
+
+	gtk_box_pack_start (GTK_BOX (hbox1), showSignal, FALSE, FALSE, 0);
+	gtk_radio_button_set_group (GTK_RADIO_BUTTON (showSignal), 
+							showSignal_group);
+	showSignal_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON 
+								(showSignal));
+
+	executeLabel = gtk_label_new (_("Execute command after sutdown"));
+	gtk_widget_show (executeLabel);
+	gtk_table_attach (GTK_TABLE (table1), executeLabel, 0, 1, 2, 3,
+		(GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 0, 0);
+        gtk_misc_set_alignment (GTK_MISC (executeLabel), 0, 0.5);
+	command = gtk_entry_new ();
+	gtk_widget_show (command);
+	gtk_table_attach (GTK_TABLE (table1), command, 1, 2, 2, 3,
+				(GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+				(GtkAttachOptions) (0), 0, 0);
+
+	device = gtk_entry_new ();
+	gtk_entry_set_text(GTK_ENTRY(device), data->device);
+	gtk_widget_show (device);
+	gtk_table_attach (GTK_TABLE (table1), device, 1, 2, 0, 1,
+				(GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+				(GtkAttachOptions) (0), 0, 0);
+
+	g_signal_connect ((gpointer) command, "changed",
+				G_CALLBACK (radio_command_changed), NULL);
+	g_signal_connect ((gpointer) device, "changed",
+				G_CALLBACK (radio_device_changed), NULL);
+}
+
+
+
 static void radio_read_config(Control *ctrl, xmlNodePtr parent) { }
 static void radio_write_config(Control *ctrl, xmlNodePtr parent) { }
 static void radio_set_size(Control *ctrl, int size) { }
 static void radio_attach_callback(Control *ctrl, const gchar *signal,
 						GCallback cb, gpointer data) {}
-static void radio_create_options(Control *ctrl, GtkContainer *container,
-							GtkWidget *done) { }
 
 G_MODULE_EXPORT void xfce_control_class_init(ControlClass *cc) {
 	cc->name = "radio";
