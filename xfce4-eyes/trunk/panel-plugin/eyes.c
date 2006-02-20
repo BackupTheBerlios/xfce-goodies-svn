@@ -76,8 +76,7 @@ extern xmlDocPtr xmlconfig;
 /*75*/
 
 /* TODO - Optimize this a bit */
-static void 
-calculate_pupil_xy (t_eyes *eyes_applet,
+static void calculate_pupil_xy (t_eyes *eyes_applet,
 		    gint x, gint y,
 		    gint *pupil_x, gint *pupil_y)
 {
@@ -122,8 +121,7 @@ calculate_pupil_xy (t_eyes *eyes_applet,
         *pupil_y += eyes_applet->eye_height / 2;
 }
 
-static void 
-draw_eye (t_eyes *eyes_applet,
+static void draw_eye (t_eyes *eyes_applet,
 	  gint eye_num, 
           gint pupil_x, 
           gint pupil_y)
@@ -188,8 +186,7 @@ draw_eye (t_eyes *eyes_applet,
  
 }
 
-static gint 
-timer_cb(t_eyes *eyes)
+static gint timer_cb(t_eyes *eyes)
 {
         gint x, y;
         gint pupil_x, pupil_y;
@@ -207,8 +204,7 @@ timer_cb(t_eyes *eyes)
         return(TRUE);
 }
 
-static void
-properties_load(t_eyes *eyes)
+static void properties_load(t_eyes *eyes)
 {
         gchar *path;
 
@@ -224,8 +220,7 @@ properties_load(t_eyes *eyes)
         g_free(path);
 }
 
-void
-setup_eyes(t_eyes *eyes) 
+static void setup_eyes(t_eyes *eyes) 
 {
 	int i;
 
@@ -262,8 +257,7 @@ setup_eyes(t_eyes *eyes)
 }
 
 
-static gboolean
-eyes_applet_fill(t_eyes *eyes)
+static gboolean eyes_applet_fill(t_eyes *eyes)
 {
 	gtk_widget_show_all(GTK_WIDGET(eyes->align));
 
@@ -312,14 +306,12 @@ eyes_control_new(Control *ctrl)
 }
 
 static void
-eyes_free(Control *ctrl)
+eyes_free_data(XfcePanelPlugin* plugin, t_eyes* eyes)
 {
-	t_eyes *eyes;
-
-	g_return_if_fail(ctrl != NULL);
-	g_return_if_fail(ctrl->data != NULL);
-
-	eyes = (t_eyes *)ctrl->data;
+ /* TODO free property dialog? */
+ 
+	g_return_if_fail(plugin != NULL);
+	g_return_if_fail(eyes != NULL);
 
 	if (eyes->timeout_id != 0)
 		g_source_remove(eyes->timeout_id);
@@ -327,9 +319,6 @@ eyes_free(Control *ctrl)
 	if (eyes->options.theme != NULL)
 		g_free(eyes->options.theme);
 	
-/*	if (eyes->revert.theme != NULL)
-		g_free(eyes->revert.theme);
-*/
 	if (eyes->eye_image != NULL)
 		g_object_unref(eyes->eye_image);
 	
@@ -350,73 +339,6 @@ eyes_free(Control *ctrl)
 	
 	gtk_widget_destroy(eyes->align);
 	g_free(eyes);
-}
-
-static void
-eyes_read_config(Control *ctrl, xmlNodePtr node)
-{
-	xmlChar *value;
-	t_eyes *eyes;
-	
-	eyes = (t_eyes *)ctrl->data;
-	
-	if (node == NULL || (node = node->children) == NULL)
-		return;
-
-	if (!xmlStrEqual(node->name, (const xmlChar *)EYES_ROOT))
-		return;
-
-	for (node = node->children; node != NULL; node = node->next) {
-		if (xmlStrEqual(node->name, (const xmlChar *)"Theme")) {
-			if ((value = MYDATA(node)) != NULL) {
-				if (eyes->options.theme)
-					g_free(eyes->options.theme);
-				eyes->options.theme = g_strdup((gchar *)value);
-			}
-
-			break;
-		}
-	}
-
-	properties_load(eyes);
-        setup_eyes (eyes);
-	eyes_applet_fill(eyes);
-}
-
-static void
-eyes_write_config(Control *ctrl, xmlNodePtr parent)
-{
-	xmlNodePtr root, node;
-	
-	t_eyes *eyes;
-	
-	eyes = (t_eyes *)ctrl->data;
-	
-	root = xmlNewTextChild(parent, NULL, EYES_ROOT, NULL);
-
-	if (eyes->options.theme) {
-		node = xmlNewTextChild(root, NULL, "Theme",
-				eyes->options.theme);
-	}
-	else {
-		g_warning("No theme selected");
-	}
-}
-
-static void
-eyes_attach_callback(Control *ctrl, const gchar *signal, GCallback cb,
-		gpointer data)
-{
-	t_eyes *eyes;
-
-	eyes = (t_eyes *)ctrl->data;
-	g_signal_connect(eyes->hbox, signal, cb, data);
-}
-
-static void
-eyes_set_size(Control *ctrl, int size)
-{
-	gtk_widget_set_size_request(ctrl->base, -1, -1);
 }
 
 static void
@@ -445,19 +367,6 @@ menu_add_string(GtkMenu *menu, gchar *text)
 	gtk_widget_show(widget);
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu), widget);
 }
-
-#if 0
-static void
-eyes_revert_options_cb(GtkWidget *button, t_eyes *eyes)
-{
-	if (eyes->options.theme)
-		g_free(eyes->options.theme);
-
-	eyes->options.theme = eyes->revert.theme;
-	eyes->revert.theme = NULL;
-	gtk_widget_set_sensitive(GTK_WIDGET(eyes->revert_b), FALSE);
-}
-#endif
 
 static void
 eyes_create_options(Control *control, GtkContainer *container, 
@@ -529,42 +438,113 @@ eyes_create_options(Control *control, GtkContainer *container,
 			G_CALLBACK(theme_changed_cb), eyes);
 }
 
+static gboolean
+eyes_set_size (XfcePanelPlugin *plugin, int size)
+{
+    if (xfce_panel_plugin_get_orientation (plugin) ==
+            GTK_ORIENTATION_HORIZONTAL)
+    {
+        gtk_widget_set_size_request (GTK_WIDGET (plugin),
+                                     -1, size);
+    }
+    else
+    {
+        gtk_widget_set_size_request (GTK_WIDGET (plugin),
+                                     size, -1);
+    }
+ 
+    return TRUE;
+}
+
 static void
-eyes_set_orientation (Control *control, int orientation)
+eyes_orientation_changed (XfcePanelPlugin *plugin, 
+                           GtkOrientation orientation, 
+                           t_eyes* eyes)
 {
-	t_eyes * eyes;
-	
-	eyes = (t_eyes *)control->data;
-	
-	switch (orientation) {
-	case VERTICAL:
-		gtk_alignment_set (GTK_ALIGNMENT (eyes->align), 0.5, 0.0, 0.0, 1.0);
-		break;
-	case HORIZONTAL:
-		gtk_alignment_set (GTK_ALIGNMENT (eyes->align), 0.0, 0.5, 1.0, 0.0);
-		break;
-	}
+  if (orientation == GTK_ORIENTATION_VERTICAL) {
+    gtk_alignment_set (GTK_ALIGNMENT (eyes->align), 0.5, 0.0, 0.0, 1.0);
+  } else {
+    gtk_alignment_set (GTK_ALIGNMENT (eyes->align), 0.0, 0.5, 1.0, 0.0);
+  }
 }
 
-G_MODULE_EXPORT void
-xfce_control_class_init(ControlClass *cc)
+static void
+eyes_read_rc_file (XfcePanelPlugin *plugin, t_eyes* eyes)
 {
-	xfce_textdomain(GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR, "UTF-8");
-	
-	cc->name		= "eyes";
-	cc->caption		= _("Eyes");
+  XfceRc* rc;
+  gchar const* theme1;
 
-	cc->create_control	= (CreateControlFunc)eyes_control_new;
+  if (eyes->options.theme != NULL) {
+    g_free (eyes->options.theme);
+    eyes->options.theme = NULL;
+  }
 
-	cc->free		= eyes_free;
-	cc->read_config		= eyes_read_config;
-	cc->write_config	= eyes_write_config;
-	cc->attach_callback	= eyes_attach_callback;
-	
-	cc->create_options		= eyes_create_options;
-
-	cc->set_size		= eyes_set_size;
-	cc->set_orientation	= eyes_set_orientation;
+  if ((file = xfce_panel_plugin_lookup_rc_file (plugin)) != NULL) {
+    rc = xfce_rc_simple_open (file, TRUE);
+    g_free (file);
+    
+    if (rc != NULL) {
+      theme1 = xfce_rc_read_entry (rc, "theme", NULL);
+      if (theme1 != NULL) {
+        eyes->options.theme = g_strdup (theme1);
+      }
+    }
+  }
 }
 
-XFCE_PLUGIN_CHECK_INIT
+static void
+eyes_write_rc_file (XfcePanelPlugin *plugin, t_eyes* eyes)
+{
+    char *file;
+    XfceRc *rc;
+    
+    if (!(file = xfce_panel_plugin_save_location (plugin, TRUE)))
+        return;
+
+    rc = xfce_rc_simple_open (file, FALSE);
+    g_free (file);
+
+    if (!rc)
+        return;
+ 
+    if (eyes->options.theme != NULL) {
+      xfce_rc_write_entry (rc, "theme", eyes->options.theme);
+    }
+
+    xfce_rc_close (rc);
+}
+
+                                                      
+static void eyes_construct (XfcePanelPlugin *plugin);
+
+XFCE_PANEL_PLUGIN_REGISTER_INTERNAL(eyes_construct);
+
+static void 
+eyes_construct (XfcePanelPlugin *plugin)
+{
+    t_eyes *eyes = g_new0 (t_eyes, 1);
+
+    g_signal_connect (plugin, "orientation-changed", 
+                      G_CALLBACK (eyes_orientation_changed), eyes);
+    
+    g_signal_connect (plugin, "size-changed", 
+                      G_CALLBACK (eyes_set_size), NULL);
+    
+    g_signal_connect (plugin, "free-data", 
+                      G_CALLBACK (eyes_free_data), eyes);
+    
+    g_signal_connect (plugin, "save", 
+                      G_CALLBACK (eyes_write_rc_file), eyes);
+
+    xfce_panel_plugin_menu_show_configure (plugin);
+    g_signal_connect (plugin, "configure-plugin", 
+                      G_CALLBACK (eyes_properties_dialog), eyes);
+
+    eyes->plugin = plugin;
+
+    eyes_read_rc_file (plugin, eyes);
+
+    gtk_container_add (GTK_CONTAINER (plugin), eyes->eyes);
+    
+    xfce_panel_plugin_add_action_widget (plugin, eyes->eyes);
+}
