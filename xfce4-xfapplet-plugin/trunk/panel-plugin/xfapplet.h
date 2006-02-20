@@ -25,9 +25,11 @@
 
 typedef struct  {
 	XfcePanelPlugin   *plugin;
+	gboolean           configured;
 	gchar             *iid;
 	gchar             *gconf_key;
 	BonoboUIComponent *uic;
+	Bonobo_PropertyBag prop_bag;
 	GtkWidget         *tv;
 	GSList            *applets;
 } XfAppletPlugin;

@@ -227,6 +227,7 @@ xfapplet_applet_activated (Bonobo_Unknown object, CORBA_Environment *ev, gpointe
 	GtkWidget           *bw;
 	BonoboControlFrame  *frame;
 	BonoboUIComponent   *uic;
+	Bonobo_PropertyBag   prop_bag;
 	XfAppletPlugin      *xap = (XfAppletPlugin*) data;
 
 	bw = bonobo_widget_new_control_from_objref (object, CORBA_OBJECT_NIL);
@@ -234,7 +235,8 @@ xfapplet_applet_activated (Bonobo_Unknown object, CORBA_Environment *ev, gpointe
 	
 	frame = bonobo_widget_get_control_frame (BONOBO_WIDGET (bw));
         uic = bonobo_control_frame_get_popup_component (frame, CORBA_OBJECT_NIL);
-
+	prop_bag = bonobo_control_frame_get_control_property_bag (frame, CORBA_OBJECT_NIL);
+	
 	bonobo_ui_component_freeze (uic, CORBA_OBJECT_NIL);
 	
 	xfce_textdomain("xfce4-panel", LIBXFCE4PANEL_LOCALE_DIR, "UTF-8");
@@ -250,25 +252,43 @@ xfapplet_applet_activated (Bonobo_Unknown object, CORBA_Environment *ev, gpointe
 
 	gtk_widget_show (bw);
 
-	if (xap->uic)
+	if (xap->configured) {
 		bonobo_object_unref (BONOBO_OBJECT (xap->uic));
+		bonobo_object_release_unref (xap->prop_bag, NULL);
+	}
+
 	xap->uic = uic;
+	xap->prop_bag = prop_bag;
 
 	list = gtk_container_get_children (GTK_CONTAINER (xap->plugin));
 	if (list && list->data)
 		gtk_widget_destroy (GTK_WIDGET (list->data));
 
 	gtk_container_add (GTK_CONTAINER(xap->plugin), bw);
+	xap->configured = TRUE;
 
 	if (!xfapplet_save_configuration (xap))
 		g_warning (_("Could not save XfApplet configuration."));
 }
 
 static gboolean 
-xfapplet_size_changed (XfcePanelPlugin *plugin, int size, gpointer dummy)
+xfapplet_size_changed (XfcePanelPlugin *plugin, int size, gpointer data)
 {
-	if (xfce_panel_plugin_get_orientation (plugin) ==
-	    GTK_ORIENTATION_HORIZONTAL)
+	int		sz;
+	XfAppletPlugin *xap = (XfAppletPlugin*) data;
+	
+	if (xap->configured) {
+		sz = size <= GNOME_PANEL_SIZE_XX_SMALL ? GNOME_PANEL_SIZE_XX_SMALL :
+		     size <= GNOME_PANEL_SIZE_X_SMALL  ? GNOME_PANEL_SIZE_X_SMALL  :
+		     size <= GNOME_PANEL_SIZE_SMALL    ? GNOME_PANEL_SIZE_SMALL    :
+		     size <= GNOME_PANEL_SIZE_MEDIUM   ? GNOME_PANEL_SIZE_MEDIUM   :
+		     size <= GNOME_PANEL_SIZE_LARGE    ? GNOME_PANEL_SIZE_LARGE    :
+		     size <= GNOME_PANEL_SIZE_X_LARGE  ? GNOME_PANEL_SIZE_X_LARGE  : GNOME_PANEL_SIZE_XX_LARGE;
+
+		bonobo_pbclient_set_short (xap->prop_bag, "panel-applet-size", sz, NULL);
+	}
+
+	if (xfce_panel_plugin_get_orientation (plugin) == GTK_ORIENTATION_HORIZONTAL)
 		gtk_widget_set_size_request (GTK_WIDGET (plugin), -1, size);
 	else
 		gtk_widget_set_size_request (GTK_WIDGET (plugin), size, -1);
@@ -279,10 +299,14 @@ xfapplet_size_changed (XfcePanelPlugin *plugin, int size, gpointer dummy)
 static void
 xfapplet_free(XfcePanelPlugin *plugin, XfAppletPlugin *xap)
 {
-	if (xap->uic)
-		bonobo_object_unref (BONOBO_OBJECT (xap->uic));
 	g_free (xap->iid);
 	g_free (xap->gconf_key);
+	
+	if (xap->configured) {
+		bonobo_object_unref (BONOBO_OBJECT (xap->uic));
+		bonobo_object_release_unref (xap->prop_bag, NULL);
+	}
+	
 	g_free (xap);
 }
 
@@ -411,8 +435,11 @@ xfapplet_new (XfcePanelPlugin *plugin)
 
 	xap = g_new0 (XfAppletPlugin, 1);
 	xap->plugin = plugin;
+	xap->configured = FALSE;
 	xap->iid = NULL;
 	xap->gconf_key = NULL;
+	xap->uic = NULL;
+	xap->prop_bag = 0;
 	xap->tv = NULL;
 	xap->applets = NULL;
 
@@ -439,7 +466,7 @@ xfapplet_construct (XfcePanelPlugin *plugin)
 		xfapplet_setup_empty (xap);
 
 	g_signal_connect (plugin, "free-data", G_CALLBACK (xfapplet_free), xap);
-	g_signal_connect (plugin, "size-changed", G_CALLBACK (xfapplet_size_changed), NULL);
+	g_signal_connect (plugin, "size-changed", G_CALLBACK (xfapplet_size_changed), xap);
 }
 
 XFCE_PANEL_PLUGIN_REGISTER_EXTERNAL(xfapplet_construct)
