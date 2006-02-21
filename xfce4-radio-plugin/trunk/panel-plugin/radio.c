@@ -118,7 +118,7 @@ static void radio_stop(radio_gui* data) {
 	xfce_exec(data->command, FALSE, FALSE, NULL);
 }
 
-static radio_preset* find_preset(const char* name, radio_gui* data) {
+static radio_preset* find_preset_by_name(const char* name, radio_gui* data) {
 	radio_preset* preset = data->presets;
 	while (preset != NULL) {
 		if (strcmp(preset->name, name) == 0) {
@@ -136,7 +136,11 @@ static gboolean append_to_presets(radio_preset* new_preset, radio_gui* data) {
 		if (new_preset->freq == preset->freq) return FALSE;
 		preset = preset->next;
 	}
-	prev->next = new_preset;
+	if (preset == data->presets) {
+		data->presets = new_preset;
+	} else {
+		prev->next = new_preset;
+	}
 	return TRUE;
 }
 
@@ -177,11 +181,31 @@ static void add_preset_dialog(GtkEditable* menu_item, void *pointer) {
 	gtk_widget_destroy(dialog);
 }
 
+static void remove_preset(GtkEditable* menu_item, void *pointer) {
+	radio_gui* data = (radio_gui*) pointer;
+	radio_preset *preset = data->presets, *prev;
+
+	while (preset != NULL) {
+		if (preset->freq == data->freq) {
+			if (preset == data->presets) {
+				data->presets = preset->next;
+			} else {
+				prev->next = preset->next;
+			}
+			free(preset);
+		} else {
+			prev = preset;
+		}
+		preset = preset->next;
+	}
+
+}
+
 static void select_preset(GtkEditable* menu_item, void *pointer) {
         radio_gui* data = (radio_gui*) pointer;
 	GtkWidget* label = gtk_bin_get_child(GTK_BIN(menu_item));
 	const char* text = gtk_label_get_text(GTK_LABEL(label));
-	radio_preset* preset = find_preset(text, data);
+	radio_preset* preset = find_preset_by_name(text, data);
 	data->freq = preset->freq;
 	radio_tune(data);
 }
@@ -232,7 +256,7 @@ static gboolean mouse_click(GtkWidget* src, GdkEventButton *event, radio_gui*
 		gtk_widget_show(item);
 		gtk_menu_append(menu, item);
 		g_signal_connect(GTK_WIDGET(item), "activate",
-					G_CALLBACK(add_preset_dialog), data);
+					G_CALLBACK(remove_preset), data);
 
 		gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, NULL, 
 				event->button, event->time);
