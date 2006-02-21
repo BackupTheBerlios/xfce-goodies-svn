@@ -195,7 +195,7 @@ static gboolean mouse_click(GtkWidget* src, GdkEventButton *event, radio_gui*
 			data->on = FALSE;
 			radio_stop(data);
 		}
-	} else if (event->button == 2) {
+	} else if (event->button == 2 && data->on) {
 		GtkWidget* menu = gtk_menu_new();
 		GtkWidget* item = gtk_menu_item_new_with_label(_("Presets"));
 		gtk_widget_show(item);
