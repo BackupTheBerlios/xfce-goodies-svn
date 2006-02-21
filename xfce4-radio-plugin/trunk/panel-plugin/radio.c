@@ -67,16 +67,22 @@ static gboolean radio_start(radio_gui* data) {
 		(tuner.flags & VIDEO_TUNER_LOW))
 		data->freqfact = 16000;
 
-	ioctl(data->fd, VIDIOCSAUDIO, &vid_aud);
-	vid_aud.volume = 65535;
+	if (ioctl(data->fd, VIDIOCSAUDIO, &vid_aud)) perror("VIDIOCGAUDIO");
+	if (vid_aud.volume == 0) vid_aud.volume = 65535;
 	vid_aud.flags &= ~VIDEO_AUDIO_MUTE;
-	ioctl(data->fd, VIDIOCSAUDIO, &vid_aud);
+	if (ioctl(data->fd, VIDIOCSAUDIO, &vid_aud)) perror("VIDIOCSAUDIO");
 
 	radio_tune(data);
 	return TRUE;
 }
 
 static void radio_stop(radio_gui* data) {
+	struct video_audio vid_aud;
+
+	if (ioctl(data->fd, VIDIOCGAUDIO, &vid_aud)) perror("VIDIOCGAUDIO");
+	vid_aud.flags |= VIDEO_AUDIO_MUTE;
+	if (ioctl(data->fd, VIDIOCSAUDIO, &vid_aud)) perror("VIDIOCSAUDIO");
+
 	close(data->fd);
 
 	// TODO: check if blank
