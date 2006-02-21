@@ -37,6 +37,34 @@
 #include <panel/plugins.h>
 #include <panel/xfce_support.h>
 
+static int radio_get_signal(int fd) {
+	struct video_tuner vt;
+	int i, signal;
+
+	memset(&vt,0,sizeof(vt));
+	ioctl(fd, VIDIOCGTUNER, &vt);
+	signal = vt.signal>>13;
+
+	return signal;
+}
+
+static void update_signal_bar(radio_gui* data) {
+	if (!data->on || !data->show_signal) {
+		gtk_widget_hide(data->signal_bar);
+	} else {
+		gtk_widget_show(data->signal_bar);
+		double signal = radio_get_signal(data->fd);
+		gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR
+					(data->signal_bar), signal / 2);
+	
+		GdkColor color;
+		gdk_color_parse(signal > 1 ? COLOR_SIGNAL_HIGH :
+						COLOR_SIGNAL_LOW, &color);
+		gtk_widget_modify_bg(data->signal_bar, GTK_STATE_PRELIGHT,
+								&color);
+	}
+}
+
 static void update_label(radio_gui* data) {
 	char* label = malloc(MAX_LABEL_LENGTH + 1);
 	if (data->on) {
@@ -45,6 +73,7 @@ static void update_label(radio_gui* data) {
 		strcpy(label, "- off -");
 	}
 	gtk_label_set_label(GTK_LABEL(data->label), label);
+
 	free(label);
 }
 
@@ -85,17 +114,10 @@ static void radio_stop(radio_gui* data) {
 
 	close(data->fd);
 
+	if (data->show_signal) gtk_widget_hide(data->signal_bar);
+
 	// TODO: check if blank
 	xfce_exec(data->command, FALSE, FALSE, NULL);
-}
-
-static int radio_get_signal(int fd) {
-	struct video_tuner vt;
-	int i, signal;
-
-	memset(&vt,0,sizeof(vt));
-	ioctl(fd, VIDIOCGTUNER, &vt);
-	signal = vt.signal>>13;
 }
 
 static gboolean mouse_click(GtkWidget* src, GdkEventButton *event, radio_gui*
@@ -109,15 +131,16 @@ static gboolean mouse_click(GtkWidget* src, GdkEventButton *event, radio_gui*
 		}
 	}
 	update_label(data);
+	update_signal_bar(data);
 	return event->button != 3;
 }
 
 static void radio_tune(radio_gui* data) {
 	int freq = (data->freq * data->freqfact) / 100;
 	ioctl(data->fd, VIDIOCSFREQ, &freq);
-	update_label(data);
 
-	data->signal = radio_get_signal(data->fd);
+	update_label(data);
+	update_signal_bar(data);
 }
 
 static void mouse_scroll(GtkWidget* src, GdkEventScroll *event, radio_gui* 
@@ -142,12 +165,18 @@ static radio_gui* create_gui() {
 	g_signal_connect(GTK_WIDGET(gui->ebox), "scroll_event", 
 						G_CALLBACK(mouse_scroll), gui);
 
+	gui->signal_bar = gtk_progress_bar_new();
+	gtk_progress_bar_set_orientation(GTK_PROGRESS_BAR(gui->signal_bar),
+						GTK_PROGRESS_LEFT_TO_RIGHT);
+
 	gui->box = gtk_vbox_new(FALSE, 0);
 	gtk_widget_show(gui->box);
 
 	gui->label = gtk_label_new("");
 	gtk_widget_show(gui->label);
-	gtk_container_add(GTK_CONTAINER(gui->box), gui->label);
+
+	gtk_box_pack_start(GTK_BOX(gui->box), gui->label, FALSE, FALSE,0);
+	gtk_box_pack_start(GTK_BOX(gui->box), gui->signal_bar, FALSE, FALSE,0);
 
 	gtk_container_add(GTK_CONTAINER(gui->ebox), gui->box);
 	
@@ -174,8 +203,8 @@ static gboolean plugin_control_new(Control *ctrl) {
 	plugin_data->freqfact = 16;
 	plugin_data->show_signal = FALSE;
 	strcpy(plugin_data->device, "/dev/radio0");
-	strcpy(plugin_data->command, "/home/stefan/muteradio.sh");
-
+	//strcpy(plugin_data->command, "/home/stefan/muteradio.sh");
+	
 	update_label(plugin_data);
 
 	gtk_container_add(GTK_CONTAINER(ctrl->base), plugin_data->ebox);
@@ -199,6 +228,7 @@ void radio_show_signal_changed(GtkEditable* editable, void *pointer) {
 	radio_gui* data = (radio_gui*) pointer;
 	data->show_signal = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON
 								(editable));
+	update_signal_bar(data);
 }
 
 static void plugin_create_options(Control *ctrl, GtkContainer *container,
@@ -332,7 +362,14 @@ static void plugin_read_config(Control *ctrl, xmlNodePtr parent) {
 	}
 }
 
-static void radio_set_size(Control *ctrl, int size) { }
+static void plugin_set_size(Control *ctrl, int size) {
+	radio_gui* data = ctrl->data;
+
+	int icon = icon_size[size];
+
+	gtk_widget_set_size_request(data->signal_bar, icon - 6, 2 + 2 * size);
+}
+
 static void radio_attach_callback(Control *ctrl, const gchar *signal,
 						GCallback cb, gpointer data) {}
 
@@ -345,7 +382,7 @@ G_MODULE_EXPORT void xfce_control_class_init(ControlClass *cc) {
 	cc->read_config = plugin_read_config;
 	cc->write_config = plugin_write_config;
 	cc->attach_callback = radio_attach_callback;
-	cc->set_size = radio_set_size;
+	cc->set_size = plugin_set_size;
 	cc->create_options = plugin_create_options;
 }
 

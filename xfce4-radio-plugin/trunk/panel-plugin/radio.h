@@ -35,18 +35,22 @@
 #define FREQ_MAX		10800
 #define FREQ_INIT		10795
 #define FREQ_STEP		5
+
 #define MAX_LABEL_LENGTH	7
 #define MAX_DEVICE_NAME_LENGTH	32
 #define MAX_COMMAND_LENGTH	128
+
+#define COLOR_SIGNAL_LOW	"#ffff00"
+#define COLOR_SIGNAL_HIGH	"#00ff00"
 
 typedef struct {
 	GtkWidget*	box;
 	GtkWidget*	ebox;
 	GtkWidget*	label;
+	GtkWidget*	signal_bar;
 	gboolean	on;
 	gboolean	show_signal;
 	int		freq;
-	int		signal;
 	int		fd;
 	int		freqfact;
 	char		device[MAX_DEVICE_NAME_LENGTH + 1];
