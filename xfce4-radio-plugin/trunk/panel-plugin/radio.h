@@ -44,7 +44,9 @@ typedef struct {
 	GtkWidget*	ebox;
 	GtkWidget*	label;
 	gboolean	on;
+	gboolean	show_signal;
 	int		freq;
+	int		signal;
 	int		fd;
 	int		freqfact;
 	char		device[MAX_DEVICE_NAME_LENGTH + 1];

@@ -89,6 +89,15 @@ static void radio_stop(radio_gui* data) {
 	xfce_exec(data->command, FALSE, FALSE, NULL);
 }
 
+static int radio_get_signal(int fd) {
+	struct video_tuner vt;
+	int i, signal;
+
+	memset(&vt,0,sizeof(vt));
+	ioctl(fd, VIDIOCGTUNER, &vt);
+	signal = vt.signal>>13;
+}
+
 static gboolean mouse_click(GtkWidget* src, GdkEventButton *event, radio_gui*
 									data) {
 	if (event->button == 1) {
@@ -107,6 +116,8 @@ static void radio_tune(radio_gui* data) {
 	int freq = (data->freq * data->freqfact) / 100;
 	ioctl(data->fd, VIDIOCSFREQ, &freq);
 	update_label(data);
+
+	data->signal = radio_get_signal(data->fd);
 }
 
 static void mouse_scroll(GtkWidget* src, GdkEventScroll *event, radio_gui* 
