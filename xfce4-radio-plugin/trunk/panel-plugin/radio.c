@@ -144,7 +144,7 @@ static void add_preset_dialog(GtkEditable* menu_item, void *pointer) {
         radio_gui* data = (radio_gui*) pointer;
 	GtkWindow* win = GTK_WINDOW(gtk_widget_get_toplevel(data->box));
 	GtkWidget* dialog = gtk_dialog_new_with_buttons(_("Add preset"),
-				data->box, GTK_DIALOG_DESTROY_WITH_PARENT,
+				NULL, GTK_DIALOG_DESTROY_WITH_PARENT,
 				GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
 				GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL);
 	GtkWidget* box = GTK_DIALOG(dialog)->vbox;
