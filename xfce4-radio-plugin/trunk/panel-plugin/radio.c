@@ -48,12 +48,20 @@ static void update_label(radio_gui* data) {
 	free(label);
 }
 
-static void radio_start(radio_gui* data) {
+static gboolean radio_start(radio_gui* data) {
 	struct video_tuner tuner;
 	struct video_audio vid_aud;
 
-	// TODO: report errors
-	data->fd = open(data->device, O_RDONLY);
+	if (-1 == (data->fd = open(data->device, O_RDONLY))) {
+		GtkWindow* win = GTK_WINDOW(gtk_widget_get_toplevel(
+								data->box));
+		GtkWidget* warn = gtk_message_dialog_new(win, 0,
+			GTK_MESSAGE_ERROR, GTK_BUTTONS_OK,
+			"Error opening radio device");
+		gtk_dialog_run(GTK_DIALOG(warn));
+		gtk_widget_destroy(warn);
+		return FALSE;
+	}
 
 	if (0 == ioctl(data->fd, VIDIOCGTUNER, &tuner) &&
 		(tuner.flags & VIDEO_TUNER_LOW))
@@ -65,6 +73,7 @@ static void radio_start(radio_gui* data) {
 	ioctl(data->fd, VIDIOCSAUDIO, &vid_aud);
 
 	radio_tune(data);
+	return TRUE;
 }
 
 static void radio_stop(radio_gui* data) {
@@ -77,10 +86,10 @@ static void radio_stop(radio_gui* data) {
 static gboolean mouse_click(GtkWidget* src, GdkEventButton *event, radio_gui*
 									data) {
 	if (event->button == 1) {
-		data->on = !data->on;
-		if (data->on) {
-			radio_start(data);
+		if (!data->on) {
+			data->on = radio_start(data);
 		} else {
+			data->on = FALSE;
 			radio_stop(data);
 		}
 	}
@@ -168,7 +177,7 @@ void radio_device_changed(GtkEditable* editable, void *pointer) {
 	strncpy(data->device, device, MAX_DEVICE_NAME_LENGTH);
 }
 
-static void radio_create_options(Control *ctrl, GtkContainer *container,
+static void plugin_create_options(Control *ctrl, GtkContainer *container,
 							GtkWidget *done) {
 	radio_gui* data = ctrl->data;
 
@@ -246,10 +255,36 @@ static void radio_create_options(Control *ctrl, GtkContainer *container,
 				G_CALLBACK (radio_device_changed), data);
 }
 
+static void plugin_write_config(Control *ctrl, xmlNodePtr parent) {
+	radio_gui* data = ctrl->data;
+	char buf[32];
+	xmlNodePtr xml;
 
+	xml = xmlNewTextChild(parent, NULL, "xfce4-radio", NULL);
+	snprintf(buf, 32, "%d", data->freq);
+	xmlSetProp(xml, "freq", buf);
+	g_printf("Wrote: freq=%d\n", data->freq);
+}
 
-static void radio_read_config(Control *ctrl, xmlNodePtr parent) { }
-static void radio_write_config(Control *ctrl, xmlNodePtr parent) { }
+static void radio_read_config(Control *ctrl, xmlNodePtr parent) {
+	xmlChar* value;
+	xmlNodePtr child;
+
+	radio_gui* data = ctrl->data;
+
+	if (!parent || !parent->children) return;
+
+	for (child = parent->children; child; child = child->next) {
+		if (!(xmlStrEqual (child->name, "xfce4-radio"))) continue;
+
+		if ((value = xmlGetProp (child, (const xmlChar *) "freq")) !=
+									NULL) {
+			data->freq = atoi(value);
+			g_free(value);
+		}
+	}
+	g_printf("Freq: %d\n", data->freq);
+}
 static void radio_set_size(Control *ctrl, int size) { }
 static void radio_attach_callback(Control *ctrl, const gchar *signal,
 						GCallback cb, gpointer data) {}
@@ -261,10 +296,10 @@ G_MODULE_EXPORT void xfce_control_class_init(ControlClass *cc) {
 	cc->create_control = plugin_control_new;
 	cc->free = plugin_free;
 	cc->read_config = radio_read_config;
-	cc->write_config = radio_write_config;
+	cc->write_config = plugin_write_config;
 	cc->attach_callback = radio_attach_callback;
 	cc->set_size = radio_set_size;
-	cc->create_options = radio_create_options;
+	cc->create_options = plugin_create_options;
 }
 
 XFCE_PLUGIN_CHECK_INIT
