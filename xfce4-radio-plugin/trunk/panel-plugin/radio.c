@@ -159,7 +159,8 @@ static void add_preset_dialog(GtkEditable* menu_item, void *pointer) {
 
 	char buf[8];
 	sprintf(buf, "%5.1f FM", ((float) data->freq) / 100);
-	GtkWidget* station = gtk_entry_new();
+	GtkWidget* station = gtk_entry_new_with_max_length(
+						MAX_PRESET_NAME_LENGTH);
 	gtk_entry_set_text(GTK_ENTRY(station), buf);
 	gtk_widget_show(station);
 	gtk_box_pack_start(GTK_BOX(box), station, FALSE, FALSE, 0);
@@ -434,14 +435,14 @@ static void plugin_create_options(Control *ctrl, GtkContainer *container,
 		(GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 0, 0);
         gtk_misc_set_alignment (GTK_MISC (executeLabel), 0, 0.5);
 
-	command = gtk_entry_new ();
+	command = gtk_entry_new_with_max_length(MAX_COMMAND_LENGTH);
 	gtk_entry_set_text(GTK_ENTRY(command), data->command);
 	gtk_widget_show (command);
 	gtk_table_attach (GTK_TABLE (table1), command, 1, 2, 2, 3,
 				(GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 				(GtkAttachOptions) (0), 0, 0);
 
-	device = gtk_entry_new ();
+	device = gtk_entry_new_with_max_length(MAX_DEVICE_NAME_LENGTH);
 	gtk_entry_set_text(GTK_ENTRY(device), data->device);
 	gtk_widget_show (device);
 	gtk_table_attach (GTK_TABLE (table1), device, 1, 2, 0, 1,
