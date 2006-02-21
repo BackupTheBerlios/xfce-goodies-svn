@@ -68,7 +68,7 @@ static void update_label(radio_gui* data) {
 	if (data->on) {
 		sprintf(label, "%5.1f", ((float) data->freq) / 100);
 	} else {
-		strcpy(label, "- off -");
+		strcpy(label, _("- off -"));
 	}
 	gtk_label_set_label(GTK_LABEL(data->label), label);
 
@@ -84,7 +84,7 @@ static gboolean radio_start(radio_gui* data) {
 								data->box));
 		GtkWidget* warn = gtk_message_dialog_new(win, 0,
 			GTK_MESSAGE_ERROR, GTK_BUTTONS_OK,
-			"Error opening radio device");
+			_("Error opening radio device"));
 		gtk_dialog_run(GTK_DIALOG(warn));
 		gtk_widget_destroy(warn);
 		return FALSE;
@@ -201,7 +201,6 @@ static gboolean plugin_control_new(Control *ctrl) {
 	plugin_data->freqfact = 16;
 	plugin_data->show_signal = FALSE;
 	strcpy(plugin_data->device, "/dev/radio0");
-	//strcpy(plugin_data->command, "/home/stefan/muteradio.sh");
 	
 	update_label(plugin_data);
 
