@@ -129,19 +129,44 @@ static radio_preset* find_preset_by_name(const char* name, radio_gui* data) {
 	return NULL;
 }
 
-static gboolean append_to_presets(radio_preset* new_preset, radio_gui* data) {
-	radio_preset *preset = data->presets, *prev;
+static radio_preset* find_preset_by_freq(int freq, radio_gui* data) {
+	radio_preset* preset = data->presets;
 	while (preset != NULL) {
-		prev = preset;
-		if (new_preset->freq == preset->freq) return FALSE;
+		if (preset->freq == freq) {
+			return preset;
+		}
 		preset = preset->next;
 	}
-	if (preset == data->presets) {
+	return NULL;
+}
+
+static gboolean add_before(radio_preset* a, radio_preset* b) {
+	return (b == NULL || a->name[0] < b->name[0]);
+}
+
+static gboolean append_to_presets(radio_preset* new_preset, radio_gui* data) {
+	radio_preset *preset = data->presets, *prev;
+
+	if (find_preset_by_freq(new_preset->freq, data)) return FALSE;
+
+	if (data->presets == NULL) {
+		data->presets = new_preset;
+	} else if (add_before(new_preset, data->presets)) {
+		new_preset->next = data->presets;
 		data->presets = new_preset;
 	} else {
-		prev->next = new_preset;
+		while (preset != NULL) {
+			prev = preset;
+
+			preset = preset->next;
+			if (add_before(new_preset, preset)) {
+				new_preset->next = preset;
+				prev->next = new_preset;
+				return TRUE;
+			}
+		}
 	}
-	return TRUE;
+	return FALSE;
 }
 
 static void add_preset_dialog(GtkEditable* menu_item, void *pointer) {
