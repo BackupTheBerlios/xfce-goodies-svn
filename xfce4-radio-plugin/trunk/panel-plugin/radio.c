@@ -129,6 +129,51 @@ static radio_preset* find_preset(const char* name, radio_gui* data) {
 	return NULL;
 }
 
+static gboolean append_to_presets(radio_preset* new_preset, radio_gui* data) {
+	radio_preset *preset = data->presets, *prev;
+	while (preset != NULL) {
+		prev = preset;
+		if (new_preset->freq == preset->freq) return FALSE;
+		preset = preset->next;
+	}
+	prev->next = new_preset;
+	return TRUE;
+}
+
+static void add_preset_dialog(GtkEditable* menu_item, void *pointer) {
+        radio_gui* data = (radio_gui*) pointer;
+	GtkWindow* win = GTK_WINDOW(gtk_widget_get_toplevel(data->box));
+	GtkWidget* dialog = gtk_dialog_new_with_buttons(_("Add preset"),
+				data->box, GTK_DIALOG_DESTROY_WITH_PARENT,
+				GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
+				GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL);
+	GtkWidget* box = GTK_DIALOG(dialog)->vbox;
+
+	GtkWidget* label = gtk_label_new(_("Station name:"));
+	gtk_widget_show(label);
+	gtk_box_pack_start(GTK_BOX(box), label, FALSE, FALSE, 0);
+
+	GtkWidget* station = gtk_entry_new();
+	gtk_widget_show(station);
+	gtk_box_pack_start(GTK_BOX(box), station, FALSE, FALSE, 0);
+
+	if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
+		const char* name = gtk_entry_get_text(GTK_ENTRY(station));
+		radio_preset* preset = malloc(sizeof(radio_preset));
+		strncpy(preset->name, name, MAX_PRESET_NAME_LENGTH);
+		preset->freq = data->freq;
+		preset->next = NULL;
+		if (!append_to_presets(preset, data)) {
+			GtkWidget* warn = gtk_message_dialog_new(win, 0,
+					GTK_MESSAGE_ERROR, GTK_BUTTONS_OK,
+			_("There is already a preset with this frequency."));
+			gtk_dialog_run(GTK_DIALOG(warn));
+			gtk_widget_destroy(warn);
+		}
+	}
+	gtk_widget_destroy(dialog);
+}
+
 static void select_preset(GtkEditable* menu_item, void *pointer) {
         radio_gui* data = (radio_gui*) pointer;
 	GtkWidget* label = gtk_bin_get_child(GTK_BIN(menu_item));
@@ -161,13 +206,24 @@ static gboolean mouse_click(GtkWidget* src, GdkEventButton *event, radio_gui*
 
 		radio_preset* preset = data->presets;
 		while (preset != NULL) {
-			item = gtk_menu_item_new_with_label(_(preset->name));
+			item = gtk_menu_item_new_with_label(preset->name);
 			gtk_widget_show(item);
 			gtk_menu_append(menu, item);
 			g_signal_connect(GTK_WIDGET(item), "activate",
 					G_CALLBACK(select_preset), data);
 			preset = preset->next;
 		}
+
+		separator = gtk_separator_menu_item_new();
+		gtk_widget_show(separator);
+		gtk_container_add(GTK_CONTAINER (menu), separator);
+		gtk_widget_set_sensitive(separator, FALSE);
+
+		item = gtk_menu_item_new_with_label(_("Add preset"));
+		gtk_widget_show(item);
+		gtk_menu_append(menu, item);
+		g_signal_connect(GTK_WIDGET(item), "activate",
+					G_CALLBACK(add_preset_dialog), data);
 
 		gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, NULL, 
 				event->button, event->time);
@@ -247,13 +303,18 @@ static gboolean plugin_control_new(Control *ctrl) {
 	strcpy(plugin_data->device, "/dev/radio0");
 
 	// HACK
+	radio_preset* SP = malloc(sizeof(radio_preset));
+	strncpy(SP->name, "SwissPop", MAX_PRESET_NAME_LENGTH);
+	SP->freq = 10700;
+	SP->next = NULL;
+
 	radio_preset* BE1 = malloc(sizeof(radio_preset));
-	BE1->name = "BE1";
+	strncpy(BE1->name, "BE1", MAX_PRESET_NAME_LENGTH);
 	BE1->freq = 9700;
-	BE1->next = NULL;
+	BE1->next = SP;
 
 	radio_preset* VIRUS = malloc(sizeof(radio_preset));
-	VIRUS->name = "VIRUS";
+	strncpy(VIRUS->name, "Virus", MAX_PRESET_NAME_LENGTH);
 	VIRUS->freq = 9430;
 	VIRUS->next = BE1;
 

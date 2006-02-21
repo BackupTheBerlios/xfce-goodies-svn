@@ -39,13 +39,14 @@
 #define MAX_LABEL_LENGTH	7
 #define MAX_DEVICE_NAME_LENGTH	32
 #define MAX_COMMAND_LENGTH	128
+#define MAX_PRESET_NAME_LENGTH	12
 
 #define COLOR_SIGNAL_LOW	"#ffff00"
 #define COLOR_SIGNAL_HIGH	"#00ff00"
 
 typedef struct {
 	int			freq;
-	char*			name;
+	char			name[MAX_PRESET_NAME_LENGTH + 1];
 	struct radio_preset*	next;
 } radio_preset;
 
