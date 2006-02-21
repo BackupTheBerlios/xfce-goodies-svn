@@ -29,8 +29,6 @@
 
 #include "radio.h"
 
-#include <gtk/gtk.h>
-
 #include <libxfcegui4/dialogs.h>
 #include <panel/global.h>
 #include <panel/controls.h>
@@ -370,7 +368,7 @@ static void plugin_set_size(Control *ctrl, int size) {
 	gtk_widget_set_size_request(data->signal_bar, icon - 6, 2 + 2 * size);
 }
 
-static void radio_attach_callback(Control *ctrl, const gchar *signal,
+static void plugin_attach_callback(Control *ctrl, const gchar *signal,
 						GCallback cb, gpointer data) {}
 
 G_MODULE_EXPORT void xfce_control_class_init(ControlClass *cc) {
@@ -381,7 +379,7 @@ G_MODULE_EXPORT void xfce_control_class_init(ControlClass *cc) {
 	cc->free = plugin_free;
 	cc->read_config = plugin_read_config;
 	cc->write_config = plugin_write_config;
-	cc->attach_callback = radio_attach_callback;
+	cc->attach_callback = plugin_attach_callback;
 	cc->set_size = plugin_set_size;
 	cc->create_options = plugin_create_options;
 }
