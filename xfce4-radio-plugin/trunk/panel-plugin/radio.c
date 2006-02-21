@@ -311,7 +311,7 @@ static radio_gui* create_gui() {
 	gtk_box_pack_start(GTK_BOX(gui->box), gui->signal_bar, FALSE, FALSE,0);
 
 	gtk_container_add(GTK_CONTAINER(gui->ebox), gui->box);
-	
+
 	return gui;
 }
 
@@ -322,6 +322,13 @@ static void plugin_free(Control *ctrl) {
 	radio_gui* gui = ctrl->data;
 
 	if (gui->on) radio_stop(gui);
+
+	radio_preset *preset = gui->presets;
+
+	while (preset != NULL) {
+		free(preset);
+		preset = preset->next;
+	}
 
 	g_free(gui);
 }
