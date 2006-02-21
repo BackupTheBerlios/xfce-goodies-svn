@@ -470,7 +470,7 @@ static void plugin_create_options(Control *ctrl, GtkContainer *container,
 static void plugin_write_config(Control *ctrl, xmlNodePtr parent) {
 	radio_gui* data = ctrl->data;
 	char buf[32];
-	xmlNodePtr xml;
+	xmlNodePtr xml, preset_xml;
 
 	xml = xmlNewTextChild(parent, NULL, "xfce4-radio", NULL);
 
@@ -482,6 +482,17 @@ static void plugin_write_config(Control *ctrl, xmlNodePtr parent) {
 
 	snprintf(buf, 2, "%i", data->show_signal);
 	xmlSetProp(xml, "show_signal", buf);
+
+	radio_preset* preset = data->presets;
+	while (preset != NULL) {
+		preset_xml = xmlNewTextChild(xml, NULL, "preset", NULL);
+		xmlSetProp(preset_xml, "name", preset->name);
+
+		snprintf(buf, 32, "%d", preset->freq);
+		xmlSetProp(preset_xml, "freq", buf);
+
+		preset = preset->next;
+	}
 }
 
 static void plugin_read_config(Control *ctrl, xmlNodePtr parent) {
