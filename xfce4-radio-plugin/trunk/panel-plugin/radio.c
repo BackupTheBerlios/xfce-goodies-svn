@@ -153,7 +153,10 @@ static void add_preset_dialog(GtkEditable* menu_item, void *pointer) {
 	gtk_widget_show(label);
 	gtk_box_pack_start(GTK_BOX(box), label, FALSE, FALSE, 0);
 
+	char buf[8];
+	sprintf(buf, "%5.1f FM", ((float) data->freq) / 100);
 	GtkWidget* station = gtk_entry_new();
+	gtk_entry_set_text(GTK_ENTRY(station), buf);
 	gtk_widget_show(station);
 	gtk_box_pack_start(GTK_BOX(box), station, FALSE, FALSE, 0);
 
