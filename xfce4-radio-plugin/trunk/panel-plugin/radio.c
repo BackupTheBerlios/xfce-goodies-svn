@@ -261,12 +261,14 @@ static void plugin_write_config(Control *ctrl, xmlNodePtr parent) {
 	xmlNodePtr xml;
 
 	xml = xmlNewTextChild(parent, NULL, "xfce4-radio", NULL);
+
 	snprintf(buf, 32, "%d", data->freq);
 	xmlSetProp(xml, "freq", buf);
-	g_printf("Wrote: freq=%d\n", data->freq);
+
+	xmlSetProp(xml, "dev", data->device);
 }
 
-static void radio_read_config(Control *ctrl, xmlNodePtr parent) {
+static void plugin_read_config(Control *ctrl, xmlNodePtr parent) {
 	xmlChar* value;
 	xmlNodePtr child;
 
@@ -277,14 +279,19 @@ static void radio_read_config(Control *ctrl, xmlNodePtr parent) {
 	for (child = parent->children; child; child = child->next) {
 		if (!(xmlStrEqual (child->name, "xfce4-radio"))) continue;
 
-		if ((value = xmlGetProp (child, (const xmlChar *) "freq")) !=
+		if ((value = xmlGetProp(child, (const xmlChar*) "freq")) !=
 									NULL) {
 			data->freq = atoi(value);
 			g_free(value);
 		}
+		if ((value = xmlGetProp(child, (const xmlChar*) "dev")) !=
+									NULL) {
+			strcpy(data->device, value);
+			g_free(value);
+		}
 	}
-	g_printf("Freq: %d\n", data->freq);
 }
+
 static void radio_set_size(Control *ctrl, int size) { }
 static void radio_attach_callback(Control *ctrl, const gchar *signal,
 						GCallback cb, gpointer data) {}
@@ -295,7 +302,7 @@ G_MODULE_EXPORT void xfce_control_class_init(ControlClass *cc) {
 
 	cc->create_control = plugin_control_new;
 	cc->free = plugin_free;
-	cc->read_config = radio_read_config;
+	cc->read_config = plugin_read_config;
 	cc->write_config = plugin_write_config;
 	cc->attach_callback = radio_attach_callback;
 	cc->set_size = radio_set_size;
