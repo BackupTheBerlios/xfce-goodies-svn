@@ -127,6 +127,19 @@ static gboolean mouse_click(GtkWidget* src, GdkEventButton *event, radio_gui*
 			data->on = FALSE;
 			radio_stop(data);
 		}
+	} else if (event->button == 2) {
+		GtkMenu* menu = gtk_menu_new();
+		GtkWidget* item = gtk_menu_item_new_with_label(_("Presets"));
+		gtk_widget_show(item);
+		gtk_menu_append(menu, item);
+
+		GtkWidget* separator = gtk_separator_menu_item_new();
+		gtk_widget_show(separator);
+		gtk_container_add(GTK_CONTAINER (menu), separator);
+		gtk_widget_set_sensitive(separator, FALSE);
+
+		gtk_menu_popup (menu, NULL, NULL, NULL, NULL, 
+				event->button, event->time);
 	}
 	update_label(data);
 	update_signal_bar(data);
