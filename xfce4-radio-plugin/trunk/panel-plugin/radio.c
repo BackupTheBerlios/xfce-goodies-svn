@@ -335,25 +335,7 @@ static gboolean plugin_control_new(Control *ctrl) {
 	plugin_data->freqfact = 16;
 	plugin_data->show_signal = FALSE;
 	strcpy(plugin_data->device, "/dev/radio0");
-
-	// HACK
-	radio_preset* SP = malloc(sizeof(radio_preset));
-	strncpy(SP->name, "SwissPop", MAX_PRESET_NAME_LENGTH);
-	SP->freq = 10700;
-	SP->next = NULL;
-
-	radio_preset* BE1 = malloc(sizeof(radio_preset));
-	strncpy(BE1->name, "BE1", MAX_PRESET_NAME_LENGTH);
-	BE1->freq = 9700;
-	BE1->next = SP;
-
-	radio_preset* VIRUS = malloc(sizeof(radio_preset));
-	strncpy(VIRUS->name, "Virus", MAX_PRESET_NAME_LENGTH);
-	VIRUS->freq = 9430;
-	VIRUS->next = BE1;
-
-	plugin_data->presets = VIRUS;
-	// END HACK
+	plugin_data->presets = NULL;
 	
 	update_label(plugin_data);
 
@@ -503,29 +485,41 @@ static void plugin_read_config(Control *ctrl, xmlNodePtr parent) {
 
 	if (!parent || !parent->children) return;
 
-	for (child = parent->children; child; child = child->next) {
-		if (!(xmlStrEqual (child->name, "xfce4-radio"))) continue;
+	child = parent->children;
 
-		if ((value = xmlGetProp(child, (const xmlChar*) "freq")) !=
-									NULL) {
-			data->freq = atoi(value);
-			g_free(value);
-		}
-		if ((value = xmlGetProp(child, (const xmlChar*) "dev")) !=
-									NULL) {
-			strcpy(data->device, value);
-			g_free(value);
-		}
-		if ((value = xmlGetProp(child, (const xmlChar*) "cmd")) !=
-									NULL) {
-			strcpy(data->command, value);
-			g_free(value);
-		}
-		if ((value = xmlGetProp(child, (const xmlChar*) "show_signal"))
+	if ((value = xmlGetProp(child, (const xmlChar*) "freq")) != NULL) {
+		data->freq = atoi(value);
+		g_free(value);
+	}
+	if ((value = xmlGetProp(child, (const xmlChar*) "dev")) != NULL) {
+		strcpy(data->device, value);
+		g_free(value);
+	}
+	if ((value = xmlGetProp(child, (const xmlChar*) "cmd")) != NULL) {
+		strcpy(data->command, value);
+		g_free(value);
+	}
+	if ((value = xmlGetProp(child, (const xmlChar*) "show_signal"))
 								!= NULL) {
-			data->show_signal = atoi(value);
+		data->show_signal = atoi(value);
+		g_free(value);
+	}
+	xmlNodePtr preset_node = child->children;
+	while (preset_node) {
+		radio_preset* preset = malloc(sizeof(radio_preset));
+		preset->next = NULL;
+		if ((value = xmlGetProp(preset_node, (const xmlChar*) "name"))
+								!= NULL) {
+			strncpy(preset->name, value, MAX_PRESET_NAME_LENGTH);
 			g_free(value);
 		}
+		if ((value = xmlGetProp(preset_node, (const xmlChar*) "freq"))
+								!= NULL) {
+			preset->freq = atoi(value);
+			g_free(value);
+		}
+		append_to_presets(preset, data);
+		preset_node = preset_node->next;
 	}
 }
 
