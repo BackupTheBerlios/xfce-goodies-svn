@@ -47,6 +47,203 @@
 #define GNOME_PANEL_SIZE_X_LARGE        80
 #define GNOME_PANEL_SIZE_XX_LARGE       128
 
+/* Gnome applet orientations */
+#define GNOME_APPLET_ORIENT_UP		0
+#define GNOME_APPLET_ORIENT_DOWN	1
+#define GNOME_APPLET_ORIENT_LEFT	2
+#define GNOME_APPLET_ORIENT_RIGHT	3
+
+enum {
+	PANEL_NEAR_TOP,
+	PANEL_NEAR_BOTTOM,
+	PANEL_NEAR_RIGHT,
+	PANEL_NEAR_LEFT
+};
+
+static int
+xfapplet_panel_near (GtkWidget *widget, GtkOrientation orientation)
+{
+	GdkScreen	*screen;
+	gint		 x, y, ret = 0;
+
+	screen = gdk_screen_get_default ();
+	gdk_window_get_origin (widget->window, &x, &y);
+
+	if (orientation == GTK_ORIENTATION_HORIZONTAL)
+		ret = y > (gdk_screen_get_height (screen) - y) ? PANEL_NEAR_BOTTOM : PANEL_NEAR_TOP;
+	else if (orientation == GTK_ORIENTATION_VERTICAL)
+		ret = x > (gdk_screen_get_width (screen) - x) ? PANEL_NEAR_RIGHT : PANEL_NEAR_LEFT;
+	else
+		g_assert_not_reached ();
+
+	return ret;
+}
+
+static unsigned short
+xfapplet_xfce_screen_position_to_gnome_applet_orientation (XfcePanelPlugin *plugin, XfceScreenPosition position)
+{
+        switch (position) {
+        case XFCE_SCREEN_POSITION_NW_H:   /* top */
+	case XFCE_SCREEN_POSITION_N:
+	case XFCE_SCREEN_POSITION_NE_H:
+                return GNOME_APPLET_ORIENT_DOWN;
+        case XFCE_SCREEN_POSITION_SW_H:   /* bottom */
+	case XFCE_SCREEN_POSITION_S:
+	case XFCE_SCREEN_POSITION_SE_H:
+                return GNOME_APPLET_ORIENT_UP;
+        case XFCE_SCREEN_POSITION_NW_V:   /* left */
+	case XFCE_SCREEN_POSITION_W:
+	case XFCE_SCREEN_POSITION_SW_V:
+                return GNOME_APPLET_ORIENT_RIGHT;
+        case XFCE_SCREEN_POSITION_NE_V:   /* right */
+	case XFCE_SCREEN_POSITION_E:
+	case XFCE_SCREEN_POSITION_SE_V:
+                return GNOME_APPLET_ORIENT_LEFT;
+	case XFCE_SCREEN_POSITION_FLOATING_H:
+		switch (xfapplet_panel_near (GTK_WIDGET (plugin), GTK_ORIENTATION_HORIZONTAL)) {
+		case PANEL_NEAR_TOP:
+			return GNOME_APPLET_ORIENT_DOWN;
+		case PANEL_NEAR_BOTTOM:
+			return GNOME_APPLET_ORIENT_UP;
+		default:
+			g_assert_not_reached ();
+			break;
+		}
+		break;
+	case XFCE_SCREEN_POSITION_FLOATING_V:
+		switch (xfapplet_panel_near (GTK_WIDGET (plugin), GTK_ORIENTATION_VERTICAL)) {
+		case PANEL_NEAR_RIGHT:
+			return GNOME_APPLET_ORIENT_LEFT;
+		case PANEL_NEAR_LEFT:
+			return GNOME_APPLET_ORIENT_RIGHT;
+		default:
+			g_assert_not_reached ();
+			break;
+		}
+		break;
+	case XFCE_SCREEN_POSITION_NONE:
+		break;
+        default:
+                g_assert_not_reached ();
+                break;
+        }
+
+	return GNOME_APPLET_ORIENT_UP;
+}
+
+static unsigned short
+xfapplet_xfce_size_to_gnome_size (gint size)
+{
+	unsigned short sz;
+	
+	sz = size <= GNOME_PANEL_SIZE_XX_SMALL ? GNOME_PANEL_SIZE_XX_SMALL :
+	     size <= GNOME_PANEL_SIZE_X_SMALL  ? GNOME_PANEL_SIZE_X_SMALL  :
+	     size <= GNOME_PANEL_SIZE_SMALL    ? GNOME_PANEL_SIZE_SMALL    :
+	     size <= GNOME_PANEL_SIZE_MEDIUM   ? GNOME_PANEL_SIZE_MEDIUM   :
+	     size <= GNOME_PANEL_SIZE_LARGE    ? GNOME_PANEL_SIZE_LARGE    :
+	     size <= GNOME_PANEL_SIZE_X_LARGE  ? GNOME_PANEL_SIZE_X_LARGE  : GNOME_PANEL_SIZE_XX_LARGE;
+
+	return sz;
+}
+
+static void
+xfapplet_screen_position_changed (XfcePanelPlugin *plugin, XfceScreenPosition position, gpointer data)
+{
+	unsigned short	 orientation;
+	XfAppletPlugin	*xap = (XfAppletPlugin*) data;
+
+	if (!xap->configured)
+		return;
+
+	orientation = xfapplet_xfce_screen_position_to_gnome_applet_orientation (plugin, position);
+	bonobo_pbclient_set_short (xap->prop_bag, "panel-applet-orient", orientation, NULL);
+
+	gtk_widget_queue_resize (GTK_WIDGET (plugin));
+}
+
+static gboolean 
+xfapplet_size_changed (XfcePanelPlugin *plugin, int size, gpointer data)
+{
+	gint		 sz;
+	XfAppletPlugin	*xap = (XfAppletPlugin*) data;
+	
+	if (xap->configured) {
+		sz = xfapplet_xfce_size_to_gnome_size (size);
+		bonobo_pbclient_set_short (xap->prop_bag, "panel-applet-size", sz, NULL);
+	}
+
+	if (xfce_panel_plugin_get_orientation (plugin) == GTK_ORIENTATION_HORIZONTAL)
+		gtk_widget_set_size_request (GTK_WIDGET (plugin), -1, size);
+	else
+		gtk_widget_set_size_request (GTK_WIDGET (plugin), size, -1);
+
+	return TRUE;
+}
+
+static const gchar*
+xfapplet_get_orient_string (XfcePanelPlugin *plugin)
+{
+	XfceScreenPosition	 position;
+	const gchar		*ret = NULL;
+
+	position = xfce_panel_plugin_get_screen_position (plugin);
+
+	switch (xfapplet_xfce_screen_position_to_gnome_applet_orientation (plugin, position)) {
+	case GNOME_APPLET_ORIENT_UP:
+		ret = "up";
+		break;
+	case GNOME_APPLET_ORIENT_DOWN:
+		ret = "down";
+		break;
+	case GNOME_APPLET_ORIENT_RIGHT:
+		ret = "right";
+		break;
+	case GNOME_APPLET_ORIENT_LEFT:
+		ret = "left";
+		break;
+	default:
+		g_assert_not_reached ();
+	}
+
+	return ret;
+}
+
+static const gchar*
+xfapplet_get_size_string (XfcePanelPlugin *plugin)
+{
+	gint		 size;
+	const gchar	*retval;
+
+	size = xfce_panel_plugin_get_size (plugin);
+	size = xfapplet_xfce_size_to_gnome_size (size);
+
+        switch (size) {
+	case GNOME_PANEL_SIZE_XX_SMALL:
+                retval = "xx-small";
+		break;
+	case GNOME_PANEL_SIZE_X_SMALL:
+		retval = "x-small";
+		break;
+	case GNOME_PANEL_SIZE_SMALL:
+                retval = "small";
+		break;
+	case GNOME_PANEL_SIZE_MEDIUM:
+                retval = "medium";
+		break;
+	case GNOME_PANEL_SIZE_LARGE:
+                retval = "large";
+		break;
+	case GNOME_PANEL_SIZE_X_LARGE:
+                retval = "x-large";
+		break;
+	default:
+                retval = "xx-large";
+		break;
+	}
+
+        return retval;
+}
+
 static gboolean
 xfapplet_save_configuration (XfAppletPlugin *xap)
 {
@@ -271,31 +468,6 @@ xfapplet_applet_activated (Bonobo_Unknown object, CORBA_Environment *ev, gpointe
 		g_warning (_("Could not save XfApplet configuration."));
 }
 
-static gboolean 
-xfapplet_size_changed (XfcePanelPlugin *plugin, int size, gpointer data)
-{
-	int		sz;
-	XfAppletPlugin *xap = (XfAppletPlugin*) data;
-	
-	if (xap->configured) {
-		sz = size <= GNOME_PANEL_SIZE_XX_SMALL ? GNOME_PANEL_SIZE_XX_SMALL :
-		     size <= GNOME_PANEL_SIZE_X_SMALL  ? GNOME_PANEL_SIZE_X_SMALL  :
-		     size <= GNOME_PANEL_SIZE_SMALL    ? GNOME_PANEL_SIZE_SMALL    :
-		     size <= GNOME_PANEL_SIZE_MEDIUM   ? GNOME_PANEL_SIZE_MEDIUM   :
-		     size <= GNOME_PANEL_SIZE_LARGE    ? GNOME_PANEL_SIZE_LARGE    :
-		     size <= GNOME_PANEL_SIZE_X_LARGE  ? GNOME_PANEL_SIZE_X_LARGE  : GNOME_PANEL_SIZE_XX_LARGE;
-
-		bonobo_pbclient_set_short (xap->prop_bag, "panel-applet-size", sz, NULL);
-	}
-
-	if (xfce_panel_plugin_get_orientation (plugin) == GTK_ORIENTATION_HORIZONTAL)
-		gtk_widget_set_size_request (GTK_WIDGET (plugin), -1, size);
-	else
-		gtk_widget_set_size_request (GTK_WIDGET (plugin), size, -1);
-
-	return TRUE;
-}
-
 static void
 xfapplet_free(XfcePanelPlugin *plugin, XfAppletPlugin *xap)
 {
@@ -303,81 +475,13 @@ xfapplet_free(XfcePanelPlugin *plugin, XfAppletPlugin *xap)
 	g_free (xap->gconf_key);
 	
 	if (xap->configured) {
-		bonobo_object_unref (BONOBO_OBJECT (xap->uic));
 		bonobo_object_release_unref (xap->prop_bag, NULL);
+		bonobo_object_unref (BONOBO_OBJECT (xap->uic));
 	}
 	
 	g_free (xap);
 }
 
-static const gchar*
-xfapplet_get_size_string (XfcePanelPlugin *plugin)
-{
-	gint size;
-	const gchar *retval = NULL;
-
-	size = xfce_panel_plugin_get_size (plugin);
-
-        if (size <= GNOME_PANEL_SIZE_XX_SMALL)
-                retval = "xx-small";
-        else if (size <= GNOME_PANEL_SIZE_X_SMALL)
-                retval = "x-small";
-        else if (size <= GNOME_PANEL_SIZE_SMALL)
-                retval = "small";
-        else if (size <= GNOME_PANEL_SIZE_MEDIUM)
-                retval = "medium";
-        else if (size <= GNOME_PANEL_SIZE_LARGE)
-                retval = "large";
-        else if (size <= GNOME_PANEL_SIZE_X_LARGE)
-                retval = "x-large";
-        else
-                retval = "xx-large";
-
-        return retval;
-}
-
-static const gchar*
-xfapplet_get_orient_string (XfcePanelPlugin *plugin)
-{
-        XfceScreenPosition  pos;
-        const gchar        *retval = NULL;
-
-        pos = xfce_panel_plugin_get_screen_position (plugin);
-
-        switch (pos) {
-        case XFCE_SCREEN_POSITION_NW_H:   /* top */
-	case XFCE_SCREEN_POSITION_N:
-	case XFCE_SCREEN_POSITION_NE_H:
-                retval = "down";
-                break;
-        case XFCE_SCREEN_POSITION_SW_H:   /* bottom */
-	case XFCE_SCREEN_POSITION_S:
-	case XFCE_SCREEN_POSITION_SE_H:
-                retval = "up";
-                break;
-        case XFCE_SCREEN_POSITION_NW_V:   /* left */
-	case XFCE_SCREEN_POSITION_W:
-	case XFCE_SCREEN_POSITION_SW_V:
-                retval = "right";
-                break;
-        case XFCE_SCREEN_POSITION_NE_V:   /* right */
-	case XFCE_SCREEN_POSITION_E:
-	case XFCE_SCREEN_POSITION_SE_V:
-                retval = "left";
-                break;
-	case XFCE_SCREEN_POSITION_FLOATING_H:
-		retval = "down";
-		break;
-	case XFCE_SCREEN_POSITION_FLOATING_V:
-		retval = "right";
-		break;
-        default:
-                g_assert_not_reached ();
-                break;
-        }
-
-        return retval;
-}
 
 static gchar*
 xfapplet_construct_moniker (XfAppletPlugin *xap)
@@ -467,6 +571,9 @@ xfapplet_construct (XfcePanelPlugin *plugin)
 
 	g_signal_connect (plugin, "free-data", G_CALLBACK (xfapplet_free), xap);
 	g_signal_connect (plugin, "size-changed", G_CALLBACK (xfapplet_size_changed), xap);
+	g_signal_connect (plugin, "screen-position-changed",
+			  G_CALLBACK (xfapplet_screen_position_changed), xap);
 }
 
 XFCE_PANEL_PLUGIN_REGISTER_EXTERNAL(xfapplet_construct)
+
