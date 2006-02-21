@@ -228,6 +228,12 @@ static gboolean mouse_click(GtkWidget* src, GdkEventButton *event, radio_gui*
 		g_signal_connect(GTK_WIDGET(item), "activate",
 					G_CALLBACK(add_preset_dialog), data);
 
+		item = gtk_menu_item_new_with_label(_("Delete active preset"));
+		gtk_widget_show(item);
+		gtk_menu_append(menu, item);
+		g_signal_connect(GTK_WIDGET(item), "activate",
+					G_CALLBACK(add_preset_dialog), data);
+
 		gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, NULL, 
 				event->button, event->time);
 	}
@@ -271,6 +277,7 @@ static radio_gui* create_gui() {
 						GTK_PROGRESS_LEFT_TO_RIGHT);
 
 	gui->box = gtk_vbox_new(FALSE, 0);
+	gtk_container_set_border_width(GTK_CONTAINER(gui->box), border_width);
 	gtk_widget_show(gui->box);
 
 	gui->label = gtk_label_new("");
