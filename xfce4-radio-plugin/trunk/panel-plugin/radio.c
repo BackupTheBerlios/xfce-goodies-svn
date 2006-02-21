@@ -185,13 +185,13 @@ static gboolean plugin_control_new(Control *ctrl) {
 
 void radio_command_changed(GtkEditable* editable, void *pointer) {
 	radio_gui* data = (radio_gui*) pointer;
-	char* command = gtk_entry_get_text(GTK_ENTRY(editable));
+	const char* command = gtk_entry_get_text(GTK_ENTRY(editable));
 	strncpy(data->command, command, MAX_COMMAND_LENGTH);
 }
 
 void radio_device_changed(GtkEditable* editable, void *pointer) {
 	radio_gui* data = (radio_gui*) pointer;
-	char* device = gtk_entry_get_text(GTK_ENTRY(editable));
+	const char* device = gtk_entry_get_text(GTK_ENTRY(editable));
 	strncpy(data->device, device, MAX_DEVICE_NAME_LENGTH);
 }
 
