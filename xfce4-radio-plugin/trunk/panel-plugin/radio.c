@@ -326,6 +326,7 @@ static void plugin_write_config(Control *ctrl, xmlNodePtr parent) {
 	xmlSetProp(xml, "freq", buf);
 
 	xmlSetProp(xml, "dev", data->device);
+	xmlSetProp(xml, "cmd", data->command);
 
 	snprintf(buf, 2, "%i", data->show_signal);
 	xmlSetProp(xml, "show_signal", buf);
@@ -350,6 +351,11 @@ static void plugin_read_config(Control *ctrl, xmlNodePtr parent) {
 		if ((value = xmlGetProp(child, (const xmlChar*) "dev")) !=
 									NULL) {
 			strcpy(data->device, value);
+			g_free(value);
+		}
+		if ((value = xmlGetProp(child, (const xmlChar*) "cmd")) !=
+									NULL) {
+			strcpy(data->command, value);
 			g_free(value);
 		}
 		if ((value = xmlGetProp(child, (const xmlChar*) "show_signal"))
