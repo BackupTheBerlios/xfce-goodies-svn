@@ -34,7 +34,7 @@
 #define FREQ_MIN		8750
 #define FREQ_MAX		10800
 #define FREQ_INIT		10795
-#define FREQ_STEP		5
+#define FREQ_STEP		10
 
 #define MAX_LABEL_LENGTH	7
 #define MAX_DEVICE_NAME_LENGTH	32

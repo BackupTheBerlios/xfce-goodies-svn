@@ -66,7 +66,7 @@ static void update_signal_bar(radio_gui* data) {
 static void update_label(radio_gui* data) {
 	char* label = malloc(MAX_LABEL_LENGTH + 1);
 	if (data->on) {
-		sprintf(label, "%5.2f", ((float) data->freq) / 100);
+		sprintf(label, "%5.1f", ((float) data->freq) / 100);
 	} else {
 		strcpy(label, "- off -");
 	}
