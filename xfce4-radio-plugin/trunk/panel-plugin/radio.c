@@ -172,6 +172,7 @@ static gboolean plugin_control_new(Control *ctrl) {
 	plugin_data->on = FALSE;
 	plugin_data->freq = FREQ_INIT;
 	plugin_data->freqfact = 16;
+	plugin_data->show_signal = FALSE;
 	strcpy(plugin_data->device, "/dev/radio0");
 	strcpy(plugin_data->command, "/home/stefan/muteradio.sh");
 
@@ -194,6 +195,12 @@ void radio_device_changed(GtkEditable* editable, void *pointer) {
 	strncpy(data->device, device, MAX_DEVICE_NAME_LENGTH);
 }
 
+void radio_show_signal_changed(GtkEditable* editable, void *pointer) {
+	radio_gui* data = (radio_gui*) pointer;
+	data->show_signal = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON
+								(editable));
+}
+
 static void plugin_create_options(Control *ctrl, GtkContainer *container,
 							GtkWidget *done) {
 	radio_gui* data = ctrl->data;
@@ -203,7 +210,8 @@ static void plugin_create_options(Control *ctrl, GtkContainer *container,
 	GtkWidget *qualityLabel;
 	GtkWidget *hbox1;
 	GSList *showSignal_group = NULL;
-	GtkWidget *showSignal;
+	GtkWidget *radioShowSignal;
+	GtkWidget *radioHideSignal;
 	GtkWidget *executeLabel;
 	GtkWidget *command;
 	GtkWidget *device;
@@ -229,22 +237,27 @@ static void plugin_create_options(Control *ctrl, GtkContainer *container,
 	gtk_table_attach (GTK_TABLE (table1), hbox1, 1, 2, 1, 2,
 	(GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (GTK_FILL), 0, 0);
 
-	showSignal = gtk_radio_button_new_with_mnemonic (NULL, _("yes"));
-	gtk_widget_show (showSignal);
-	gtk_box_pack_start (GTK_BOX (hbox1), showSignal, FALSE, FALSE, 0);
-	gtk_radio_button_set_group (GTK_RADIO_BUTTON (showSignal), 
+	radioShowSignal = gtk_radio_button_new_with_mnemonic (NULL, _("yes"));
+	gtk_widget_show (radioShowSignal);
+	gtk_box_pack_start (GTK_BOX (hbox1), radioShowSignal, FALSE, FALSE, 0);
+	gtk_radio_button_set_group (GTK_RADIO_BUTTON (radioShowSignal), 
 							showSignal_group);
 	showSignal_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON
-								(showSignal));
+							(radioShowSignal));
 
-	showSignal = gtk_radio_button_new_with_mnemonic (NULL, _("no"));
-	gtk_widget_show (showSignal);
+	radioHideSignal = gtk_radio_button_new_with_mnemonic (NULL, _("no"));
+	gtk_widget_show (radioHideSignal);
 
-	gtk_box_pack_start (GTK_BOX (hbox1), showSignal, FALSE, FALSE, 0);
-	gtk_radio_button_set_group (GTK_RADIO_BUTTON (showSignal), 
+	gtk_box_pack_start (GTK_BOX (hbox1), radioHideSignal, FALSE, FALSE, 0);
+	gtk_radio_button_set_group (GTK_RADIO_BUTTON (radioHideSignal), 
 							showSignal_group);
 	showSignal_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON 
-								(showSignal));
+							(radioHideSignal));
+	
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radioShowSignal),
+							data->show_signal);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radioHideSignal),
+							!data->show_signal);
 
 	executeLabel = gtk_label_new (_("Execute command after sutdown"));
 	gtk_widget_show (executeLabel);
@@ -270,6 +283,8 @@ static void plugin_create_options(Control *ctrl, GtkContainer *container,
 				G_CALLBACK (radio_command_changed), data);
 	g_signal_connect ((gpointer) device, "changed",
 				G_CALLBACK (radio_device_changed), data);
+	g_signal_connect (G_OBJECT (radioShowSignal), "toggled",
+				G_CALLBACK (radio_show_signal_changed), data);
 }
 
 static void plugin_write_config(Control *ctrl, xmlNodePtr parent) {
@@ -283,6 +298,9 @@ static void plugin_write_config(Control *ctrl, xmlNodePtr parent) {
 	xmlSetProp(xml, "freq", buf);
 
 	xmlSetProp(xml, "dev", data->device);
+
+	snprintf(buf, 2, "%i", data->show_signal);
+	xmlSetProp(xml, "show_signal", buf);
 }
 
 static void plugin_read_config(Control *ctrl, xmlNodePtr parent) {
@@ -304,6 +322,11 @@ static void plugin_read_config(Control *ctrl, xmlNodePtr parent) {
 		if ((value = xmlGetProp(child, (const xmlChar*) "dev")) !=
 									NULL) {
 			strcpy(data->device, value);
+			g_free(value);
+		}
+		if ((value = xmlGetProp(child, (const xmlChar*) "show_signal"))
+								!= NULL) {
+			data->show_signal = atoi(value);
 			g_free(value);
 		}
 	}
