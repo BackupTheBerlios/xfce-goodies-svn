@@ -44,6 +44,12 @@
 #define COLOR_SIGNAL_HIGH	"#00ff00"
 
 typedef struct {
+	int			freq;
+	char*			name;
+	struct radio_preset*	next;
+} radio_preset;
+
+typedef struct {
 	GtkWidget*	box;
 	GtkWidget*	ebox;
 	GtkWidget*	label;
@@ -55,6 +61,7 @@ typedef struct {
 	int		freqfact;
 	char		device[MAX_DEVICE_NAME_LENGTH + 1];
 	char		command[MAX_COMMAND_LENGTH + 1];
+	radio_preset*	presets;
 } radio_gui;
 
 static void radio_tune(radio_gui*);

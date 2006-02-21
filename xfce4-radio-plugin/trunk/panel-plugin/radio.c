@@ -118,6 +118,26 @@ static void radio_stop(radio_gui* data) {
 	xfce_exec(data->command, FALSE, FALSE, NULL);
 }
 
+static radio_preset* find_preset(const char* name, radio_gui* data) {
+	radio_preset* preset = data->presets;
+	while (preset != NULL) {
+		if (strcmp(preset->name, name) == 0) {
+			return preset;
+		}
+		preset = preset->next;
+	}
+	return NULL;
+}
+
+static void select_preset(GtkEditable* menu_item, void *pointer) {
+        radio_gui* data = (radio_gui*) pointer;
+	GtkWidget* label = gtk_bin_get_child(GTK_BIN(menu_item));
+	const char* text = gtk_label_get_text(GTK_LABEL(label));
+	radio_preset* preset = find_preset(text, data);
+	data->freq = preset->freq;
+	radio_tune(data);
+}
+
 static gboolean mouse_click(GtkWidget* src, GdkEventButton *event, radio_gui*
 									data) {
 	if (event->button == 1) {
@@ -128,17 +148,28 @@ static gboolean mouse_click(GtkWidget* src, GdkEventButton *event, radio_gui*
 			radio_stop(data);
 		}
 	} else if (event->button == 2) {
-		GtkMenu* menu = gtk_menu_new();
+		GtkWidget* menu = gtk_menu_new();
 		GtkWidget* item = gtk_menu_item_new_with_label(_("Presets"));
 		gtk_widget_show(item);
 		gtk_menu_append(menu, item);
+		gtk_widget_set_sensitive(item, FALSE);
 
 		GtkWidget* separator = gtk_separator_menu_item_new();
 		gtk_widget_show(separator);
 		gtk_container_add(GTK_CONTAINER (menu), separator);
 		gtk_widget_set_sensitive(separator, FALSE);
 
-		gtk_menu_popup (menu, NULL, NULL, NULL, NULL, 
+		radio_preset* preset = data->presets;
+		while (preset != NULL) {
+			item = gtk_menu_item_new_with_label(_(preset->name));
+			gtk_widget_show(item);
+			gtk_menu_append(menu, item);
+			g_signal_connect(GTK_WIDGET(item), "activate",
+					G_CALLBACK(select_preset), data);
+			preset = preset->next;
+		}
+
+		gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, NULL, 
 				event->button, event->time);
 	}
 	update_label(data);
@@ -214,6 +245,20 @@ static gboolean plugin_control_new(Control *ctrl) {
 	plugin_data->freqfact = 16;
 	plugin_data->show_signal = FALSE;
 	strcpy(plugin_data->device, "/dev/radio0");
+
+	// HACK
+	radio_preset* BE1 = malloc(sizeof(radio_preset));
+	BE1->name = "BE1";
+	BE1->freq = 9700;
+	BE1->next = NULL;
+
+	radio_preset* VIRUS = malloc(sizeof(radio_preset));
+	VIRUS->name = "VIRUS";
+	VIRUS->freq = 9430;
+	VIRUS->next = BE1;
+
+	plugin_data->presets = VIRUS;
+	// END HACK
 	
 	update_label(plugin_data);
 
