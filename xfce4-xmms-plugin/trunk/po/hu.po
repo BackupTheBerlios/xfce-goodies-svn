@@ -1,7 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-01-04 23:52+0900\n"
 "PO-Revision-Date: 2006-02-11 18:16+0100\n"
 "Last-Translator: SZERVÑC Attila <sas@321.hu>\n"
 "Language-Team: hu\n"
@@ -26,4 +27,3 @@ msgstr "XMMS plugin az Xfce 4.4 panelhez"
 #: ../panel-plugin/xfce4-xmms-plugin.desktop.in.in.h:2
 msgid "Xfce4 XMMS Plugin"
 msgstr "Xfce4 XMMS Plugin"
-

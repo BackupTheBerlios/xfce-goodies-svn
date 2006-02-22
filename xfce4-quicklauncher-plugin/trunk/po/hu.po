@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xfce4-quicklauncher-plugin 1.9.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-12 14:41+0900\n"
+"POT-Creation-Date: 2006-02-15 08:23+0900\n"
 "PO-Revision-Date: 2006-02-12 14:57+0900\n"
 "Last-Translator: SZERVÁC Attila <sas@321.hu>\n"
 "Language-Team: Hungarian <translation-team-hu@lists.sourceforge.net>\n"
@@ -38,15 +38,15 @@ msgstr "parancs"
 msgid "Open icon"
 msgstr "Ikon megnyitása"
 
-#: ../panel-plugin/main.c:158 ../panel-plugin/quicklauncher.desktop.in.in.h:2
+#: ../panel-plugin/main.c:163 ../panel-plugin/quicklauncher.desktop.in.in.h:2
 msgid "Quicklauncher"
 msgstr "Gyorsindító"
 
-#: ../panel-plugin/main.c:161
+#: ../panel-plugin/main.c:166
 msgid "Allows you to add launchers easily and display them on many lines."
 msgstr "Lehetővé teszi futtatók könnyű hozzáadását és többsoros kijelzését"
 
-#: ../panel-plugin/main.c:163
+#: ../panel-plugin/main.c:168
 msgid "Other plugins available here"
 msgstr "Más itt elérhető pluginok"
 
