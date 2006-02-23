@@ -70,10 +70,26 @@ static gboolean update_signal_bar(radio_gui* data) {
 	}
 }
 
+static void update_tooltip(radio_gui* data) {
+	GtkWidget* ebox = data->ebox;
+
+	char *text = malloc(1024);
+	strcpy(text, _("Not tuned"));
+	radio_preset* preset = find_preset_by_freq(data->freq, data);
+
+	if (preset) {
+		sprintf(text, "Tuned to %s", preset->name);
+	} else {
+		sprintf(text, "Tuned to %5.1f", (float)data->freq / 100);
+	}
+	gtk_tooltips_set_tip(data->tooltips, ebox, text, NULL);
+}
+
 static void update_label(radio_gui* data) {
 	char* label = malloc(MAX_LABEL_LENGTH + 1);
 	if (data->on) {
 		sprintf(label, "%5.1f", ((float) data->freq) / 100);
+		update_tooltip(data);
 	} else {
 		strcpy(label, _("- off -"));
 	}
@@ -107,11 +123,13 @@ static gboolean radio_start(radio_gui* data) {
 	if (ioctl(data->fd, VIDIOCSAUDIO, &vid_aud)) perror("VIDIOCSAUDIO");
 
 	radio_tune(data);
+	gtk_tooltips_enable(data->tooltips);
 	return TRUE;
 }
 
 static void radio_stop(radio_gui* data) {
 	struct video_audio vid_aud;
+	gtk_tooltips_disable(data->tooltips);
 
 	if (ioctl(data->fd, VIDIOCGAUDIO, &vid_aud)) perror("VIDIOCGAUDIO");
 	vid_aud.flags |= VIDEO_AUDIO_MUTE;
@@ -426,6 +444,7 @@ static gboolean plugin_control_new(Control *ctrl) {
 	plugin_data->presets = NULL;
 	plugin_data->scroll = CHANGE_FREQ;
 	plugin_data->timeout_id = 0;
+	plugin_data->tooltips = gtk_tooltips_new();
 	
 	update_label(plugin_data);
 

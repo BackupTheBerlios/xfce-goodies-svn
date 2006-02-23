@@ -60,6 +60,7 @@ typedef struct {
 	GtkWidget*		ebox;
 	GtkWidget*		label;
 	GtkWidget*		signal_bar;
+	GtkTooltips*		tooltips;
 	
 	int			timeout_id;
 
@@ -75,3 +76,4 @@ typedef struct {
 } radio_gui;
 
 static void radio_tune(radio_gui*);
+static radio_preset* find_preset_by_freq(int, radio_gui*);
