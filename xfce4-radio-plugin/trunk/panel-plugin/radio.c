@@ -686,26 +686,27 @@ static void plugin_write_config(Control *ctrl, xmlNodePtr parent) {
 	char buf[32];
 	xmlNodePtr xml, preset_xml;
 
-	xml = xmlNewTextChild(parent, NULL, "xfce4-radio", NULL);
+	xml = xmlNewTextChild(parent, NULL, (xmlChar*)"xfce4-radio", NULL);
 
 	snprintf(buf, 32, "%d", data->freq);
-	xmlSetProp(xml, "freq", buf);
+	xmlSetProp(xml, (xmlChar*)"freq", (xmlChar*)buf);
 
-	xmlSetProp(xml, "dev", data->device);
-	xmlSetProp(xml, "cmd", data->command);
+	xmlSetProp(xml, (xmlChar*)"dev", (xmlChar*)data->device);
+	xmlSetProp(xml, (xmlChar*)"cmd", (xmlChar*)data->command);
 
 	snprintf(buf, 2, "%i", data->show_signal);
-	xmlSetProp(xml, "show_signal", buf);
+	xmlSetProp(xml, (xmlChar*)"show_signal", (xmlChar*)buf);
 
-	xmlSetProp(xml, "scroll", data->scroll == CHANGE_FREQ ? "frq" : "pre");
+	xmlSetProp(xml, (xmlChar*)"scroll", data->scroll == CHANGE_FREQ ?
+					(xmlChar*)"frq" : (xmlChar*)"pre");
 
 	radio_preset* preset = data->presets;
 	while (preset != NULL) {
-		preset_xml = xmlNewTextChild(xml, NULL, "preset", NULL);
-		xmlSetProp(preset_xml, "name", preset->name);
+		preset_xml = xmlNewTextChild(xml,NULL,(xmlChar*)"preset",NULL);
+		xmlSetProp(preset_xml,(xmlChar*)"name",(xmlChar*)preset->name);
 
 		snprintf(buf, 32, "%d", preset->freq);
-		xmlSetProp(preset_xml, "freq", buf);
+		xmlSetProp(preset_xml, (xmlChar*)"freq", (xmlChar*)buf);
 
 		preset = preset->next;
 	}
@@ -722,25 +723,25 @@ static void plugin_read_config(Control *ctrl, xmlNodePtr parent) {
 	child = parent->children;
 
 	if ((value = xmlGetProp(child, (const xmlChar*) "freq")) != NULL) {
-		data->freq = atoi(value);
+		data->freq = atoi((char*)value);
 		g_free(value);
 	}
 	if ((value = xmlGetProp(child, (const xmlChar*) "dev")) != NULL) {
-		strcpy(data->device, value);
+		strcpy(data->device, (char*)value);
 		g_free(value);
 	}
 	if ((value = xmlGetProp(child, (const xmlChar*) "cmd")) != NULL) {
-		strcpy(data->command, value);
+		strcpy(data->command, (char*)value);
 		g_free(value);
 	}
 	if ((value = xmlGetProp(child, (const xmlChar*) "scroll")) != NULL) {
-		data->scroll = strcmp(value, "frq") == 0 ? CHANGE_FREQ :
+		data->scroll = strcmp((char*)value, "frq") == 0 ? CHANGE_FREQ :
 								CHANGE_PRESET;
 		g_free(value);
 	}
 	if ((value = xmlGetProp(child, (const xmlChar*) "show_signal"))
 								!= NULL) {
-		data->show_signal = atoi(value);
+		data->show_signal = atoi((char*)value);
 		g_free(value);
 	}
 	xmlNodePtr preset_node = child->children;
@@ -749,12 +750,13 @@ static void plugin_read_config(Control *ctrl, xmlNodePtr parent) {
 		preset->next = NULL;
 		if ((value = xmlGetProp(preset_node, (const xmlChar*) "name"))
 								!= NULL) {
-			strncpy(preset->name, value, MAX_PRESET_NAME_LENGTH);
+			strncpy(preset->name, (char*)value, 
+						MAX_PRESET_NAME_LENGTH);
 			g_free(value);
 		}
 		if ((value = xmlGetProp(preset_node, (const xmlChar*) "freq"))
 								!= NULL) {
-			preset->freq = atoi(value);
+			preset->freq = atoi((char*)value);
 			g_free(value);
 		}
 		append_to_presets(preset, data);
