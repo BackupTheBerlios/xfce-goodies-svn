@@ -49,11 +49,13 @@ typedef enum {
 	CHANGE_PRESET
 } mouse_scroll_reaction;
 
-typedef struct {
+struct radio_preset_st {
 	int			freq;
 	char			name[MAX_PRESET_NAME_LENGTH];
-	struct radio_preset*	next;
-} radio_preset;
+	struct radio_preset_st*	next;
+};
+
+typedef struct radio_preset_st radio_preset;
 
 typedef struct {
 	GtkWidget*		box;
