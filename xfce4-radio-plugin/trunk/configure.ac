@@ -32,9 +32,6 @@ AC_HEADER_STDC
 dnl configure the panel plugin
 XFCE_PANEL_PLUGIN([XFCE4_PANEL], [4.0.0])
 
-dnl Check for debugging support
-BM_DEBUG_SUPPORT
-
 AC_OUTPUT([
 Makefile
 panel-plugin/Makefile
