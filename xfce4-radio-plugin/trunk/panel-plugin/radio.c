@@ -265,6 +265,8 @@ static gboolean mouse_click(GtkWidget* src, GdkEventButton *event, radio_gui*
 			gtk_menu_append(menu, item);
 			g_signal_connect(GTK_WIDGET(item), "activate",
 					G_CALLBACK(select_preset), data);
+			gtk_widget_set_sensitive(item, preset->freq !=
+								data->freq);
 			preset = preset->next;
 		}
 
