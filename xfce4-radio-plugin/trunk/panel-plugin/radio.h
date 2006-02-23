@@ -44,6 +44,11 @@
 #define COLOR_SIGNAL_LOW	"#ffff00"
 #define COLOR_SIGNAL_HIGH	"#00ff00"
 
+typedef enum {
+	CHANGE_FREQ,
+	CHANGE_PRESET
+} mouse_scroll_reaction;
+
 typedef struct {
 	int			freq;
 	char			name[MAX_PRESET_NAME_LENGTH];
@@ -51,18 +56,19 @@ typedef struct {
 } radio_preset;
 
 typedef struct {
-	GtkWidget*	box;
-	GtkWidget*	ebox;
-	GtkWidget*	label;
-	GtkWidget*	signal_bar;
-	gboolean	on;
-	gboolean	show_signal;
-	int		freq;
-	int		fd;
-	int		freqfact;
-	char		device[MAX_DEVICE_NAME_LENGTH];
-	char		command[MAX_COMMAND_LENGTH];
-	radio_preset*	presets;
+	GtkWidget*		box;
+	GtkWidget*		ebox;
+	GtkWidget*		label;
+	GtkWidget*		signal_bar;
+	gboolean		on;
+	gboolean		show_signal;
+	int			freq;
+	int			fd;
+	int			freqfact;
+	char			device[MAX_DEVICE_NAME_LENGTH];
+	char			command[MAX_COMMAND_LENGTH];
+	radio_preset*		presets;
+	mouse_scroll_reaction	scroll;
 } radio_gui;
 
 static void radio_tune(radio_gui*);

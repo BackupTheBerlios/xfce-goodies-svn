@@ -151,9 +151,11 @@ static gboolean append_to_presets(radio_preset* new_preset, radio_gui* data) {
 
 	if (data->presets == NULL) {
 		data->presets = new_preset;
+		return TRUE;
 	} else if (add_before(new_preset, data->presets)) {
 		new_preset->next = data->presets;
 		data->presets = new_preset;
+		return TRUE;
 	} else {
 		while (preset != NULL) {
 			prev = preset;
@@ -224,7 +226,6 @@ static void remove_preset(GtkEditable* menu_item, void *pointer) {
 		}
 		preset = preset->next;
 	}
-
 }
 
 static void select_preset(GtkEditable* menu_item, void *pointer) {
@@ -300,14 +301,59 @@ static void radio_tune(radio_gui* data) {
 	update_signal_bar(data);
 }
 
+static void tune_to_prev_preset(radio_gui* data) {
+	radio_preset *preset = data->presets, *prev;
+
+	if (preset->freq == data->freq) {
+		while (preset->next != NULL) {
+			preset = preset->next;
+		}
+		data->freq = preset->freq;
+	} else {
+		prev = preset;
+		while (preset != NULL) {
+			if (preset->freq == data->freq) {
+				data->freq = prev->freq;
+			}
+			prev = preset;
+			preset = preset->next;
+		}
+	}
+	radio_tune(data);
+}
+
 static void mouse_scroll(GtkWidget* src, GdkEventScroll *event, radio_gui* 
 									data) {
 	if (data->on) {
 		int direction = event->direction == GDK_SCROLL_UP ? -1 : 1;
-		data->freq += direction * FREQ_STEP;
-		if (data->freq > FREQ_MAX) data->freq = FREQ_MIN;
-		if (data->freq < FREQ_MIN) data->freq = FREQ_MAX;
-		radio_tune(data);
+		if (data->scroll == CHANGE_FREQ) {
+			data->freq += direction * FREQ_STEP;
+			if (data->freq > FREQ_MAX) data->freq = FREQ_MIN;
+			if (data->freq < FREQ_MIN) data->freq = FREQ_MAX;
+			radio_tune(data);
+		} else if (data->scroll == CHANGE_PRESET) {
+			radio_preset* preset = find_preset_by_freq(data->freq,
+									data);
+			if (preset) {
+				// preset found
+				if (direction == 1) {
+					// tune to next preset
+					preset = preset->next == NULL ?
+						data->presets :	preset->next;
+					data->freq = preset->freq;
+					radio_tune(data);
+				} else {
+					tune_to_prev_preset(data);
+				}
+			} else {
+				// tune to first preset, if it exists
+				preset = data->presets;
+				if (preset) {
+					data->freq = preset->freq;
+					radio_tune(data);
+				}
+			}
+		}
 	}
 }
 
@@ -369,6 +415,7 @@ static gboolean plugin_control_new(Control *ctrl) {
 	plugin_data->show_signal = FALSE;
 	strcpy(plugin_data->device, "/dev/radio0");
 	plugin_data->presets = NULL;
+	plugin_data->scroll = CHANGE_FREQ;
 	
 	update_label(plugin_data);
 
@@ -396,6 +443,16 @@ void radio_show_signal_changed(GtkEditable* editable, void *pointer) {
 	update_signal_bar(data);
 }
 
+void radio_scroll_type_changed(GtkEditable* button, void *pointer) {
+	radio_gui* data = (radio_gui*) pointer;
+	gboolean frq = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button));
+	if (frq) {
+		data->scroll = CHANGE_FREQ;
+	} else {
+		data->scroll = CHANGE_PRESET;
+	}
+}
+
 static void plugin_create_options(Control *ctrl, GtkContainer *container,
 							GtkWidget *done) {
 	radio_gui* data = ctrl->data;
@@ -404,14 +461,19 @@ static void plugin_create_options(Control *ctrl, GtkContainer *container,
 	GtkWidget *deviceLabel;
 	GtkWidget *qualityLabel;
 	GtkWidget *hbox1;
+	GtkWidget *hbox2;
 	GSList *showSignal_group = NULL;
 	GtkWidget *radioShowSignal;
 	GtkWidget *radioHideSignal;
 	GtkWidget *executeLabel;
 	GtkWidget *command;
 	GtkWidget *device;
+	GtkWidget *scrollLabel;
+	GtkWidget *frequency_button;
+	GtkWidget *preset_button;
+	GSList *frequency_button_group = NULL;
 
-	table1 = gtk_table_new (3, 2, FALSE);
+	table1 = gtk_table_new (4, 2, FALSE);
 	gtk_widget_show (table1);
 	gtk_container_add (GTK_CONTAINER (container), table1);
 
@@ -448,7 +510,7 @@ static void plugin_create_options(Control *ctrl, GtkContainer *container,
 							showSignal_group);
 	showSignal_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON 
 							(radioHideSignal));
-	
+
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radioShowSignal),
 							data->show_signal);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radioHideSignal),
@@ -456,16 +518,51 @@ static void plugin_create_options(Control *ctrl, GtkContainer *container,
 
 	executeLabel = gtk_label_new (_("Execute command after sutdown"));
 	gtk_widget_show (executeLabel);
-	gtk_table_attach (GTK_TABLE (table1), executeLabel, 0, 1, 2, 3,
+	gtk_table_attach (GTK_TABLE (table1), executeLabel, 0, 1, 3, 4,
 		(GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 0, 0);
         gtk_misc_set_alignment (GTK_MISC (executeLabel), 0, 0.5);
 
 	command = gtk_entry_new_with_max_length(MAX_COMMAND_LENGTH);
 	gtk_entry_set_text(GTK_ENTRY(command), data->command);
 	gtk_widget_show (command);
-	gtk_table_attach (GTK_TABLE (table1), command, 1, 2, 2, 3,
+	gtk_table_attach (GTK_TABLE (table1), command, 1, 2, 3, 4,
 				(GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 				(GtkAttachOptions) (0), 0, 0);
+	
+	scrollLabel = gtk_label_new (_("Mouse scrolling changes"));
+	gtk_widget_show (scrollLabel);
+	gtk_table_attach (GTK_TABLE (table1), scrollLabel, 0, 1, 2, 3,
+				(GtkAttachOptions) (GTK_FILL),
+				(GtkAttachOptions) (0), 0, 0);
+	gtk_misc_set_alignment (GTK_MISC (scrollLabel), 0, 0.5);
+	
+	hbox2 = gtk_hbox_new (FALSE, 0);
+	gtk_widget_show (hbox2);
+	gtk_table_attach (GTK_TABLE (table1), hbox2, 1, 2, 2, 3,
+				(GtkAttachOptions) (GTK_FILL),
+				(GtkAttachOptions) (GTK_FILL), 0, 0);
+	
+	frequency_button = gtk_radio_button_new_with_mnemonic (NULL, _(
+								"frequency"));
+	gtk_widget_show (frequency_button);
+	gtk_box_pack_start (GTK_BOX(hbox2), frequency_button, FALSE, FALSE, 0);
+	gtk_radio_button_set_group (GTK_RADIO_BUTTON (frequency_button),
+						frequency_button_group);
+	frequency_button_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON
+							(frequency_button));
+
+	preset_button = gtk_radio_button_new_with_mnemonic (NULL, _("preset"));
+	gtk_widget_show (preset_button);
+	gtk_box_pack_start (GTK_BOX (hbox2), preset_button, FALSE, FALSE, 0);
+	gtk_radio_button_set_group (GTK_RADIO_BUTTON (preset_button),
+						frequency_button_group);
+	frequency_button_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON
+						(preset_button));
+
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(frequency_button),
+						data->scroll == CHANGE_FREQ);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(preset_button),
+						data->scroll == CHANGE_PRESET);
 
 	device = gtk_entry_new_with_max_length(MAX_DEVICE_NAME_LENGTH);
 	gtk_entry_set_text(GTK_ENTRY(device), data->device);
@@ -480,6 +577,8 @@ static void plugin_create_options(Control *ctrl, GtkContainer *container,
 				G_CALLBACK (radio_device_changed), data);
 	g_signal_connect (G_OBJECT (radioShowSignal), "toggled",
 				G_CALLBACK (radio_show_signal_changed), data);
+	g_signal_connect (G_OBJECT (frequency_button), "toggled",
+				G_CALLBACK (radio_scroll_type_changed), data);
 }
 
 static void plugin_write_config(Control *ctrl, xmlNodePtr parent) {
@@ -497,6 +596,8 @@ static void plugin_write_config(Control *ctrl, xmlNodePtr parent) {
 
 	snprintf(buf, 2, "%i", data->show_signal);
 	xmlSetProp(xml, "show_signal", buf);
+
+	xmlSetProp(xml, "scroll", data->scroll == CHANGE_FREQ ? "frq" : "pre");
 
 	radio_preset* preset = data->presets;
 	while (preset != NULL) {
@@ -530,6 +631,11 @@ static void plugin_read_config(Control *ctrl, xmlNodePtr parent) {
 	}
 	if ((value = xmlGetProp(child, (const xmlChar*) "cmd")) != NULL) {
 		strcpy(data->command, value);
+		g_free(value);
+	}
+	if ((value = xmlGetProp(child, (const xmlChar*) "scroll")) != NULL) {
+		data->scroll = strcmp(value, "frq") == 0 ? CHANGE_FREQ :
+								CHANGE_PRESET;
 		g_free(value);
 	}
 	if ((value = xmlGetProp(child, (const xmlChar*) "show_signal"))
