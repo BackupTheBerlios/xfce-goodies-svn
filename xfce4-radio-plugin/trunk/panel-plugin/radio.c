@@ -414,7 +414,7 @@ static gboolean plugin_control_new(Control *ctrl) {
 	plugin_data->on = FALSE;
 	plugin_data->freq = FREQ_INIT;
 	plugin_data->freqfact = 16;
-	plugin_data->show_signal = FALSE;
+	plugin_data->show_signal = TRUE;
 	strcpy(plugin_data->device, "/dev/radio0");
 	plugin_data->presets = NULL;
 	plugin_data->scroll = CHANGE_FREQ;
