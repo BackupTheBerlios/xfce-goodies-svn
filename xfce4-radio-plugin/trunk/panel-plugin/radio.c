@@ -594,130 +594,120 @@ void radio_scroll_type_changed(GtkEditable* button, void *pointer) {
 
 static void plugin_create_options(Control *ctrl, GtkContainer *container,
 							GtkWidget *done) {
-	radio_gui* data = ctrl->data;
+	radio_gui *data = ctrl->data;
 
-	GtkWidget *table1;
-	GtkWidget *deviceLabel;
-	GtkWidget *qualityLabel;
-	GtkWidget *hbox1;
-	GtkWidget *hbox2;
-	GSList *showSignal_group = NULL;
-	GtkWidget *radioShowSignal;
-	GtkWidget *radioHideSignal;
-	GtkWidget *executeLabel;
-	GtkWidget *command;
-	GtkWidget *device;
-	GtkWidget *scrollLabel;
-	GtkWidget *frequency_button;
-	GtkWidget *preset_button;
-	GSList *frequency_button_group = NULL;
+	GtkWidget *table;
+	GtkWidget *label;
+	GtkWidget *hbox;
 
-	table1 = gtk_table_new (4, 2, FALSE);
-	gtk_widget_show (table1);
-	gtk_container_add (GTK_CONTAINER (container), table1);
+	GSList *show_signal_group = NULL;	// signal strength:
+	GtkWidget *signal_show;			//  - show
+	GtkWidget *signal_hide;			//  - hide
+	GtkWidget *command_entry;		// post-down command
+	GtkWidget *device_entry;		// v4l-device
+	GSList *scroll_group = NULL;		// scroll action:
+	GtkWidget *frequency_button;		//  - change frequency
+	GtkWidget *preset_button;		//  - change preset
 
-	deviceLabel = gtk_label_new (_("V4L device"));
-	gtk_widget_show (deviceLabel);
-	gtk_table_attach (GTK_TABLE (table1), deviceLabel, 0, 1, 0, 1,
-		(GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 0, 0);
-	gtk_misc_set_alignment (GTK_MISC (deviceLabel), 0, 0.5);
+	table = gtk_table_new(4, 2, FALSE);
+	gtk_widget_show(table);
+	gtk_container_add(GTK_CONTAINER (container), table);
 
-	qualityLabel = gtk_label_new (_("Display signal strength"));
-	gtk_widget_show (qualityLabel);
-	gtk_table_attach (GTK_TABLE (table1), qualityLabel, 0, 1, 1, 2,
-		(GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 0, 0);
-	gtk_misc_set_alignment (GTK_MISC (qualityLabel), 0, 0.5);
+	label = gtk_label_new(_("V4L device"));
+	gtk_widget_show(label);
+	gtk_table_attach(GTK_TABLE(table), label, 0, 1, 0, 1, GTK_FILL,
+								0, 0, 0);
+	gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
 
-	hbox1 = gtk_hbox_new (FALSE, 0);
-	gtk_widget_show (hbox1);
-	gtk_table_attach (GTK_TABLE (table1), hbox1, 1, 2, 1, 2,
-	(GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (GTK_FILL), 0, 0);
+	label = gtk_label_new(_("Display signal strength"));
+	gtk_widget_show(label);
+	gtk_table_attach(GTK_TABLE(table), label, 0, 1, 1, 2, GTK_FILL,
+								0, 0, 0);
+	gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
 
-	radioShowSignal = gtk_radio_button_new_with_mnemonic (NULL, _("yes"));
-	gtk_widget_show (radioShowSignal);
-	gtk_box_pack_start (GTK_BOX (hbox1), radioShowSignal, FALSE, FALSE, 0);
-	gtk_radio_button_set_group (GTK_RADIO_BUTTON (radioShowSignal), 
-							showSignal_group);
-	showSignal_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON
-							(radioShowSignal));
+	hbox = gtk_hbox_new(FALSE, 0);
+	gtk_widget_show(hbox);
+	gtk_table_attach(GTK_TABLE(table), hbox, 1, 2, 1, 2, GTK_FILL,
+							GTK_FILL, 0, 0);
 
-	radioHideSignal = gtk_radio_button_new_with_mnemonic (NULL, _("no"));
-	gtk_widget_show (radioHideSignal);
+	signal_show = gtk_radio_button_new_with_label(NULL, _("yes"));
+	gtk_widget_show(signal_show);
+	gtk_box_pack_start(GTK_BOX(hbox), signal_show, FALSE, FALSE, 0);
+	gtk_radio_button_set_group(GTK_RADIO_BUTTON(signal_show),
+							show_signal_group);
+	show_signal_group = gtk_radio_button_get_group(GTK_RADIO_BUTTON
+							(signal_show));
 
-	gtk_box_pack_start (GTK_BOX (hbox1), radioHideSignal, FALSE, FALSE, 0);
-	gtk_radio_button_set_group (GTK_RADIO_BUTTON (radioHideSignal), 
-							showSignal_group);
-	showSignal_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON 
-							(radioHideSignal));
+	signal_hide = gtk_radio_button_new_with_label(show_signal_group,
+								_("no"));
+	gtk_widget_show(signal_hide);
 
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radioShowSignal),
+	gtk_box_pack_start(GTK_BOX (hbox), signal_hide, FALSE, FALSE, 0);
+
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(signal_show),
 							data->show_signal);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radioHideSignal),
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(signal_hide),
 							!data->show_signal);
 
-	executeLabel = gtk_label_new (_("Execute command after sutdown"));
-	gtk_widget_show (executeLabel);
-	gtk_table_attach (GTK_TABLE (table1), executeLabel, 0, 1, 3, 4,
-		(GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 0, 0);
-        gtk_misc_set_alignment (GTK_MISC (executeLabel), 0, 0.5);
+	label = gtk_label_new(_("Execute command after shutdown"));
+	gtk_widget_show(label);
+	gtk_table_attach(GTK_TABLE(table), label, 0, 1, 3, 4, GTK_FILL,
+								0, 0, 0);
+        gtk_misc_set_alignment(GTK_MISC (label), 0, 0.5);
 
-	command = gtk_entry_new_with_max_length(MAX_COMMAND_LENGTH);
-	gtk_entry_set_text(GTK_ENTRY(command), data->command);
-	gtk_widget_show (command);
-	gtk_table_attach (GTK_TABLE (table1), command, 1, 2, 3, 4,
-				(GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-				(GtkAttachOptions) (0), 0, 0);
+	command_entry = gtk_entry_new_with_max_length(MAX_COMMAND_LENGTH);
+	gtk_entry_set_text(GTK_ENTRY(command_entry), data->command);
+	gtk_widget_show(command_entry);
+	gtk_table_attach(GTK_TABLE(table), command_entry, 1, 2, 3, 4,
+					GTK_EXPAND | GTK_FILL, 0, 0, 0);
 	
-	scrollLabel = gtk_label_new (_("Mouse scrolling changes"));
-	gtk_widget_show (scrollLabel);
-	gtk_table_attach (GTK_TABLE (table1), scrollLabel, 0, 1, 2, 3,
-				(GtkAttachOptions) (GTK_FILL),
-				(GtkAttachOptions) (0), 0, 0);
-	gtk_misc_set_alignment (GTK_MISC (scrollLabel), 0, 0.5);
+	label = gtk_label_new(_("Mouse scrolling changes"));
+	gtk_widget_show(label);
+	gtk_table_attach(GTK_TABLE(table), label, 0, 1, 2, 3, GTK_FILL,
+								0, 0, 0);
+	gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
 	
-	hbox2 = gtk_hbox_new (FALSE, 0);
-	gtk_widget_show (hbox2);
-	gtk_table_attach (GTK_TABLE (table1), hbox2, 1, 2, 2, 3,
-				(GtkAttachOptions) (GTK_FILL),
-				(GtkAttachOptions) (GTK_FILL), 0, 0);
+	hbox = gtk_hbox_new(FALSE, 0);
+	gtk_widget_show(hbox);
+	gtk_table_attach(GTK_TABLE(table), hbox, 1, 2, 2, 3, GTK_FILL,
+							GTK_FILL, 0, 0);
 	
-	frequency_button = gtk_radio_button_new_with_mnemonic (NULL, _(
-								"frequency"));
-	gtk_widget_show (frequency_button);
-	gtk_box_pack_start (GTK_BOX(hbox2), frequency_button, FALSE, FALSE, 0);
-	gtk_radio_button_set_group (GTK_RADIO_BUTTON (frequency_button),
-						frequency_button_group);
-	frequency_button_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON
+	frequency_button = gtk_radio_button_new_with_label(NULL, 
+							_("frequency"));
+	gtk_widget_show(frequency_button);
+	gtk_box_pack_start(GTK_BOX(hbox), frequency_button, FALSE, FALSE, 0);
+	gtk_radio_button_set_group(GTK_RADIO_BUTTON(frequency_button),
+								scroll_group);
+	scroll_group = gtk_radio_button_get_group(GTK_RADIO_BUTTON
 							(frequency_button));
 
-	preset_button = gtk_radio_button_new_with_mnemonic (NULL, _("preset"));
-	gtk_widget_show (preset_button);
-	gtk_box_pack_start (GTK_BOX (hbox2), preset_button, FALSE, FALSE, 0);
-	gtk_radio_button_set_group (GTK_RADIO_BUTTON (preset_button),
-						frequency_button_group);
-	frequency_button_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON
-						(preset_button));
+	preset_button = gtk_radio_button_new_with_label(NULL, _("preset"));
+	gtk_widget_show(preset_button);
+	gtk_box_pack_start(GTK_BOX(hbox), preset_button, FALSE, FALSE, 0);
+	gtk_radio_button_set_group(GTK_RADIO_BUTTON(preset_button),
+								scroll_group);
+	scroll_group = gtk_radio_button_get_group(GTK_RADIO_BUTTON
+							(preset_button));
 
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(frequency_button),
 						data->scroll == CHANGE_FREQ);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(preset_button),
 						data->scroll == CHANGE_PRESET);
 
-	device = gtk_entry_new_with_max_length(MAX_DEVICE_NAME_LENGTH);
-	gtk_entry_set_text(GTK_ENTRY(device), data->device);
-	gtk_widget_show (device);
-	gtk_table_attach (GTK_TABLE (table1), device, 1, 2, 0, 1,
-				(GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-				(GtkAttachOptions) (0), 0, 0);
+	device_entry = gtk_entry_new_with_max_length(MAX_DEVICE_NAME_LENGTH);
+	gtk_entry_set_text(GTK_ENTRY(device_entry), data->device);
+	gtk_widget_show(device_entry);
+	gtk_table_attach(GTK_TABLE(table), device_entry, 1, 2, 0, 1,
+					GTK_EXPAND | GTK_FILL, 0, 0, 0);
 
-	g_signal_connect ((gpointer) command, "changed",
-				G_CALLBACK (radio_command_changed), data);
-	g_signal_connect ((gpointer) device, "changed",
-				G_CALLBACK (radio_device_changed), data);
-	g_signal_connect (G_OBJECT (radioShowSignal), "toggled",
-				G_CALLBACK (radio_show_signal_changed), data);
-	g_signal_connect (G_OBJECT (frequency_button), "toggled",
-				G_CALLBACK (radio_scroll_type_changed), data);
+	g_signal_connect((gpointer) command_entry, "changed",
+				G_CALLBACK(radio_command_changed), data);
+	g_signal_connect((gpointer) device_entry, "changed",
+				G_CALLBACK(radio_device_changed), data);
+	g_signal_connect(G_OBJECT (signal_show), "toggled",
+				G_CALLBACK(radio_show_signal_changed), data);
+	g_signal_connect(G_OBJECT (frequency_button), "toggled",
+				G_CALLBACK(radio_scroll_type_changed), data);
 }
 
 static void plugin_write_config(Control *ctrl, xmlNodePtr parent) {
