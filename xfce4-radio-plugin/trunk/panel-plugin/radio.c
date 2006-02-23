@@ -46,9 +46,11 @@ static int radio_get_signal(int fd) {
 	return signal;
 }
 
-static void update_signal_bar(radio_gui* data) {
+static gboolean update_signal_bar(radio_gui* data) {
 	if (!data->on || !data->show_signal) {
 		gtk_widget_hide(data->signal_bar);
+		data->timeout_id = 0;
+		return FALSE;
 	} else {
 		gtk_widget_show(data->signal_bar);
 		double signal = radio_get_signal(data->fd);
@@ -60,6 +62,11 @@ static void update_signal_bar(radio_gui* data) {
 						COLOR_SIGNAL_LOW, &color);
 		gtk_widget_modify_bg(data->signal_bar, GTK_STATE_PRELIGHT,
 								&color);
+		if (data->timeout_id == 0) {
+			data->timeout_id = g_timeout_add(500, (GtkFunction)
+					update_signal_bar, (gpointer)data);
+		}
+		return TRUE;
 	}
 }
 
@@ -418,6 +425,7 @@ static gboolean plugin_control_new(Control *ctrl) {
 	strcpy(plugin_data->device, "/dev/radio0");
 	plugin_data->presets = NULL;
 	plugin_data->scroll = CHANGE_FREQ;
+	plugin_data->timeout_id = 0;
 	
 	update_label(plugin_data);
 

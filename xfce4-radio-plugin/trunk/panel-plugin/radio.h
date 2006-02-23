@@ -60,6 +60,9 @@ typedef struct {
 	GtkWidget*		ebox;
 	GtkWidget*		label;
 	GtkWidget*		signal_bar;
+	
+	int			timeout_id;
+
 	gboolean		on;
 	gboolean		show_signal;
 	int			freq;
