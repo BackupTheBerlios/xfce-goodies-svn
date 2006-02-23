@@ -196,6 +196,34 @@ static gboolean append_to_presets(radio_preset* new_preset, radio_gui* data) {
 	return FALSE;
 }
 
+static void rename_preset(GtkEditable* menu_item, void *pointer) {
+	radio_gui* data = (radio_gui*) pointer;
+	radio_preset* preset = find_preset_by_freq(data->freq, data);
+	if (!preset) return;
+	GtkWidget* dialog = gtk_dialog_new_with_buttons(_("Add preset"),
+				NULL, GTK_DIALOG_DESTROY_WITH_PARENT,
+				GTK_STOCK_OK, GTK_RESPONSE_OK,
+				GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, NULL);
+	GtkWidget* box = GTK_DIALOG(dialog)->vbox;
+
+	GtkWidget* label = gtk_label_new(_("Station name:"));
+	gtk_widget_show(label);
+	gtk_box_pack_start(GTK_BOX(box), label, FALSE, FALSE, 0);
+
+	GtkWidget* station = gtk_entry_new_with_max_length(
+						MAX_PRESET_NAME_LENGTH);
+	gtk_entry_set_text(GTK_ENTRY(station), preset->name);
+	gtk_widget_show(station);
+	gtk_box_pack_start(GTK_BOX(box), station, FALSE, FALSE, 0);
+
+	if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_OK) {
+		strncpy(preset->name, gtk_entry_get_text(GTK_ENTRY(station)),
+						MAX_PRESET_NAME_LENGTH);
+	}
+	gtk_widget_destroy(dialog);
+	update_tooltip(data);
+}
+
 static void add_preset_dialog(GtkEditable* menu_item, void *pointer) {
         radio_gui* data = (radio_gui*) pointer;
 	GtkWindow* win = GTK_WINDOW(gtk_widget_get_toplevel(data->box));
@@ -360,17 +388,28 @@ static gboolean mouse_click(GtkWidget* src, GdkEventButton *event, radio_gui*
 		gtk_container_add(GTK_CONTAINER (menu), separator);
 		gtk_widget_set_sensitive(separator, FALSE);
 
+		radio_preset* current = find_preset_by_freq(data->freq, data);
+
 		item = gtk_menu_item_new_with_label(_("Add preset"));
 		gtk_widget_show(item);
 		gtk_menu_append(menu, item);
 		g_signal_connect(GTK_WIDGET(item), "activate",
 					G_CALLBACK(add_preset_dialog), data);
+		gtk_widget_set_sensitive(item, current == NULL);
 
 		item = gtk_menu_item_new_with_label(_("Delete active preset"));
 		gtk_widget_show(item);
 		gtk_menu_append(menu, item);
 		g_signal_connect(GTK_WIDGET(item), "activate",
 					G_CALLBACK(remove_preset), data);
+		gtk_widget_set_sensitive(item, current != NULL);
+
+		item = gtk_menu_item_new_with_label(_("Rename active preset"));
+		gtk_widget_show(item);
+		gtk_menu_append(menu, item);
+		g_signal_connect(GTK_WIDGET(item), "activate",
+					G_CALLBACK(rename_preset), data);
+		gtk_widget_set_sensitive(item, current != NULL);
 
 		separator = gtk_separator_menu_item_new();
 		gtk_widget_show(separator);
