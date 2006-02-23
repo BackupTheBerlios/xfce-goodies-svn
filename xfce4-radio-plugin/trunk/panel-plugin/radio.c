@@ -273,15 +273,18 @@ static void radio_tune_gui(GtkEditable* menu_item, void *pointer) {
 	gtk_box_pack_start(GTK_BOX(box), freq, FALSE, FALSE, 0);
 
 	int retval;
-	gboolean done = FALSE;
-	while(!done) {
+	for (;;) {
 		retval = gtk_dialog_run(GTK_DIALOG(dialog));
-		if (retval == GTK_RESPONSE_CANCEL || 
-						retval == GTK_RESPONSE_NONE) {
-			break;
+
+		if (	retval == GTK_RESPONSE_CANCEL || 
+			retval == GTK_RESPONSE_DELETE_EVENT ||
+			retval == GTK_RESPONSE_NONE) {
+				break;
 		}
+
 		const char* freq_char = gtk_entry_get_text(GTK_ENTRY(freq));
 		if (parse_freq_and_tune(freq_char, data)) break;
+	
 		GtkWidget* warn = gtk_message_dialog_new(win, 0,
 					GTK_MESSAGE_ERROR, GTK_BUTTONS_OK,
 						_("Illegal frequency."));
