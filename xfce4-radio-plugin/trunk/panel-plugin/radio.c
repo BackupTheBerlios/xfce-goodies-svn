@@ -237,7 +237,6 @@ static void add_preset_dialog(GtkEditable* menu_item, void *pointer) {
 static gboolean parse_freq_and_tune(const char* freq_char, radio_gui* data) {
 	int freq_int = 100 * atoi(freq_char);
 
-g_printf("freq=\"%s\"\n", freq_char);
 	char* decimals = strstr(freq_char, ".");
 	if (!decimals) {
 		decimals = "0";
@@ -279,7 +278,6 @@ static void radio_tune_gui(GtkEditable* menu_item, void *pointer) {
 		retval = gtk_dialog_run(GTK_DIALOG(dialog));
 		if (retval == GTK_RESPONSE_CANCEL || 
 						retval == GTK_RESPONSE_NONE) {
-			g_printf("reject!\n");
 			break;
 		}
 		const char* freq_char = gtk_entry_get_text(GTK_ENTRY(freq));
