@@ -166,7 +166,7 @@ static radio_preset* find_preset_by_freq(int freq, radio_gui* data) {
 }
 
 static gboolean add_before(radio_preset* a, radio_preset* b) {
-	return (b == NULL || a->name[0] < b->name[0]);
+	return (b == NULL || strcmp(a->name, b->name) < 0);
 }
 
 static gboolean append_to_presets(radio_preset* new_preset, radio_gui* data) {
