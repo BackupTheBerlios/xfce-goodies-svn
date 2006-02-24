@@ -41,7 +41,7 @@ dnl required
 XDT_CHECK_PACKAGE([GOBJECT], [gobject-2.0], [2.4.0])
 XDT_CHECK_PACKAGE([GTK], [gtk+-2.0], [2.4.0])
 XDT_CHECK_PACKAGE([ORBIT2], [ORBit-2.0], [2.12.5])
-XDT_CHECK_PACKAGE([LIBBONOBOUI], [libbonoboui-2.0], [2.1.1])
+XDT_CHECK_PACKAGE([LIBPANELAPPLET], [libpanelapplet-2.0], [2.0.0])
 XDT_CHECK_PACKAGE([LIBXFCE4PANEL], [libxfce4panel-1.0], [4.3.20])
 
 dnl check special variable localedir for libxfce4panel

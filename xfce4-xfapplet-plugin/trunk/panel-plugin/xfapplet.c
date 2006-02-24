@@ -26,6 +26,7 @@
 #include <bonobo/bonobo-ui-component.h>
 #include <bonobo/bonobo-control-frame.h>
 #include <bonobo/bonobo-ui-util.h>
+#include <bonobo/bonobo-exception.h>
 #include <bonobo/bonobo-ui-main.h>
 #include <libxfce4util/libxfce4util.h>
 #include <libxfce4panel/xfce-panel-plugin.h>
@@ -150,10 +151,26 @@ static void
 xfapplet_screen_position_changed (XfcePanelPlugin *plugin, XfceScreenPosition position, gpointer data)
 {
 	unsigned short	 orientation;
+	GList		*list;
 	XfAppletPlugin	*xap = (XfAppletPlugin*) data;
 
 	if (!xap->configured)
 		return;
+
+	/*
+	 * Workaround: Xfce panel makes all items in all panels insensitive when
+	 * moving items between panels. Some Gnome applets (noticeably the Mixer
+	 * applet) misbehave when the following happens:
+	 * 1. Applet is set insensitive;
+	 * 2. Applet changes orientation;
+	 * 3. Applet is set sensitive again.
+	 * The following makes sure the applet is set sensitive before it
+	 * changes orientation.
+	 */
+
+	list = gtk_container_get_children (GTK_CONTAINER (xap->plugin));
+	if (list && list->data)
+		gtk_widget_set_sensitive (GTK_WIDGET (list->data), TRUE);
 
 	orientation = xfapplet_xfce_screen_position_to_gnome_applet_orientation (plugin, position);
 	bonobo_pbclient_set_short (xap->prop_bag, "panel-applet-orient", orientation, NULL);
@@ -417,15 +434,47 @@ xfapplet_setup_menu_items (XfcePanelPlugin *plugin, BonoboUIComponent *uic)
 					      xfapplet_menu_item_activated, data);
 }
 
+static GNOME_Vertigo_PanelAppletShell
+xfapplet_get_applet_shell (Bonobo_Control object)
+{
+	CORBA_Environment		ev;
+	GNOME_Vertigo_PanelAppletShell	shell;
+
+	CORBA_exception_init (&ev);
+	shell = Bonobo_Unknown_queryInterface (object, "IDL:GNOME/Vertigo/PanelAppletShell:1.0", &ev);
+	if (BONOBO_EX (&ev))
+		shell = CORBA_OBJECT_NIL;
+	CORBA_exception_free (&ev);
+
+	return shell;
+}
+
+static gboolean
+xfapplet_button_pressed (GtkWidget *widget, GdkEventButton *event, gpointer data)
+{
+	CORBA_Environment	 ev;
+	XfAppletPlugin		*xap = (XfAppletPlugin*) data;
+	
+	if (event->button == 3 && (event->type == GDK_BUTTON_PRESS || event->type == GDK_2BUTTON_PRESS)) {
+		CORBA_exception_init (&ev);
+		gdk_pointer_ungrab (GDK_CURRENT_TIME);
+		GNOME_Vertigo_PanelAppletShell_popup_menu (xap->shell, event->button, event->time, &ev);
+		CORBA_exception_free (&ev);
+	}
+
+	return TRUE;
+}
+
 static void
 xfapplet_applet_activated (Bonobo_Unknown object, CORBA_Environment *ev, gpointer data)
 {
-	GList *list;
-	GtkWidget           *bw;
-	BonoboControlFrame  *frame;
-	BonoboUIComponent   *uic;
-	Bonobo_PropertyBag   prop_bag;
-	XfAppletPlugin      *xap = (XfAppletPlugin*) data;
+	GList				*list;
+	GtkWidget			*bw;
+	BonoboControlFrame		*frame;
+	BonoboUIComponent		*uic;
+	Bonobo_PropertyBag		 prop_bag;
+	GNOME_Vertigo_PanelAppletShell	 shell;
+	XfAppletPlugin      		*xap = (XfAppletPlugin*) data;
 
 	bw = bonobo_widget_new_control_from_objref (object, CORBA_OBJECT_NIL);
 	bonobo_object_release_unref (object, NULL);
@@ -433,6 +482,7 @@ xfapplet_applet_activated (Bonobo_Unknown object, CORBA_Environment *ev, gpointe
 	frame = bonobo_widget_get_control_frame (BONOBO_WIDGET (bw));
         uic = bonobo_control_frame_get_popup_component (frame, CORBA_OBJECT_NIL);
 	prop_bag = bonobo_control_frame_get_control_property_bag (frame, CORBA_OBJECT_NIL);
+	shell = xfapplet_get_applet_shell (object);
 	
 	bonobo_ui_component_freeze (uic, CORBA_OBJECT_NIL);
 	
@@ -450,12 +500,17 @@ xfapplet_applet_activated (Bonobo_Unknown object, CORBA_Environment *ev, gpointe
 	gtk_widget_show (bw);
 
 	if (xap->configured) {
-		bonobo_object_unref (BONOBO_OBJECT (xap->uic));
 		bonobo_object_release_unref (xap->prop_bag, NULL);
+		bonobo_object_release_unref (xap->shell, NULL);
+		bonobo_object_unref (BONOBO_OBJECT (xap->uic));
 	}
+	else
+		g_signal_connect (xap->plugin, "button-press-event",
+				  G_CALLBACK (xfapplet_button_pressed), xap);
 
 	xap->uic = uic;
 	xap->prop_bag = prop_bag;
+	xap->shell = shell;
 
 	list = gtk_container_get_children (GTK_CONTAINER (xap->plugin));
 	if (list && list->data)

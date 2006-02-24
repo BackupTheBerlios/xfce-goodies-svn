@@ -22,16 +22,18 @@
 #include <gtk/gtk.h>
 #include <bonobo/bonobo-ui-component.h>
 #include <libxfce4panel/xfce-panel-plugin.h>
+#include <GNOME_Panel.h>
 
 typedef struct  {
-	XfcePanelPlugin   *plugin;
-	gboolean           configured;
-	gchar             *iid;
-	gchar             *gconf_key;
-	BonoboUIComponent *uic;
-	Bonobo_PropertyBag prop_bag;
-	GtkWidget         *tv;
-	GSList            *applets;
+	XfcePanelPlugin   		*plugin;
+	gboolean           		 configured;
+	gchar             		*iid;
+	gchar             		*gconf_key;
+	BonoboUIComponent 		*uic;
+	Bonobo_PropertyBag		 prop_bag;
+	GNOME_Vertigo_PanelAppletShell	 shell;
+	GtkWidget         		*tv;
+	GSList            		*applets;
 } XfAppletPlugin;
 
 typedef struct {
