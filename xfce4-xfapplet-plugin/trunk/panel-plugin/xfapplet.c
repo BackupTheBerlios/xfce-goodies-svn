@@ -34,6 +34,8 @@
 #include "xfapplet.h"
 
 /* Relevant menu items order in the xfce panel popup menu. */
+#define PROPERTIES_MENU_ITEM_ORDER	2
+#define ABOUT_MENU_ITEM_ORDER		3
 #define MOVE_MENU_ITEM_ORDER            4
 #define REMOVE_MENU_ITEM_ORDER          6
 #define ADD_MENU_ITEM_ORDER             8
@@ -370,22 +372,6 @@ xfapplet_about_dialog (XfcePanelPlugin *plugin, gpointer data)
 }
 
 static void
-xfapplet_properties_item_activated (BonoboUIComponent *uic, gpointer data, const char *cname)
-{
-	XfAppletPlugin *xap = (XfAppletPlugin*) data;
-
-	xfapplet_chooser_dialog (xap->plugin, xap);
-}
-
-static void
-xfapplet_about_item_activated (BonoboUIComponent *uic, gpointer data, const char *cname)
-{
-	XfAppletPlugin *xap = (XfAppletPlugin*) data;
-
-	xfapplet_about_dialog (xap->plugin, xap);
-}
-
-static void
 xfapplet_menu_item_activated (BonoboUIComponent *uic, gpointer mi, const char *cname)
 {
 	gtk_menu_item_activate (GTK_MENU_ITEM(mi));
@@ -431,6 +417,17 @@ xfapplet_setup_menu_items (XfcePanelPlugin *plugin, BonoboUIComponent *uic)
 	data = g_list_nth_data (list, MOVE_MENU_ITEM_ORDER);
 	if (GTK_IS_MENU_ITEM (data))
 		bonobo_ui_component_add_verb (uic, "Move",
+					      xfapplet_menu_item_activated, data);
+	/* "About" menu item */
+	data = g_list_nth_data (list, ABOUT_MENU_ITEM_ORDER);
+	if (GTK_IS_MENU_ITEM (data))
+		bonobo_ui_component_add_verb (uic, "About",
+					      xfapplet_menu_item_activated, data);
+
+	/* "Properties" menu item */
+	data = g_list_nth_data (list, PROPERTIES_MENU_ITEM_ORDER);
+	if (GTK_IS_MENU_ITEM (data))
+		bonobo_ui_component_add_verb (uic, "Properties",
 					      xfapplet_menu_item_activated, data);
 }
 
@@ -492,8 +489,6 @@ xfapplet_applet_activated (Bonobo_Unknown object, CORBA_Environment *ev, gpointe
 	xfce_textdomain(GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR, "UTF-8");
 
 	xfapplet_setup_menu_items (xap->plugin, uic);
-	bonobo_ui_component_add_verb (uic, "About", xfapplet_about_item_activated, xap);
-	bonobo_ui_component_add_verb (uic, "Properties", xfapplet_properties_item_activated, xap);
 
 	bonobo_ui_component_thaw (uic, CORBA_OBJECT_NIL);
 
@@ -582,9 +577,6 @@ xfapplet_setup_empty (XfAppletPlugin *xap)
 	xfce_panel_plugin_add_action_widget (xap->plugin, eb);
 	xfce_panel_plugin_menu_show_configure (xap->plugin);
 	xfce_panel_plugin_menu_show_about (xap->plugin);
-
-	g_signal_connect (xap->plugin, "configure-plugin", G_CALLBACK (xfapplet_chooser_dialog), xap);
-	g_signal_connect (xap->plugin, "about", G_CALLBACK (xfapplet_about_dialog), xap);
 }
 
 static XfAppletPlugin*
@@ -628,6 +620,8 @@ xfapplet_construct (XfcePanelPlugin *plugin)
 	g_signal_connect (plugin, "size-changed", G_CALLBACK (xfapplet_size_changed), xap);
 	g_signal_connect (plugin, "screen-position-changed",
 			  G_CALLBACK (xfapplet_screen_position_changed), xap);
+	g_signal_connect (xap->plugin, "configure-plugin", G_CALLBACK (xfapplet_chooser_dialog), xap);
+	g_signal_connect (xap->plugin, "about", G_CALLBACK (xfapplet_about_dialog), xap);
 }
 
 XFCE_PANEL_PLUGIN_REGISTER_EXTERNAL(xfapplet_construct)
