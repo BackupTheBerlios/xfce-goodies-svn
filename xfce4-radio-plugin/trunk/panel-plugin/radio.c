@@ -139,8 +139,9 @@ static void radio_stop(radio_gui* data) {
 
 	if (data->show_signal) gtk_widget_hide(data->signal_bar);
 
-	// TODO: check if blank
-	xfce_exec(data->command, FALSE, FALSE, NULL);
+	if (strcmp(data->command, "") != 0) {
+		xfce_exec(data->command, FALSE, FALSE, NULL);
+	}
 }
 
 static radio_preset* find_preset_by_name(const char* name, radio_gui* data) {
