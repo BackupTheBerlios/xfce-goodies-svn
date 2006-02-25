@@ -144,27 +144,20 @@ static void radio_stop(radio_gui* data) {
 	}
 }
 
-static radio_preset* find_preset_by_name(const char* name, radio_gui* data) {
-	radio_preset* preset = data->presets;
-	while (preset != NULL) {
-		if (strcmp(preset->name, name) == 0) {
-			return preset;
-		}
-		preset = preset->next;
+#define make_preset_finder(name, arg, comparison)	\
+	static radio_preset* find_preset_by_##name(arg, radio_gui* data) { \
+		radio_preset* preset = data->presets;	\
+		while (preset != NULL) {		\
+			if (comparison) {		\
+				return preset;		\
+			}				\
+			preset = preset->next;		\
+		}					\
+		return NULL;				\
 	}
-	return NULL;
-}
 
-static radio_preset* find_preset_by_freq(int freq, radio_gui* data) {
-	radio_preset* preset = data->presets;
-	while (preset != NULL) {
-		if (preset->freq == freq) {
-			return preset;
-		}
-		preset = preset->next;
-	}
-	return NULL;
-}
+make_preset_finder(name, const char* name, strcmp(preset->name, name) == 0);
+make_preset_finder(freq, int freq, preset->freq == freq);
 
 static gboolean add_before(radio_preset* a, radio_preset* b) {
 	return (b == NULL || strcmp(a->name, b->name) < 0);
