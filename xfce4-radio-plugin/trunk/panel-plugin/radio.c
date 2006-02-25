@@ -197,6 +197,25 @@ static gboolean append_to_presets(radio_preset* new_preset, radio_gui* data) {
 	return FALSE;
 }
 
+static radio_preset* pop_preset(radio_preset *target, radio_gui *data) {
+	radio_preset *preset = data->presets, *prev;
+
+	while (preset != NULL) {
+		if (preset->freq == target->freq) {
+			if (preset == data->presets) {
+				data->presets = preset->next;
+			} else {
+				prev->next = preset->next;
+			}
+			return preset;
+		} else {
+			prev = preset;
+		}
+		preset = preset->next;
+	}
+	return NULL;
+}
+
 static void rename_preset(GtkEditable* menu_item, void *pointer) {
 	radio_gui* data = (radio_gui*) pointer;
 	radio_preset* preset = find_preset_by_freq(data->freq, data);
@@ -220,6 +239,8 @@ static void rename_preset(GtkEditable* menu_item, void *pointer) {
 	if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_OK) {
 		strncpy(preset->name, gtk_entry_get_text(GTK_ENTRY(station)),
 						MAX_PRESET_NAME_LENGTH);
+		pop_preset(preset, data);
+		append_to_presets(preset, data);
 	}
 	gtk_widget_destroy(dialog);
 	update_tooltip(data);
@@ -325,21 +346,10 @@ static void radio_tune_gui(GtkEditable* menu_item, void *pointer) {
 
 static void remove_preset(GtkEditable* menu_item, void *pointer) {
 	radio_gui* data = (radio_gui*) pointer;
-	radio_preset *preset = data->presets, *prev;
+	radio_preset *preset;
 
-	while (preset != NULL) {
-		if (preset->freq == data->freq) {
-			if (preset == data->presets) {
-				data->presets = preset->next;
-			} else {
-				prev->next = preset->next;
-			}
-			free(preset);
-		} else {
-			prev = preset;
-		}
-		preset = preset->next;
-	}
+	preset = pop_preset(find_preset_by_freq(data->freq, data), data);
+	free(preset);
 }
 
 static void select_preset(GtkEditable* menu_item, void *pointer) {
