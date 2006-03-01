@@ -49,8 +49,8 @@ AC_MSG_CHECKING([for libxfce4panel-1.0 localedir])
 LIBXFCE4PANEL_LOCALE_DIR=`$PKG_CONFIG --variable=localedir libxfce4panel-1.0`
 if test "none$LIBXFCE4PANEL_LOCALE_DIR" = "none"; then
    AC_MSG_RESULT([not found])
-   echo '*** You need a bleeding edge version of xfce4-panel svn to ***'
-   echo '*** compile xfce4-xfapplet-plugin.                         ***'
+   echo '*** You need xfce4-panel 4.3 (SVN) >= r19874 to ***'
+   echo '*** compile xfce4-xfapplet-plugin.              ***'
    exit 1
 fi
 AC_MSG_RESULT([$LIBXFCE4PANEL_LOCALE_DIR])
