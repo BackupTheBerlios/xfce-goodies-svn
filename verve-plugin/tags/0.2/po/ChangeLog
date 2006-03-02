@@ -1,0 +1,35 @@
+2006-02-15	Daichi Kawahata <daichi@xfce.org>
+
+	* Basque translations by Piarres Beobide <pi@beobide.net> added.
+
+2006-02-14	Jannis Pohlmann <jannis@xfce.org>
+
+	* Renamed fr_CH.po to fr.po.
+
+2006-02-12	Daichi Kawahata <daichi@xfce.org>
+
+	* Japanese translations updated.
+
+2006-02-11	Daichi Kawahata <daichi@xfce.org>
+
+	* Japanese translations added.
+	* Renamed POT file according to the GETTEXT_PACKAGE.
+	* All files are updated as well.
+	* Fixed an error in German translation file.
+
+2006-02-09	Jannis Pohlmann <jannis@xfce.org>
+
+	* Dutch (nl) translation by Vincent <imnotb@gmail.com> added
+
+2006-02-08	Jannis Pohlmann <jannis@xfce.org>
+
+	* .pot file updated
+	* German translations updated
+
+2006-02-08	Jannis Pohlmann <jannis@xfce.org>
+
+	* French translations by Maximilian Schleiss added
+
+2006-02-07	Jannis Pohlmann <jannis@xfce.org>
+
+	 * Update German translations
