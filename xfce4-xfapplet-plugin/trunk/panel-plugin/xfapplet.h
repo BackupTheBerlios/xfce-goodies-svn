@@ -24,11 +24,13 @@
 #include <libxfce4panel/xfce-panel-plugin.h>
 #include <GNOME_Panel.h>
 
-typedef struct  {
+typedef struct {
 	XfcePanelPlugin   		*plugin;
 	gboolean           		 configured;
-	gchar             		*iid;
+	gchar				*iid;
+	gchar				*name;
 	gchar             		*gconf_key;
+	CORBA_Object			 object;
 	BonoboUIComponent 		*uic;
 	Bonobo_PropertyBag		 prop_bag;
 	GNOME_Vertigo_PanelAppletShell	 shell;
@@ -49,8 +51,10 @@ typedef struct {
 	gchar  *language;
 } XfAppletTranslators;
 
-void          xfapplet_chooser_dialog (XfcePanelPlugin*, XfAppletPlugin*);
+void		xfapplet_free_applet_info (GnomeAppletInfo *applet);
 
-void          xfapplet_setup_full     (XfAppletPlugin*);
+void		xfapplet_chooser_dialog   (XfcePanelPlugin*, XfAppletPlugin*);
+
+void		xfapplet_setup_full       (XfAppletPlugin*);
 
 #endif /* XFAPPLET_PLUGIN_H */

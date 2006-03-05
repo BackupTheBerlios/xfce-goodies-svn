@@ -248,22 +248,27 @@ xfapplet_render_text (GtkTreeViewColumn *col, GtkCellRenderer *cell,
 		g_object_set (cell, "markup", "", "foreground-set", TRUE, NULL);
 }
 
+void
+xfapplet_free_applet_info (GnomeAppletInfo *applet)
+{
+	if (applet) {
+		g_free (applet->name);
+		g_free (applet->description);
+		g_free (applet->iid);
+		if (applet->icon)
+			g_object_unref (applet->icon);
+		g_free (applet);
+	}
+}
+
 static void
 xfapplet_free_applet_list (GSList *lst)
 {
 	GSList          *list;
-	GnomeAppletInfo *applet;
 
 	for (list = lst; list; list = list->next) {
-		applet = list->data;
-		if (applet) {
-			g_free (applet->name);
-			g_free (applet->description);
-			g_free (applet->iid);
-			if (applet->icon)
-				g_object_unref (applet->icon);
-			g_free (applet);
-		}
+		if (list->data) 
+			xfapplet_free_applet_info ((GnomeAppletInfo*) list->data);
 	}
 
 	g_slist_free (lst);
@@ -283,8 +288,11 @@ xfapplet_chooser_dialog_response (GtkWidget *dialog, int response, XfAppletPlugi
 		gtk_tree_model_get (model, &iter, 0, &applet, -1);
 
 		g_free (xap->iid);
+		g_free (xap->name);
 		g_free (xap->gconf_key);
+
 		xap->iid = g_strdup (applet->iid);
+		xap->name = g_strdup (applet->name);
 		xap->gconf_key = xfapplet_find_unique_key ();
 
 		xfapplet_setup_full (xap);

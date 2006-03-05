@@ -63,6 +63,66 @@ enum {
 	PANEL_NEAR_LEFT
 };
 
+static void
+xfapplet_setup_empty (XfAppletPlugin *xap);
+
+static GtkWidget*
+xfapplet_get_plugin_child (XfcePanelPlugin *plugin)
+{
+	GtkWidget	*child = NULL;
+	GList		*list;
+	
+	list = gtk_container_get_children (GTK_CONTAINER (plugin));
+	if (list && list->data)
+		child = GTK_WIDGET (list->data);
+
+	return child;
+}
+
+static void
+xfapplet_reload_response (GtkWidget *dialog, int response, XfAppletPlugin *xap)
+{
+	GtkWidget *child = NULL;
+	
+	if (response == GTK_RESPONSE_YES)
+		xfapplet_setup_full (xap);
+	else if (response == GTK_RESPONSE_NO) {
+		g_free (xap->iid);
+		xap->iid = NULL;
+		g_free (xap->name);
+		xap->name = NULL;
+		g_free (xap->gconf_key);
+		xap->gconf_key = NULL;
+		child = xfapplet_get_plugin_child (xap->plugin);
+		if (child)
+			gtk_widget_destroy (child);
+		xfapplet_setup_empty (xap);
+	}
+	else
+		g_assert_not_reached ();
+
+	gtk_widget_destroy (dialog);
+}
+
+static void
+xfapplet_connection_broken (ORBitConnection *conn, XfAppletPlugin *xap)
+{
+	GtkWidget	*dialog;
+	GdkScreen	*screen;
+
+	screen = gtk_widget_get_screen (GTK_WIDGET (xap->plugin));
+	dialog = gtk_message_dialog_new (NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_WARNING,
+					 GTK_BUTTONS_NONE, _("'%s' has quit unexpectedly."), xap->name);
+	gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
+						  _("If you don't reload the applet, XfApplet plugin "
+						    "will go back to its initial empty state."));
+	gtk_dialog_add_buttons (GTK_DIALOG (dialog), _("Don't Reload"), GTK_RESPONSE_NO,
+				_("Reload"), GTK_RESPONSE_YES, NULL);
+	gtk_window_set_screen (GTK_WINDOW (dialog), screen);
+	g_signal_connect (dialog, "response", G_CALLBACK (xfapplet_reload_response), xap);
+	gtk_widget_show (dialog);
+}
+
 static int
 xfapplet_panel_near (GtkWidget *widget, GtkOrientation orientation)
 {
@@ -153,7 +213,7 @@ static void
 xfapplet_screen_position_changed (XfcePanelPlugin *plugin, XfceScreenPosition position, gpointer data)
 {
 	unsigned short	 orientation;
-	GList		*list;
+	GtkWidget	*child = NULL;
 	XfAppletPlugin	*xap = (XfAppletPlugin*) data;
 
 	if (!xap->configured)
@@ -170,9 +230,9 @@ xfapplet_screen_position_changed (XfcePanelPlugin *plugin, XfceScreenPosition po
 	 * changes orientation.
 	 */
 
-	list = gtk_container_get_children (GTK_CONTAINER (xap->plugin));
-	if (list && list->data)
-		gtk_widget_set_sensitive (GTK_WIDGET (list->data), TRUE);
+	child = xfapplet_get_plugin_child (xap->plugin);
+	if (child)
+		gtk_widget_set_sensitive (child, TRUE);
 
 	orientation = xfapplet_xfce_screen_position_to_gnome_applet_orientation (plugin, position);
 	bonobo_pbclient_set_short (xap->prop_bag, "panel-applet-orient", orientation, NULL);
@@ -269,7 +329,7 @@ xfapplet_save_configuration (XfAppletPlugin *xap)
 	XfceRc         *config;
 	gchar          *path;
 
-	if (!xap->iid)
+	if (!xap->configured)
 		return FALSE;
 
 	path = xfce_panel_plugin_lookup_rc_file (xap->plugin);
@@ -290,6 +350,9 @@ xfapplet_save_configuration (XfAppletPlugin *xap)
 	/* iid for bonobo control */
 	xfce_rc_write_entry (config, "iid", xap->iid);
 
+	/* applet name (used in dialog messages) */
+	xfce_rc_write_entry (config, "name", xap->name);
+
 	/* gconf key for applet preferences */
 	xfce_rc_write_entry (config, "gconfkey", xap->gconf_key);
 
@@ -301,10 +364,11 @@ xfapplet_save_configuration (XfAppletPlugin *xap)
 static gboolean
 xfapplet_read_configuration (XfAppletPlugin *xap)
 {
-	XfceRc       *config;
-	gchar        *path;
-	const gchar  *iid;
-	const gchar  *gconf_key;
+	XfceRc		*config;
+	gchar		*path;
+	const gchar	*iid;
+	const gchar	*name;
+	const gchar	*gconf_key;
 
 	path = xfce_panel_plugin_lookup_rc_file (xap->plugin);
 	if (!path)
@@ -321,15 +385,19 @@ xfapplet_read_configuration (XfAppletPlugin *xap)
 	/* iid for bonobo control */
 	iid = xfce_rc_read_entry (config, "iid", NULL);
 
+	/* applet name (used in dialog messages) */
+	name = xfce_rc_read_entry (config, "name", NULL);
+
 	/* gconf key for applet preferences */
 	gconf_key = xfce_rc_read_entry (config, "gconfkey", NULL);
 
-	if (!iid || !gconf_key) {
+	if (!iid || !gconf_key || !name) {
 		xfce_rc_close (config);
 		return FALSE;
 	}
 	
 	xap->iid = g_strdup (iid);
+	xap->name = g_strdup (name);
 	xap->gconf_key = g_strdup (gconf_key);
 
 	xfce_rc_close (config);
@@ -465,14 +533,15 @@ xfapplet_button_pressed (GtkWidget *widget, GdkEventButton *event, gpointer data
 static void
 xfapplet_applet_activated (Bonobo_Unknown object, CORBA_Environment *ev, gpointer data)
 {
-	GList				*list;
-	GtkWidget			*bw;
+	GtkWidget			*bw, *child = NULL;
+	CORBA_Object			 control;
 	BonoboControlFrame		*frame;
 	BonoboUIComponent		*uic;
 	Bonobo_PropertyBag		 prop_bag;
 	GNOME_Vertigo_PanelAppletShell	 shell;
-	XfAppletPlugin      		*xap = (XfAppletPlugin*) data;
+	XfAppletPlugin			*xap = (XfAppletPlugin*) data;
 
+	control = CORBA_Object_duplicate (object, NULL);
 	bw = bonobo_widget_new_control_from_objref (object, CORBA_OBJECT_NIL);
 	bonobo_object_release_unref (object, NULL);
 	
@@ -498,18 +567,22 @@ xfapplet_applet_activated (Bonobo_Unknown object, CORBA_Environment *ev, gpointe
 		bonobo_object_release_unref (xap->prop_bag, NULL);
 		bonobo_object_release_unref (xap->shell, NULL);
 		bonobo_object_unref (BONOBO_OBJECT (xap->uic));
+		ORBit_small_unlisten_for_broken (xap->object, G_CALLBACK (xfapplet_connection_broken));
+		CORBA_Object_release (xap->object, NULL);
 	}
 	else
 		g_signal_connect (xap->plugin, "button-press-event",
 				  G_CALLBACK (xfapplet_button_pressed), xap);
 
+	xap->object = control;
 	xap->uic = uic;
 	xap->prop_bag = prop_bag;
 	xap->shell = shell;
+	ORBit_small_listen_for_broken (object, G_CALLBACK (xfapplet_connection_broken), xap);
 
-	list = gtk_container_get_children (GTK_CONTAINER (xap->plugin));
-	if (list && list->data)
-		gtk_widget_destroy (GTK_WIDGET (list->data));
+	child = xfapplet_get_plugin_child (xap->plugin);
+	if (child)
+		gtk_widget_destroy (child);
 
 	gtk_container_add (GTK_CONTAINER(xap->plugin), bw);
 	xap->configured = TRUE;
@@ -522,16 +595,18 @@ static void
 xfapplet_free(XfcePanelPlugin *plugin, XfAppletPlugin *xap)
 {
 	g_free (xap->iid);
+	g_free (xap->name);
 	g_free (xap->gconf_key);
 	
 	if (xap->configured) {
 		bonobo_object_release_unref (xap->prop_bag, NULL);
 		bonobo_object_unref (BONOBO_OBJECT (xap->uic));
+		ORBit_small_unlisten_for_broken (xap->object, G_CALLBACK (xfapplet_connection_broken));
+		CORBA_Object_release (xap->object, NULL);
 	}
 	
 	g_free (xap);
 }
-
 
 static gchar*
 xfapplet_construct_moniker (XfAppletPlugin *xap)
@@ -550,12 +625,13 @@ xfapplet_construct_moniker (XfAppletPlugin *xap)
 void
 xfapplet_setup_full (XfAppletPlugin *xap)
 {
-	CORBA_Environment   ev;
-	gchar              *moniker;
+	CORBA_Environment	 ev;
+	gchar			*moniker;
 
 	CORBA_exception_init (&ev);
 
 	moniker = xfapplet_construct_moniker (xap);
+
 	bonobo_get_object_async (moniker, "IDL:Bonobo/Control:1.0", &ev,
 				 xfapplet_applet_activated, xap);
 	g_free (moniker);
@@ -577,6 +653,8 @@ xfapplet_setup_empty (XfAppletPlugin *xap)
 	xfce_panel_plugin_add_action_widget (xap->plugin, eb);
 	xfce_panel_plugin_menu_show_configure (xap->plugin);
 	xfce_panel_plugin_menu_show_about (xap->plugin);
+
+	xap->configured = FALSE;
 }
 
 static XfAppletPlugin*
@@ -588,6 +666,7 @@ xfapplet_new (XfcePanelPlugin *plugin)
 	xap->plugin = plugin;
 	xap->configured = FALSE;
 	xap->iid = NULL;
+	xap->name = NULL;
 	xap->gconf_key = NULL;
 	xap->uic = NULL;
 	xap->prop_bag = 0;
