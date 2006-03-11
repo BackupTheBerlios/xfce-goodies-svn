@@ -132,11 +132,6 @@ xfapplet_unload_applet (XfAppletPlugin *xap)
 		xap->prop_bag = CORBA_OBJECT_NIL;
 	}
 
-	if (xap->shell) {
-		bonobo_object_release_unref (xap->shell, NULL);
-		xap->shell = CORBA_OBJECT_NIL;
-	}
-
 	if (xap->uic) {
 		bonobo_object_unref (BONOBO_OBJECT (xap->uic));
 		xap->uic = NULL;
@@ -519,37 +514,6 @@ xfapplet_setup_menu_items (XfcePanelPlugin *plugin, BonoboUIComponent *uic)
 		bonobo_ui_component_add_verb (uic, "Properties", xfapplet_menu_item_activated, data);
 }
 
-static GNOME_Vertigo_PanelAppletShell
-xfapplet_get_applet_shell (Bonobo_Control object)
-{
-	CORBA_Environment		ev;
-	GNOME_Vertigo_PanelAppletShell	shell;
-
-	CORBA_exception_init (&ev);
-	shell = Bonobo_Unknown_queryInterface (object, "IDL:GNOME/Vertigo/PanelAppletShell:1.0", &ev);
-	if (BONOBO_EX (&ev))
-		shell = CORBA_OBJECT_NIL;
-	CORBA_exception_free (&ev);
-
-	return shell;
-}
-
-static gboolean
-xfapplet_button_pressed (GtkWidget *widget, GdkEventButton *event, gpointer data)
-{
-	CORBA_Environment	 ev;
-	XfAppletPlugin		*xap = (XfAppletPlugin*) data;
-	
-	if (event->button == 3 && (event->type == GDK_BUTTON_PRESS || event->type == GDK_2BUTTON_PRESS)) {
-		CORBA_exception_init (&ev);
-		gdk_pointer_ungrab (GDK_CURRENT_TIME);
-		GNOME_Vertigo_PanelAppletShell_popup_menu (xap->shell, event->button, event->time, &ev);
-		CORBA_exception_free (&ev);
-	}
-
-	return TRUE;
-}
-
 static void
 xfapplet_applet_activated (Bonobo_Unknown object, CORBA_Environment *ev, gpointer data)
 {
@@ -558,7 +522,6 @@ xfapplet_applet_activated (Bonobo_Unknown object, CORBA_Environment *ev, gpointe
 	BonoboControlFrame		*frame;
 	BonoboUIComponent		*uic;
 	Bonobo_PropertyBag		 prop_bag;
-	GNOME_Vertigo_PanelAppletShell	 shell;
 	XfAppletPlugin			*xap = (XfAppletPlugin*) data;
 
 	control = CORBA_Object_duplicate (object, NULL);
@@ -568,7 +531,6 @@ xfapplet_applet_activated (Bonobo_Unknown object, CORBA_Environment *ev, gpointe
 	frame = bonobo_widget_get_control_frame (BONOBO_WIDGET (bw));
         uic = bonobo_control_frame_get_popup_component (frame, CORBA_OBJECT_NIL);
 	prop_bag = bonobo_control_frame_get_control_property_bag (frame, CORBA_OBJECT_NIL);
-	shell = xfapplet_get_applet_shell (object);
 	
 	bonobo_ui_component_freeze (uic, CORBA_OBJECT_NIL);
 	
@@ -584,13 +546,10 @@ xfapplet_applet_activated (Bonobo_Unknown object, CORBA_Environment *ev, gpointe
 
 	if (xap->configured)
 		xfapplet_unload_applet (xap);
-	else
-		g_signal_connect (xap->plugin, "button-press-event", G_CALLBACK (xfapplet_button_pressed), xap);
 
 	xap->object = control;
 	xap->uic = uic;
 	xap->prop_bag = prop_bag;
-	xap->shell = shell;
 	ORBit_small_listen_for_broken (object, G_CALLBACK (xfapplet_connection_broken), xap);
 
 	child = xfapplet_get_plugin_child (xap->plugin);
@@ -607,11 +566,28 @@ xfapplet_applet_activated (Bonobo_Unknown object, CORBA_Environment *ev, gpointe
 static void
 xfapplet_free(XfcePanelPlugin *plugin, XfAppletPlugin *xap)
 {
-	if (xap->configured)
+	GtkWidget *child;
+	
+	if (xap->configured) {
 		xfapplet_unload_applet (xap);
 
+		/*
+		 * The following may not seem necessary, but indeed it is. If
+		 * the plugin holds a bonobo widget and it is not explicitely
+		 * destroyed here, an "applet freeze" bug shows up. This bug can
+		 * be reproduced in the following steps:
+		 * 1. Add two xfapplets;
+		 * 2. Choose the same applet for both of them;
+		 * 3. Remove one of the xfapplets;
+		 * Result: the remaining applet will be frozen
+		 */
+		child = xfapplet_get_plugin_child (xap->plugin);
+		if (child)
+			gtk_widget_destroy (child);
+	}
+
 	xfapplet_cleanup_current (xap);
-	
+
 	g_free (xap);
 }
 

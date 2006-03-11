@@ -33,7 +33,6 @@ typedef struct {
 	CORBA_Object			 object;
 	BonoboUIComponent 		*uic;
 	Bonobo_PropertyBag		 prop_bag;
-	GNOME_Vertigo_PanelAppletShell	 shell;
 } XfAppletPlugin;
 
 typedef struct {
