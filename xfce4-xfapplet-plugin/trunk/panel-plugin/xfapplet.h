@@ -34,8 +34,6 @@ typedef struct {
 	BonoboUIComponent 		*uic;
 	Bonobo_PropertyBag		 prop_bag;
 	GNOME_Vertigo_PanelAppletShell	 shell;
-	GtkWidget         		*tv;
-	GSList            		*applets;
 } XfAppletPlugin;
 
 typedef struct {
@@ -51,10 +49,11 @@ typedef struct {
 	gchar  *language;
 } XfAppletTranslators;
 
-void		xfapplet_free_applet_info (GnomeAppletInfo *applet);
+void		xfapplet_cleanup_current  (XfAppletPlugin *xap);
 
 void		xfapplet_chooser_dialog   (XfcePanelPlugin*, XfAppletPlugin*);
 
 void		xfapplet_setup_full       (XfAppletPlugin*);
 
 #endif /* XFAPPLET_PLUGIN_H */
+
