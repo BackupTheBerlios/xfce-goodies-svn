@@ -2,7 +2,8 @@
 
 SUBDIRS = \
 	panel-plugin \
-	po
+	po \
+	pixmaps
 
 EXTRA_DIST = \
 	intltool-extract.in \
