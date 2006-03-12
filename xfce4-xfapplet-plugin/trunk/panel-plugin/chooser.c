@@ -80,6 +80,9 @@ xfapplet_find_icon (const gchar *icon_name, gint size)
 	char         *retval;
 	char         *icon_no_extension;
 	char         *p;
+	gchar        **path;
+	gint          nitems;
+	gchar        *relative;
 
 	if (icon_name == NULL || strcmp (icon_name, "") == 0)
 		return NULL;
@@ -110,6 +113,32 @@ xfapplet_find_icon (const gchar *icon_name, gint size)
 	     strcmp (p, ".svg") == 0)) {
 	    *p = 0;
 	}
+	
+	/*
+	 * Some applets provide a relative path (noticeably the Linphone
+	 * applet), but gtk_icon_theme_lookup_icon() has trouble with this, so
+	 * we must also fix it.
+	 */
+	relative = g_path_get_dirname (icon_no_extension);
+	if (strcmp (relative, ".") != 0) {
+		gint   i;
+		gchar *icon_no_relative;
+
+		icon_no_relative = g_path_get_basename (icon_no_extension);
+		g_free (icon_no_extension);
+		icon_no_extension = icon_no_relative;
+		gtk_icon_theme_get_search_path (icon_theme, &path, &nitems);
+		for (i = 0; i < nitems; i++) {
+			gchar *newpath = g_build_filename (path[i], relative, NULL);
+			gtk_icon_theme_prepend_search_path (icon_theme, newpath);
+			g_free (newpath);
+		}
+	}
+	else {
+		g_free (relative);
+		relative = NULL;
+	}
+
 	info = gtk_icon_theme_lookup_icon (icon_theme, icon_no_extension, size, 0);
 	g_free (icon_no_extension);
 
@@ -119,6 +148,12 @@ xfapplet_find_icon (const gchar *icon_name, gint size)
 	} else
 		retval = NULL;
 
+	if (relative) {
+		gtk_icon_theme_set_search_path (icon_theme, (const gchar*)path, nitems);
+		g_strfreev (path);
+		g_free (relative);
+	}
+	
 	return retval;
 }
 
