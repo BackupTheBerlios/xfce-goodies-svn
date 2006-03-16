@@ -25,6 +25,7 @@
 #include <gconf/gconf-client.h>
 #include <bonobo/bonobo-exception.h>
 #include <bonobo-activation/bonobo-activation.h>
+#include <libxfcegui4/libxfcegui4.h>
 #include "xfapplet.h"
 
 static const char applets_requirements [] =
@@ -40,6 +41,7 @@ static char *applets_sort_criteria [] = {
 typedef struct {
 	GtkWidget	*tv;
 	GSList		*applets;
+	gulong		 destroy_id;
 	XfAppletPlugin	*xap;
 } XfAppletChooserDialog;
 
@@ -149,7 +151,7 @@ xfapplet_find_icon (const gchar *icon_name, gint size)
 		retval = NULL;
 
 	if (relative) {
-		gtk_icon_theme_set_search_path (icon_theme, (const gchar*)path, nitems);
+		gtk_icon_theme_set_search_path (icon_theme, (const gchar**)path, nitems);
 		g_strfreev (path);
 		g_free (relative);
 	}
@@ -164,7 +166,7 @@ xfapplet_fill_model (GSList *list, GtkListStore *store, GtkWidget *scroll, GtkWi
 	guint       i = 0;
 	
 	for (; list; list = list->next, i++) {
-		if (i == 8) {
+		if (i == 5) {
 			GtkRequisition req;
 
 			gtk_widget_size_request (tv, &req);
@@ -177,6 +179,15 @@ xfapplet_fill_model (GSList *list, GtkListStore *store, GtkWidget *scroll, GtkWi
 
 		gtk_list_store_append (store, &iter);
 		gtk_list_store_set (store, &iter, 0, list->data, -1);
+	}
+
+	if (i < 5) {
+		int desired_width, desired_height;
+
+		if (!gtk_icon_size_lookup (GTK_ICON_SIZE_DIALOG, &desired_width, &desired_height))
+			gtk_widget_set_size_request (tv, -1, 240);
+		else 
+			gtk_widget_set_size_request (tv, -1, 5*desired_height);
 	}
 }
 
@@ -326,18 +337,17 @@ xfapplet_chooser_dialog_response (GtkWidget *dialog, int response, XfAppletChoos
 
 	if (response == GTK_RESPONSE_OK) {
 		sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (chooser->tv));
-		gtk_tree_selection_get_selected (sel, &model, &iter);
-		gtk_tree_model_get (model, &iter, 0, &applet, -1);
-
-		xfapplet_cleanup_current (xap);
-
-		xap->iid = g_strdup (applet->iid);
-		xap->name = g_strdup (applet->name);
-		xap->gconf_key = xfapplet_find_unique_key ();
-
-		xfapplet_setup_full (xap);
+		if (gtk_tree_selection_get_selected (sel, &model, &iter)) {
+			gtk_tree_model_get (model, &iter, 0, &applet, -1);
+			xfapplet_cleanup_current (xap);
+			xap->iid = g_strdup (applet->iid);
+			xap->name = g_strdup (applet->name);
+			xap->gconf_key = xfapplet_find_unique_key ();
+			xfapplet_setup_full (xap);
+		}
 	}
-	
+
+	g_signal_handler_disconnect (dialog, chooser->destroy_id);	
 	gtk_widget_destroy (dialog);
 	xfapplet_free_applet_list (chooser->applets);
 	xfce_panel_plugin_unblock_menu (xap->plugin);
@@ -347,51 +357,118 @@ xfapplet_chooser_dialog_response (GtkWidget *dialog, int response, XfAppletChoos
 static void
 xfapplet_treeview_destroyed (GtkWidget * tv)
 {
-    GtkTreeModel *store;
+	GtkTreeModel *store;
 
-    store = gtk_tree_view_get_model (GTK_TREE_VIEW (tv));
-    gtk_list_store_clear (GTK_LIST_STORE (store));
+	store = gtk_tree_view_get_model (GTK_TREE_VIEW (tv));
+	gtk_list_store_clear (GTK_LIST_STORE (store));
+}
+
+static int
+xfapplet_applet_compare (GnomeAppletInfo *a, GnomeAppletInfo *b)
+{
+	return g_utf8_collate (a->name, b->name);
+}
+
+
+static void
+xfapplet_label_resized (GtkWidget *label, GtkAllocation *alloc, gpointer dummy)
+{
+	gtk_widget_set_size_request (label, alloc->width, -1);
+}
+
+static void
+xfapplet_chooser_destroyed (GtkDialog *dialog)
+{
+	gtk_dialog_response (dialog, GTK_RESPONSE_CANCEL);
+}
+
+static gboolean
+xfapplet_tv_double_click (GtkWidget *tv, GdkEventButton *event, gpointer dialog)
+{
+	if (event->button == 1 && event->type == GDK_2BUTTON_PRESS) {
+		gtk_dialog_response (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
+		return TRUE;
+	}
+
+	return FALSE;
 }
 
 void
 xfapplet_chooser_dialog (XfcePanelPlugin *plugin, XfAppletPlugin *xap)
 {
 	XfAppletChooserDialog	*chooser;
-	GtkWidget		*dialog, *label, *scroll, *tv;
+	GtkWidget		*dialog, *label, *scroll, *ok_button,
+				*tv, *img, *header, *hbox, *info_label;
+	GtkBox			*vbox;
 	GtkTreeViewColumn	*col;
+	GtkTreeSelection	*sel;
 	GtkCellRenderer		*cell;
 	GtkListStore		*store;
 	GtkTreeModel		*model;
 	GtkTreePath		*path;
 	GSList			*list = NULL;
 	GdkColor		*color;
+	gchar			*markup;
+	gulong			 signal;
 
 	xfce_panel_plugin_block_menu (plugin);
 
+	/* creation of the applet chooser structure */
 	chooser = g_new0 (XfAppletChooserDialog, 1);
 	chooser->xap = xap;
 
-	dialog = gtk_dialog_new_with_buttons (_("Choose an applet"),
+	/* creation of the dialog */
+	dialog = gtk_dialog_new_with_buttons (_("XfApplet"),
 					      GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (plugin))),
-					      GTK_DIALOG_DESTROY_WITH_PARENT,
+					      GTK_DIALOG_DESTROY_WITH_PARENT|GTK_DIALOG_NO_SEPARATOR,
 					      GTK_STOCK_CANCEL,
 					      GTK_RESPONSE_CANCEL,
-					      GTK_STOCK_OK,
-					      GTK_RESPONSE_OK,
 					      NULL);
-
-	gtk_container_set_border_width (GTK_CONTAINER (dialog), 2);
+	ok_button = gtk_dialog_add_button (GTK_DIALOG (dialog), GTK_STOCK_OK, GTK_RESPONSE_OK);
+	gtk_container_set_border_width (GTK_CONTAINER (dialog), 8);
+	gtk_widget_set_sensitive (ok_button, FALSE);
 	g_signal_connect (dialog, "response", G_CALLBACK (xfapplet_chooser_dialog_response), chooser);
+	chooser->destroy_id = g_signal_connect_swapped (dialog, "destroy",
+							G_CALLBACK (xfapplet_chooser_destroyed), chooser);
 	gtk_window_set_position (GTK_WINDOW (dialog), GTK_WIN_POS_CENTER);
 
-	label = gtk_label_new (_("Choose an applet:"));
-	gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
-	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), label, FALSE, FALSE, 2);
+	/* grab the dialog vbox to fill it with our stuff */
+	vbox = GTK_BOX (GTK_DIALOG (dialog)->vbox);
+	gtk_container_set_border_width (GTK_CONTAINER (vbox), 6);
+	gtk_box_set_spacing (vbox, 8);
+
+	/* dialog header */
+	img = gtk_image_new_from_icon_name ("xfapplet2", GTK_ICON_SIZE_DIALOG);
+	header = xfce_create_header_with_image (img, _("Choose an applet"));
+	gtk_box_pack_start (vbox, header, FALSE, FALSE, 0);
+
+	/* dialog info message */
+	hbox = gtk_hbox_new (FALSE, 8);
+	gtk_box_pack_start (vbox, hbox, TRUE, TRUE, 0);
+	img = gtk_image_new_from_stock (GTK_STOCK_DIALOG_INFO, GTK_ICON_SIZE_LARGE_TOOLBAR);
+	gtk_misc_set_alignment (GTK_MISC (img), 0, 0);
+	gtk_box_pack_start (GTK_BOX (hbox), img, FALSE, FALSE, 0);
+	label = gtk_label_new (_("Choose an applet from the list. If you have already chosen an "
+				 "applet previously, it will be substituted by the one you choose."));
+	signal = g_signal_connect (label, "size-allocate", G_CALLBACK (xfapplet_label_resized), NULL);
+	gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
+	gtk_misc_set_alignment (GTK_MISC (label), 0, 0);
+	gtk_box_pack_start (GTK_BOX (hbox), label, TRUE, TRUE, 0);
+	info_label = label;
+
+	/* treeview "title" */
+	label = gtk_label_new (NULL);
+	gtk_misc_set_alignment (GTK_MISC (label), 0, 0.5);
+	gtk_box_pack_start (vbox, label, FALSE, FALSE, 0);
+	markup = g_strdup_printf ("<b>%s</b>", _("Available applets"));
+	gtk_label_set_markup (GTK_LABEL (label), markup);
+	g_free (markup);
 	
+	/* create and setup treeview with applets */
 	scroll = gtk_scrolled_window_new (NULL, NULL);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scroll), GTK_POLICY_NEVER, GTK_POLICY_NEVER);
 	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (scroll), GTK_SHADOW_IN);
-	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), scroll, TRUE, TRUE, 0);
+	gtk_box_pack_start (vbox, scroll, TRUE, TRUE, 0);
     
 	store = gtk_list_store_new (1, G_TYPE_POINTER);
 	model = GTK_TREE_MODEL (store);
@@ -411,25 +488,36 @@ xfapplet_chooser_dialog (XfcePanelPlugin *plugin, XfAppletPlugin *xap)
 
 	cell = gtk_cell_renderer_pixbuf_new ();
 	gtk_tree_view_column_pack_start (col, cell, FALSE);
-	gtk_tree_view_column_set_cell_data_func (col, cell, (GtkTreeCellDataFunc) xfapplet_render_icon,
-						 NULL, NULL);
+	gtk_tree_view_column_set_cell_data_func (col, cell, (GtkTreeCellDataFunc) xfapplet_render_icon, NULL, NULL);
 
 	cell = gtk_cell_renderer_text_new ();
 	gtk_tree_view_column_pack_start (col, cell, TRUE);
-	gtk_tree_view_column_set_cell_data_func (col, cell, (GtkTreeCellDataFunc) xfapplet_render_text,
-						 tv, NULL);
+	gtk_tree_view_column_set_cell_data_func (col, cell, (GtkTreeCellDataFunc) xfapplet_render_text, tv, NULL);
 
 	color = &(tv->style->fg[GTK_STATE_INSENSITIVE]);
 	g_object_set (cell, "foreground-gdk", color, NULL);
 
 	list = xfapplet_query_applets ();
+	list = g_slist_sort (list, (GCompareFunc) xfapplet_applet_compare);
 	xfapplet_fill_model (list, store, scroll, tv);
 	chooser->applets = list;
-
+	
+	/* select first applet in the treeview */
 	path = gtk_tree_path_new_from_string ("0");
 	gtk_tree_view_set_cursor (GTK_TREE_VIEW (tv), path, NULL, FALSE);
 	gtk_tree_path_free (path);
+	
+	/* 
+	 * If there's at least one applet, allow user to load it by the OK
+	 * button and by double click.
+	 */
+	sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (chooser->tv));
+	if (gtk_tree_selection_get_selected (sel, NULL, NULL)) {
+		gtk_widget_set_sensitive (ok_button, TRUE);
+		g_signal_connect (tv, "button-press-event", G_CALLBACK (xfapplet_tv_double_click), dialog);
+	}
 
 	gtk_widget_show_all (dialog);
+	g_signal_handler_disconnect (info_label, signal);
 }
 

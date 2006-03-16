@@ -264,11 +264,10 @@ xfapplet_screen_position_changed (XfcePanelPlugin *plugin, XfceScreenPosition po
 static gboolean 
 xfapplet_size_changed (XfcePanelPlugin *plugin, int size, gpointer data)
 {
-	gint		 sz;
 	XfAppletPlugin	*xap = (XfAppletPlugin*) data;
 	
 	if (xap->configured) {
-		sz = xfapplet_xfce_size_to_gnome_size (size);
+		gint sz = xfapplet_xfce_size_to_gnome_size (size);
 		bonobo_pbclient_set_short (xap->prop_bag, "panel-applet-size", sz, NULL);
 	}
 
@@ -429,9 +428,10 @@ xfapplet_read_configuration (XfAppletPlugin *xap)
 static void
 xfapplet_about_dialog (XfcePanelPlugin *plugin, gpointer data)
 {
-	XfceAboutInfo  *info;
-	GtkWidget      *dialog;
-	guint           i;
+	XfceAboutInfo	*info;
+	GtkWidget	*dialog;
+	GdkPixbuf	*pixbuf = NULL;
+	guint		 i;
 	static const XfAppletTranslators translators[] = {
 		{"Daichi Kawahata", "daichi@xfce.org", "ja",},
 		{"Adriano Winter Bess", "awbess@gmail.com", "pt_BR",},
@@ -451,8 +451,10 @@ xfapplet_about_dialog (XfcePanelPlugin *plugin, gpointer data)
 		g_free (s);
 	}
 
+	pixbuf = gdk_pixbuf_new_from_file_at_size (DATADIR "/pixmaps/xfapplet2.svg", 48, 48, NULL);
 	dialog = xfce_about_dialog_new_with_values (GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (plugin))),
-						    info, NULL);
+						    info, pixbuf);
+	g_object_unref (pixbuf);
 	gtk_window_set_position (GTK_WINDOW (dialog), GTK_WIN_POS_CENTER);
 	gtk_dialog_run (GTK_DIALOG (dialog));
 
@@ -620,13 +622,18 @@ xfapplet_setup_full (XfAppletPlugin *xap)
 static void
 xfapplet_setup_empty (XfAppletPlugin *xap)
 {
-	GtkWidget *ask, *eb, *child = NULL;
+	GtkWidget *img, *eb, *child = NULL;
+	GdkPixbuf *pixbuf;
+	gint	   size;
 	
-	ask = gtk_label_new (" ?? ");
-	gtk_widget_show (ask);
+	size = xfce_panel_plugin_get_size (xap->plugin);
+	pixbuf = gdk_pixbuf_new_from_file_at_size (DATADIR "/pixmaps/xfapplet1.svg", size, size, NULL);
+	img = gtk_image_new_from_pixbuf (pixbuf);
+	g_object_unref (pixbuf);
+	gtk_widget_show (img);
 
 	eb = gtk_event_box_new ();
-	gtk_container_add (GTK_CONTAINER (eb), ask);
+	gtk_container_add (GTK_CONTAINER (eb), img);
 	gtk_widget_show (eb);
 
 	child = xfapplet_get_plugin_child (xap->plugin);
