@@ -112,14 +112,19 @@ xfapplet_connection_broken (ORBitConnection *conn, XfAppletPlugin *xap)
 	GdkScreen	*screen;
 
 	screen = gtk_widget_get_screen (GTK_WIDGET (xap->plugin));
-	dialog = gtk_message_dialog_new (NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_WARNING,
-					 GTK_BUTTONS_NONE, _("'%s' has quit unexpectedly."), xap->name);
+	dialog = gtk_message_dialog_new (GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (xap->plugin))),
+					 GTK_DIALOG_DESTROY_WITH_PARENT,
+					 GTK_MESSAGE_WARNING,
+					 GTK_BUTTONS_NONE,
+					 _("'%s' has quit unexpectedly."),
+					 xap->name);
 	gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
 						  _("If you don't reload the applet, XfApplet plugin "
 						    "will go back to its initial empty state."));
 	gtk_dialog_add_buttons (GTK_DIALOG (dialog), _("Don't Reload"), GTK_RESPONSE_NO,
 				_("Reload"), GTK_RESPONSE_YES, NULL);
 	gtk_window_set_screen (GTK_WINDOW (dialog), screen);
+	gtk_window_set_position (GTK_WINDOW (dialog), GTK_WIN_POS_CENTER);
 	g_signal_connect (dialog, "response", G_CALLBACK (xfapplet_reload_response), xap);
 	gtk_widget_show (dialog);
 }
@@ -517,31 +522,116 @@ xfapplet_setup_menu_items (XfcePanelPlugin *plugin, BonoboUIComponent *uic)
 }
 
 static void
+xfapplet_failed_response (GtkDialog *dialog, gint dummy, XfcePanelPlugin *plugin)
+{
+	gtk_widget_destroy (GTK_WIDGET (dialog));
+	xfce_panel_plugin_unblock_menu (plugin);
+}
+
+static void
+xfapplet_applet_load_failed (XfAppletPlugin *xap)
+{
+	GtkWidget	*dialog;
+	GdkScreen	*screen;
+
+	screen = gtk_widget_get_screen (GTK_WIDGET (xap->plugin));
+      	dialog = gtk_message_dialog_new (GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (xap->plugin))),
+					 GTK_DIALOG_DESTROY_WITH_PARENT,
+					 GTK_MESSAGE_ERROR,
+					 GTK_BUTTONS_CLOSE,
+					 _("'%s' could not be loaded."),
+					 xap->name);
+	gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
+						  _("An internal error occurred and the applet could not be loaded."));
+	gtk_window_set_screen (GTK_WINDOW (dialog), screen);
+	gtk_window_set_position (GTK_WINDOW (dialog), GTK_WIN_POS_CENTER);
+	g_signal_connect (dialog, "response", G_CALLBACK (xfapplet_failed_response), xap->plugin);
+	gtk_widget_show (dialog);
+
+	xfce_panel_plugin_block_menu (xap->plugin);
+}
+
+static void
 xfapplet_applet_activated (Bonobo_Unknown object, CORBA_Environment *ev, gpointer data)
 {
-	GtkWidget			*bw, *child = NULL;
-	CORBA_Object			 control;
-	BonoboControlFrame		*frame;
-	BonoboUIComponent		*uic;
-	Bonobo_PropertyBag		 prop_bag;
-	XfAppletPlugin			*xap = (XfAppletPlugin*) data;
+	GtkWidget		*bw, *child = NULL;
+	CORBA_Object		 control;
+	CORBA_Environment	 corba_ev;
+	BonoboControlFrame	*frame;
+	BonoboUIComponent	*uic;
+	Bonobo_PropertyBag	 prop_bag;
+	XfAppletPlugin		*xap = (XfAppletPlugin*) data;
+	gchar			*error;
 
+	if (BONOBO_EX (ev) || object == CORBA_OBJECT_NIL) {
+		error = bonobo_exception_get_text (ev);
+		CORBA_exception_free (ev);
+		g_warning ("Failed to load applet '%s' (can't get CORBA object): %s\n", xap->iid, error);
+		xfapplet_applet_load_failed (xap);
+		xfapplet_cleanup_current (xap);
+		g_free (error);
+		return;
+	}
+	
 	control = CORBA_Object_duplicate (object, NULL);
 	bw = bonobo_widget_new_control_from_objref (object, CORBA_OBJECT_NIL);
 	bonobo_object_release_unref (object, NULL);
+	if (!bw) {
+		g_warning ("Failed to load applet '%s' (can't get bonobo widget)\n", xap->iid);
+		xfapplet_applet_load_failed (xap);
+		xfapplet_cleanup_current (xap);
+		return;
+	}
 	
 	frame = bonobo_widget_get_control_frame (BONOBO_WIDGET (bw));
-        uic = bonobo_control_frame_get_popup_component (frame, CORBA_OBJECT_NIL);
-	prop_bag = bonobo_control_frame_get_control_property_bag (frame, CORBA_OBJECT_NIL);
+	if (!frame) {
+		g_warning ("Failed to load applet '%s' (can't get control frame)\n", xap->iid);
+		gtk_object_sink (GTK_OBJECT (bw));
+		xfapplet_applet_load_failed (xap);
+		xfapplet_cleanup_current (xap);
+		return;
+	}
 	
+	CORBA_exception_init (&corba_ev);
+	prop_bag = bonobo_control_frame_get_control_property_bag (frame, &corba_ev);
+	if (prop_bag == NULL || BONOBO_EX (&corba_ev)) {
+		error = bonobo_exception_get_text (&corba_ev);
+		CORBA_exception_free (&corba_ev);
+		g_warning ("Failed to load applet '%s' (can't get property bag): %s\n", xap->iid, error);
+		gtk_object_sink (GTK_OBJECT (bw));
+		xfapplet_applet_load_failed (xap);
+		xfapplet_cleanup_current (xap);
+		g_free (error);
+		return;
+	}
+	
+        uic = bonobo_control_frame_get_popup_component (frame, &corba_ev);
+	if (uic == NULL || BONOBO_EX (&corba_ev)) {
+		error = bonobo_exception_get_text (&corba_ev);
+		CORBA_exception_free (&corba_ev);
+		g_warning ("Failed to load applet '%s' (can't get popup component): %s\n", xap->iid, error);
+		gtk_object_sink (GTK_OBJECT (bw));
+		xfapplet_applet_load_failed (xap);
+		xfapplet_cleanup_current (xap);
+		g_free (error);
+		return;
+	}
+		
 	bonobo_ui_component_freeze (uic, CORBA_OBJECT_NIL);
-	
-	xfce_textdomain("xfce4-panel", LIBXFCE4PANEL_LOCALE_DIR, "UTF-8");
-        bonobo_ui_util_set_ui (uic, PKGDATADIR "/ui", "XFCE_Panel_Popup.xml", "xfce4-xfapplet-plugin", CORBA_OBJECT_NIL);
-	xfce_textdomain(GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR, "UTF-8");
-
+	xfce_textdomain ("xfce4-panel", LIBXFCE4PANEL_LOCALE_DIR, "UTF-8");
+	bonobo_ui_util_set_ui (uic, PKGDATADIR "/ui", "XFCE_Panel_Popup.xml", "xfce4-xfapplet-plugin", &corba_ev);
+	if (BONOBO_EX (&corba_ev)) {
+		error = bonobo_exception_get_text (&corba_ev);
+		CORBA_exception_free (&corba_ev);
+		g_warning ("Failed to load applet '%s' (can't set ui): %s\n", xap->iid, error);
+		gtk_object_sink (GTK_OBJECT (bw));
+		xfapplet_applet_load_failed (xap);
+		xfapplet_cleanup_current (xap);
+		g_free (error);
+		return;
+	}
+	xfce_textdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR, "UTF-8");
 	xfapplet_setup_menu_items (xap->plugin, uic);
-
 	bonobo_ui_component_thaw (uic, CORBA_OBJECT_NIL);
 
 	gtk_widget_show (bw);
@@ -562,7 +652,7 @@ xfapplet_applet_activated (Bonobo_Unknown object, CORBA_Environment *ev, gpointe
 	xap->configured = TRUE;
 
 	if (!xfapplet_save_configuration (xap))
-		g_warning (_("Could not save XfApplet configuration."));
+		g_warning ("Failed to save XfApplet configuration.\n");
 }
 
 static void
@@ -673,10 +763,10 @@ xfapplet_construct (XfcePanelPlugin *plugin)
 
 	xap = xfapplet_new (plugin);
 
+	xfapplet_setup_empty (xap);
+	
 	if (xfapplet_read_configuration (xap))
 		xfapplet_setup_full (xap);
-	else
-		xfapplet_setup_empty (xap);
 
 	g_signal_connect (plugin, "free-data", G_CALLBACK (xfapplet_free), xap);
 	g_signal_connect (plugin, "size-changed", G_CALLBACK (xfapplet_size_changed), xap);
