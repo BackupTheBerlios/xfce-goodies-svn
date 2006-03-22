@@ -1,7 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-03-22 14:32-0300\n"
 "PO-Revision-Date: 2006-02-23 21:44+0100\n"
 "Last-Translator: SZERVÑC Attila <sas@321.hu>\n"
 "Language-Team: hu\n"
@@ -11,41 +12,74 @@ msgstr ""
 "X-Poedit-Language: Hungarian\n"
 "X-Poedit-Country: HUNGARY\n"
 
-#: ../panel-plugin/chooser.c:154
-#, c-format
-msgid "query returned exception %s\n"
-msgstr ""
+#. creation of the dialog
+#: ../panel-plugin/chooser.c:431 ../panel-plugin/xfapplet.desktop.in.in.h:2
+msgid "XfApplet"
+msgstr "XfApplet"
 
-#: ../panel-plugin/chooser.c:324
+#: ../panel-plugin/chooser.c:452
 msgid "Choose an applet"
 msgstr "Kisalkalmazás választása"
 
-#: ../panel-plugin/chooser.c:337
-msgid "Choose an applet:"
-msgstr "Válassz kisalkalmazást:"
+#: ../panel-plugin/chooser.c:461
+msgid ""
+"Choose an applet from the list. If you have already chosen an applet "
+"previously, it will be substituted by the one you choose."
+msgstr ""
 
-#: ../panel-plugin/xfapplet.c:137
+#: ../panel-plugin/chooser.c:473
+#, fuzzy
+msgid "Available applets"
+msgstr "Gnome kisalkalmazások mutatása"
+
+#: ../panel-plugin/xfapplet.c:125
+#, c-format
+msgid "'%s' has quit unexpectedly."
+msgstr ""
+
+#: ../panel-plugin/xfapplet.c:128
+msgid ""
+"If you don't reload the applet, XfApplet plugin will go back to its initial "
+"empty state."
+msgstr ""
+
+#: ../panel-plugin/xfapplet.c:130
+msgid "Don't Reload"
+msgstr ""
+
+#: ../panel-plugin/xfapplet.c:131
+msgid "Reload"
+msgstr ""
+
+#: ../panel-plugin/xfapplet.c:461
 msgid "Display Gnome applets on the Xfce4 Panel"
 msgstr "Gnome kisalkalmazások mutatása az Xfce4 panelon"
 
-#: ../panel-plugin/xfapplet.c:140
+#: ../panel-plugin/xfapplet.c:464
 msgid "Author/Maintainer"
 msgstr "Szerző/Karbantartó"
 
-#: ../panel-plugin/xfapplet.c:144
+#: ../panel-plugin/xfapplet.c:468
 #, c-format
 msgid "Translator (%s)"
 msgstr "Translator (%s)"
 
-#: ../panel-plugin/xfapplet.c:264
-msgid "Could not save XfApplet configuration."
-msgstr "Az XfApplet beállítása nem menthető"
+#: ../panel-plugin/xfapplet.c:558
+#, c-format
+msgid "'%s' could not be loaded."
+msgstr ""
+
+#: ../panel-plugin/xfapplet.c:561
+msgid "An internal error occurred and the applet could not be loaded."
+msgstr ""
 
 #: ../panel-plugin/xfapplet.desktop.in.in.h:1
-msgid "Display Gnome applets"
-msgstr "Gnome kisalkalmazások mutatása"
+#, fuzzy
+msgid "Display Gnome applets in the panel"
+msgstr "Gnome kisalkalmazások mutatása az Xfce4 panelon"
 
-#: ../panel-plugin/xfapplet.desktop.in.in.h:2
-msgid "XfApplet"
-msgstr "XfApplet"
+#~ msgid "Could not save XfApplet configuration."
+#~ msgstr "Az XfApplet beállítása nem menthető"
 
+#~ msgid "Choose an applet:"
+#~ msgstr "Válassz kisalkalmazást:"

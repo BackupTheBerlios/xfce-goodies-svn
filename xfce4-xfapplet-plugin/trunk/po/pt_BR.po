@@ -1,19 +1,20 @@
-# This file is distributed under the same license
-# as the xfce4-xfapplet-plugin package.
-# Copyright (C) Phan Vĩnh Thịnh <teppi@vnlinux.org>, 2006.
+# Portuguese translations for xfce4-xfapplet-plugin package.
+# Copyright (C) 2006 Adriano Winter Bess
+# This file is distributed under the same license as the xfce4-xfapplet-plugin package.
+# Adriano Winter Bess <awbess@gmail.com>, 2006.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xfce4-xfapplet-plugin\n"
+"Project-Id-Version: xfce4-xfapplet-plugin 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-03-22 14:32-0300\n"
-"PO-Revision-Date: 2006-03-01 23:31+0300\n"
-"Last-Translator: Phan Vĩnh Thịnh <teppi@vnlinux.org>\n"
-"Language-Team: Vietnamese <none@li.org>\n"
+"PO-Revision-Date: 2006-03-22 14:26-0300\n"
+"Last-Translator: Adriano Winter Bess <awbess@gmail.com>\n"
+"Language-Team: Portuguese <ldp-br@bazar.conectiva.com.br>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: KBabel 1.9.1\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #. creation of the dialog
 #: ../panel-plugin/chooser.c:431 ../panel-plugin/xfapplet.desktop.in.in.h:2
@@ -22,70 +23,63 @@ msgstr "XfApplet"
 
 #: ../panel-plugin/chooser.c:452
 msgid "Choose an applet"
-msgstr "Chọn một applet"
+msgstr "Escolha uma applet"
 
 #: ../panel-plugin/chooser.c:461
 msgid ""
 "Choose an applet from the list. If you have already chosen an applet "
 "previously, it will be substituted by the one you choose."
 msgstr ""
+"Escolha uma applet da lista. Se você já havia escolhido uma applet "
+"anteriormente, ela será substituída pela que você escolher."
 
 #: ../panel-plugin/chooser.c:473
-#, fuzzy
 msgid "Available applets"
-msgstr "Hiển thị các applet của Gnome"
+msgstr "Applets disponíveis"
 
 #: ../panel-plugin/xfapplet.c:125
 #, c-format
 msgid "'%s' has quit unexpectedly."
-msgstr ""
+msgstr "'%s' terminou inesperadamente."
 
 #: ../panel-plugin/xfapplet.c:128
 msgid ""
 "If you don't reload the applet, XfApplet plugin will go back to its initial "
 "empty state."
 msgstr ""
+"Se você não recarregar a applet, o XfApplet irá retornar ao seu estado vazio "
+"inicial."
 
 #: ../panel-plugin/xfapplet.c:130
 msgid "Don't Reload"
-msgstr ""
+msgstr "Não Recarregar"
 
 #: ../panel-plugin/xfapplet.c:131
 msgid "Reload"
-msgstr ""
+msgstr "Recarregar"
 
 #: ../panel-plugin/xfapplet.c:461
 msgid "Display Gnome applets on the Xfce4 Panel"
-msgstr "Hiển thị các applet của Gnome trên thanh Panel Xfce4"
+msgstr "Mostra applets do Gnome no painel do Xfce4"
 
 #: ../panel-plugin/xfapplet.c:464
 msgid "Author/Maintainer"
-msgstr "Tác giả/Nhà duy trì"
+msgstr "Autor/Mantenedor"
 
 #: ../panel-plugin/xfapplet.c:468
 #, c-format
 msgid "Translator (%s)"
-msgstr "Người dịch (%s)"
+msgstr "Tradutor (%s)"
 
 #: ../panel-plugin/xfapplet.c:558
 #, c-format
 msgid "'%s' could not be loaded."
-msgstr ""
+msgstr "'%s' não pode ser carregada."
 
 #: ../panel-plugin/xfapplet.c:561
 msgid "An internal error occurred and the applet could not be loaded."
-msgstr ""
+msgstr "Ocorreu um erro interno e a applet não pode ser carregada."
 
 #: ../panel-plugin/xfapplet.desktop.in.in.h:1
-#, fuzzy
 msgid "Display Gnome applets in the panel"
-msgstr "Hiển thị các applet của Gnome trên thanh Panel Xfce4"
-
-#~ msgid "query returned exception %s\n"
-#~ msgstr "yêu cầu cho ra kết quả ngoại lệ %s\n"
-
-#~ msgid "Could not save XfApplet configuration."
-#~ msgstr "Không ghi được cấu hình XfApplet."
-
-#~ msgid "Choose an applet:"
-#~ msgstr "Chọn một applet:"
+msgstr "Mostra applets do Gnome no painel"

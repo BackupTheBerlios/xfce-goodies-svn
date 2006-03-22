@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-18 17:55+0900\n"
+"POT-Creation-Date: 2006-03-22 14:32-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,40 +16,66 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../panel-plugin/chooser.c:154
-#, c-format
-msgid "query returned exception %s\n"
+#. creation of the dialog
+#: ../panel-plugin/chooser.c:431 ../panel-plugin/xfapplet.desktop.in.in.h:2
+msgid "XfApplet"
 msgstr ""
 
-#: ../panel-plugin/chooser.c:324
+#: ../panel-plugin/chooser.c:452
 msgid "Choose an applet"
 msgstr ""
 
-#: ../panel-plugin/chooser.c:337
-msgid "Choose an applet:"
+#: ../panel-plugin/chooser.c:461
+msgid ""
+"Choose an applet from the list. If you have already chosen an applet "
+"previously, it will be substituted by the one you choose."
 msgstr ""
 
-#: ../panel-plugin/xfapplet.c:137
+#: ../panel-plugin/chooser.c:473
+msgid "Available applets"
+msgstr ""
+
+#: ../panel-plugin/xfapplet.c:125
+#, c-format
+msgid "'%s' has quit unexpectedly."
+msgstr ""
+
+#: ../panel-plugin/xfapplet.c:128
+msgid ""
+"If you don't reload the applet, XfApplet plugin will go back to its initial "
+"empty state."
+msgstr ""
+
+#: ../panel-plugin/xfapplet.c:130
+msgid "Don't Reload"
+msgstr ""
+
+#: ../panel-plugin/xfapplet.c:131
+msgid "Reload"
+msgstr ""
+
+#: ../panel-plugin/xfapplet.c:461
 msgid "Display Gnome applets on the Xfce4 Panel"
 msgstr ""
 
-#: ../panel-plugin/xfapplet.c:140
+#: ../panel-plugin/xfapplet.c:464
 msgid "Author/Maintainer"
 msgstr ""
 
-#: ../panel-plugin/xfapplet.c:144
+#: ../panel-plugin/xfapplet.c:468
 #, c-format
 msgid "Translator (%s)"
 msgstr ""
 
-#: ../panel-plugin/xfapplet.c:264
-msgid "Could not save XfApplet configuration."
+#: ../panel-plugin/xfapplet.c:558
+#, c-format
+msgid "'%s' could not be loaded."
+msgstr ""
+
+#: ../panel-plugin/xfapplet.c:561
+msgid "An internal error occurred and the applet could not be loaded."
 msgstr ""
 
 #: ../panel-plugin/xfapplet.desktop.in.in.h:1
-msgid "Display Gnome applets"
-msgstr ""
-
-#: ../panel-plugin/xfapplet.desktop.in.in.h:2
-msgid "XfApplet"
+msgid "Display Gnome applets in the panel"
 msgstr ""
