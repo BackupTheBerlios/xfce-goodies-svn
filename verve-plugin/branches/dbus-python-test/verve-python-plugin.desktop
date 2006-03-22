@@ -1,7 +1,0 @@
-[Xfce Panel]
-Type=X-XFCE-PanelPlugin
-Encoding=UTF-8
-Name=verve-python-plugin
-Comment=Verve Python D-BUS Test
-Icon=fancy-icon
-X-XFCE-Exec=/home/jannis/devel/xfce/goodies/verve-plugin/branches/dbus-python-test/verve-python-plugin.py
