@@ -25,28 +25,15 @@
 #include <GNOME_Panel.h>
 
 typedef struct {
-	XfcePanelPlugin   		*plugin;
-	gboolean           		 configured;
-	gchar				*iid;
-	gchar				*name;
-	gchar             		*gconf_key;
-	CORBA_Object			 object;
-	BonoboUIComponent 		*uic;
-	Bonobo_PropertyBag		 prop_bag;
+	XfcePanelPlugin   	*plugin;
+	gboolean           	 configured;
+	gchar			*iid;
+	gchar			*name;
+	gchar             	*gconf_key;
+	CORBA_Object		 object;
+	BonoboUIComponent 	*uic;
+	Bonobo_PropertyBag	 prop_bag;
 } XfAppletPlugin;
-
-typedef struct {
-	gchar     *name;
-	gchar     *description;
-	GdkPixbuf *icon;
-	gchar     *iid;	
-} GnomeAppletInfo;
-
-typedef struct {
-	gchar  *name;
-	gchar  *email;
-	gchar  *language;
-} XfAppletTranslators;
 
 void		xfapplet_cleanup_current  (XfAppletPlugin *xap);
 

@@ -1,0 +1,203 @@
+2006-03-18 16:26  adrianob
+
+	* panel-plugin/xfapplet.c: Handle Bonobo/CORBA exceptions.
+
+2006-03-16 00:19  adrianob
+
+	* panel-plugin/Makefile.am, panel-plugin/chooser.c, 
+	  panel-plugin/xfapplet.c, pixmaps/Makefile.am, 
+	  pixmaps/xfapplet2.svg: User interface improvements.
+
+2006-03-12 02:26  adrianob
+
+	* panel-plugin/chooser.c: Make xfapplet_find_icon() find icons 
+	  provided as relative paths.
+
+2006-03-12 01:19  adrianob
+
+	* Makefile.am, configure.ac, panel-plugin/xfapplet.desktop.in.in, 
+	  pixmaps, pixmaps/Makefile.am, pixmaps/xfapplet1.svg: Added 
+	  plugin icon for the panel add items dialog.
+
+2006-03-11 23:10  adrianob
+
+	* panel-plugin/xfapplet.c, panel-plugin/xfapplet.h: Fixed 
+	  loading/removing the same applet twice or more.
+
+2006-03-11 18:42  adrianob
+
+	* panel-plugin/chooser.c, panel-plugin/xfapplet.c, 
+	  panel-plugin/xfapplet.h: General code cleanup.
+
+2006-03-06 21:11  adrianob
+
+	* configure.ac, po/vi.po: Added Vietnamese translations.
+
+2006-03-05 00:59  adrianob
+
+	* panel-plugin/chooser.c, panel-plugin/xfapplet.c, 
+	  panel-plugin/xfapplet.h: Watch for and react properly on a CORBA 
+	  connection loss.
+
+2006-03-01 21:32  adrianob
+
+	* configure.ac: Explicitly report the need for xfce4-panel >= 
+	  r19874 on configure.ac error
+	  message.
+
+2006-02-24 02:39  adrianob
+
+	* panel-plugin/xfapplet.c: Code cleanup for popup menu.
+
+2006-02-24 02:05  adrianob
+
+	* configure.ac: Added hu to XDT_I18N().
+
+2006-02-24 02:00  adrianob
+
+	* configure.ac, panel-plugin/Makefile.am, panel-plugin/xfapplet.c, 
+	  panel-plugin/xfapplet.h: Added workaround for applets 
+	  sensitivity misbehavior and fixed simultaneous use
+	  of 2 or more instances of the same applet.
+
+2006-02-23 20:45  satie
+
+	* po/hu.po: hu updates
+
+2006-02-21 18:04  adrianob
+
+	* panel-plugin/xfapplet.c: Added "screen-position-changed" 
+	  callback.
+
+2006-02-20 23:22  adrianob
+
+	* panel-plugin/xfapplet.c, panel-plugin/xfapplet.h: Handle the 
+	  Gnome applet side of the "size-changed" signal.
+
+2006-02-18 09:36  daichi
+
+	* xfce4-fsguard-plugin/trunk/po/xfce4-fsguard-plugin.pot, 
+	  xfce4-weather-plugin/trunk/po/xfce4-weather-plugin.pot, 
+	  xfce4-websearch-plugin/trunk/po/xfce4-websearch-plugin.pot, 
+	  po/ChangeLog, po/xfce4-xfapplet-plugin.pot: Added for the 
+	  translators.
+
+2006-02-18 01:25  adrianob
+
+	* panel-plugin/chooser.c, panel-plugin/xfapplet.c: Better handling 
+	  of gconf keys for the applets.
+
+2006-02-17 20:58  adrianob
+
+	* panel-plugin/XFCE_Panel_Popup.xml, panel-plugin/chooser.c, 
+	  panel-plugin/xfapplet.c: Several fixes and improvements:
+	  - Don't handle "save" plugin signal (saving configuration is 
+	  done by the plugin
+	    itself);
+	  - Allows to choose another applet after one had already been 
+	  chosen;
+	  - Use bonobo_get_object_async() and 
+	  bonobo_widget_new_control_from_objref()
+	    instead of bonobo_widget_new_control_async() because the 
+	  latter is buggy
+	    (Gnome bugzilla #331590);
+	  - Just remove previous temporary label or applet right before 
+	  adding the new
+	    chosen applet.
+
+2006-02-15 23:22  adrianob
+
+	* panel-plugin/xfapplet.c: Fixed About dialog.
+
+2006-02-15 22:54  adrianob
+
+	* configure.ac, panel-plugin/xfapplet.c, panel-plugin/xfapplet.h: 
+	  Don't crash on exit _and_ release Bonobo references. Also added 
+	  ORBit-2.0 >=
+	  2.12.5 as requirement because of a bug in earlier versions that 
+	  showed up with
+	  the plugin.
+
+2006-02-15 15:49  adrianob
+
+	* panel-plugin/xfapplet.c: Added "size-changed" callback (fixes 
+	  applet size on panel).
+
+2006-02-14 23:08  adrianob
+
+	* panel-plugin/xfapplet.c, panel-plugin/xfapplet.h: Fixed segfault 
+	  on plugin exit.
+
+2006-02-14 22:05  adrianob
+
+	* configure.ac, panel-plugin/Makefile.am, panel-plugin/chooser.c, 
+	  panel-plugin/xfapplet.c, po/ChangeLog, po/POTFILES.in, po/ja.po: 
+	  Applied patch from Daich (daichi@xfce.org) to fix i18n. Also 
+	  added ja
+	  translations.
+
+2006-02-12 13:24  adrianob
+
+	* autogen.sh: Added missing 'autogen.sh'.
+
+2006-02-08 21:09  adrianob
+
+	* configure.ac, panel-plugin/Makefile.am, 
+	  panel-plugin/XFCE_Panel_Popup.xml, panel-plugin/xfapplet.c, 
+	  panel-plugin/xfapplet.h: Added about dialog.
+
+2006-02-07 00:24  adrianob
+
+	* panel-plugin/chooser.c, panel-plugin/xfapplet.c, 
+	  panel-plugin/xfapplet.h: Fixed some compilation warnings.
+
+2006-02-05 02:12  adrianob
+
+	* panel-plugin/chooser.c, panel-plugin/xfapplet.c, 
+	  panel-plugin/xfapplet.h: Provide correct "prefs_key" and "size" 
+	  parameters for applet moniker.
+
+2006-02-05 00:28  adrianob
+
+	* panel-plugin/Makefile.am, panel-plugin/chooser.c, 
+	  panel-plugin/xfapplet.c, panel-plugin/xfapplet.h: The applet 
+	  chooser dialog and its associated functions now live on their own
+	  file (chooser.c). Data types and relevant function prototypes 
+	  now live on the
+	  plugin main header file (xfapplet.h).
+
+2006-02-04 14:24  adrianob
+
+	* panel-plugin/xfapplet.c: Improved dialog for choosing among the 
+	  available applets. Still experimental.
+
+2006-02-01 01:09  adrianob
+
+	* configure.ac, panel-plugin/Makefile.am, panel-plugin/xfapplet.c: 
+	  Read and save the plugin's configuration.
+
+2006-01-30 18:36  adrianob
+
+	* panel-plugin/xfapplet.c: Load bonobo controls (gnome applets) 
+	  asynchronously.
+
+2006-01-28 21:03  adrianob
+
+	* panel-plugin/Makefile.am, panel-plugin/XFCE_Panel_Popup.xml, 
+	  panel-plugin/xfapplet.c: Implemented UI merging between the 
+	  plugin popup menu and the applet popup menu.
+
+2006-01-28 17:18  adrianob
+
+	* AUTHORS, COPYING, ChangeLog, INSTALL, Makefile.am, NEWS, README, 
+	  configure.ac, panel-plugin, panel-plugin/Makefile.am, 
+	  panel-plugin/xfapplet.c, panel-plugin/xfapplet.desktop.in.in, 
+	  po, po/ChangeLog, po/POTFILES.in: Imported project into 
+	  repository.
+
+2006-01-27 20:57  adrianob
+
+	* xfce4-xfapplet-plugin, xfce4-xfapplet-plugin/branches, 
+	  xfce4-xfapplet-plugin/tags, .: Created directories for 
+	  xfce4-xfapplet-plugin.
+

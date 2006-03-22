@@ -39,6 +39,13 @@ static char *applets_sort_criteria [] = {
 };
 
 typedef struct {
+	gchar     *name;
+	gchar     *description;
+	GdkPixbuf *icon;
+	gchar     *iid;	
+} GnomeAppletInfo;
+
+typedef struct {
 	GtkWidget	*tv;
 	GSList		*applets;
 	gulong		 destroy_id;
@@ -191,6 +198,46 @@ xfapplet_fill_model (GSList *list, GtkListStore *store, GtkWidget *scroll, GtkWi
 	}
 }
 
+static GnomeAppletInfo*
+xfapplet_read_applet_info (Bonobo_ServerInfo *info, GSList *langs)
+{
+	const char         *name, *description, *icon;
+	GnomeAppletInfo    *applet;
+	GdkPixbuf          *pb;
+	int                 desired_width, desired_height;
+
+	name = bonobo_server_info_prop_lookup (info, "name", langs);
+	description = bonobo_server_info_prop_lookup (info, "description", langs);
+	icon = bonobo_server_info_prop_lookup (info, "panel:icon", NULL);
+
+	if (!name)
+		return NULL;
+
+	applet = g_new0 (GnomeAppletInfo, 1);
+	applet->name = g_strdup (name);
+	applet->description = g_strdup (description);
+	applet->iid = g_strdup (info->iid);
+
+	if (!gtk_icon_size_lookup (GTK_ICON_SIZE_DIALOG, &desired_width, &desired_height))
+		applet->icon = NULL;
+	else {
+		gchar *iconfile = xfapplet_find_icon (icon, desired_height);
+		if (iconfile) {
+			pb = gdk_pixbuf_new_from_file_at_size (iconfile, desired_width,
+							       desired_height, NULL);
+			if (!pb)
+				applet->icon = NULL;
+			else
+				applet->icon = pb;
+			g_free (iconfile);
+		}
+		else
+			applet->icon = NULL;
+	}
+
+	return applet;
+}
+
 static GSList*
 xfapplet_query_applets ()
 {
@@ -203,12 +250,9 @@ xfapplet_query_applets ()
 	CORBA_exception_init (&env);
 	applet_list = bonobo_activation_query (applets_requirements, applets_sort_criteria, &env);
 	if (BONOBO_EX (&env)) {
-		g_warning (_("query returned exception %s\n"),
-			   BONOBO_EX_REPOID (&env));
-
+		g_warning ("Failed to query applets: %s\n", BONOBO_EX_REPOID (&env));
 		CORBA_exception_free (&env);
 		CORBA_free (applet_list);
-
 		return NULL;
 	}
 	CORBA_exception_free (&env);
@@ -220,43 +264,9 @@ xfapplet_query_applets ()
 	langs_gslist = g_slist_reverse (langs_gslist);
 
 	for (i = 0; i < applet_list->_length; i++) {
-		Bonobo_ServerInfo  *info;
-		const char         *name, *description, *icon;
-		GnomeAppletInfo    *applet;
-		GdkPixbuf          *pb;
-		int                 desired_width, desired_height;
-
-		info = &applet_list->_buffer[i];
-		name = bonobo_server_info_prop_lookup (info, "name", langs_gslist);
-		description = bonobo_server_info_prop_lookup (info, "description", langs_gslist);
-		icon = bonobo_server_info_prop_lookup (info, "panel:icon", NULL);
-
-		if (!name)
-			continue;
-
-		applet = g_new0 (GnomeAppletInfo, 1);
-		applet->name = g_strdup (name);
-		applet->description = g_strdup (description);
-		applet->iid = g_strdup (info->iid);
-
-		if (!gtk_icon_size_lookup (GTK_ICON_SIZE_DIALOG, &desired_width, &desired_height))
-			applet->icon = NULL;
-		else {
-			gchar *iconfile = xfapplet_find_icon (icon, desired_height);
-			if (iconfile) {
-				pb = gdk_pixbuf_new_from_file_at_size (iconfile, desired_width,
-								       desired_height, NULL);
-				if (!pb)
-					applet->icon = NULL;
-				else
-					applet->icon = pb;
-				g_free (iconfile);
-			}
-			else
-				applet->icon = NULL;
-		}
-
-		list = g_slist_prepend (list, applet);
+		GnomeAppletInfo *applet = xfapplet_read_applet_info (&applet_list->_buffer[i], langs_gslist);
+		if (applet)
+			list = g_slist_prepend (list, applet);
 	}
 
 	g_slist_free (langs_gslist);
@@ -425,8 +435,8 @@ xfapplet_chooser_dialog (XfcePanelPlugin *plugin, XfAppletPlugin *xap)
 					      GTK_RESPONSE_CANCEL,
 					      NULL);
 	ok_button = gtk_dialog_add_button (GTK_DIALOG (dialog), GTK_STOCK_OK, GTK_RESPONSE_OK);
-	gtk_container_set_border_width (GTK_CONTAINER (dialog), 8);
 	gtk_widget_set_sensitive (ok_button, FALSE);
+	gtk_container_set_border_width (GTK_CONTAINER (dialog), 8);
 	g_signal_connect (dialog, "response", G_CALLBACK (xfapplet_chooser_dialog_response), chooser);
 	chooser->destroy_id = g_signal_connect_swapped (dialog, "destroy",
 							G_CALLBACK (xfapplet_chooser_destroyed), chooser);

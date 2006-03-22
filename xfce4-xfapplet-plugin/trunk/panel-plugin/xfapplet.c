@@ -63,6 +63,12 @@ enum {
 	PANEL_NEAR_LEFT
 };
 
+typedef struct {
+	gchar  *name;
+	gchar  *email;
+	gchar  *language;
+} XfAppletTranslators;
+
 static void
 xfapplet_setup_empty (XfAppletPlugin *xap);
 
@@ -155,7 +161,7 @@ xfapplet_panel_near (GtkWidget *widget, GtkOrientation orientation)
 	GdkScreen	*screen;
 	gint		 x, y, ret = 0;
 
-	screen = gdk_screen_get_default ();
+	screen = gtk_widget_get_screen (widget);
 	gdk_window_get_origin (widget->window, &x, &y);
 
 	if (orientation == GTK_ORIENTATION_HORIZONTAL)
@@ -431,6 +437,12 @@ xfapplet_read_configuration (XfAppletPlugin *xap)
 }
 
 static void
+xfapplet_about_dialog_response (GtkDialog *dialog, gint dummy1, gpointer dummy2)
+{
+	gtk_widget_destroy (GTK_WIDGET (dialog));
+}
+
+static void
 xfapplet_about_dialog (XfcePanelPlugin *plugin, gpointer data)
 {
 	XfceAboutInfo	*info;
@@ -438,8 +450,10 @@ xfapplet_about_dialog (XfcePanelPlugin *plugin, gpointer data)
 	GdkPixbuf	*pixbuf = NULL;
 	guint		 i;
 	static const XfAppletTranslators translators[] = {
+		{"SZERVÑC Attila", "sas@321.hu", "hu",},
 		{"Daichi Kawahata", "daichi@xfce.org", "ja",},
 		{"Adriano Winter Bess", "awbess@gmail.com", "pt_BR",},
+		{"Phan Vĩnh Thịnh", "teppi@vnlinux.org", "vi",},
 		{NULL,}
 	};
 
@@ -459,12 +473,14 @@ xfapplet_about_dialog (XfcePanelPlugin *plugin, gpointer data)
 	pixbuf = gdk_pixbuf_new_from_file_at_size (DATADIR "/pixmaps/xfapplet2.svg", 48, 48, NULL);
 	dialog = xfce_about_dialog_new_with_values (GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (plugin))),
 						    info, pixbuf);
-	g_object_unref (pixbuf);
-	gtk_window_set_position (GTK_WINDOW (dialog), GTK_WIN_POS_CENTER);
-	gtk_dialog_run (GTK_DIALOG (dialog));
-
-	gtk_widget_destroy (dialog);
+	
 	xfce_about_info_free (info);
+	if (pixbuf)
+		g_object_unref (pixbuf);
+
+	gtk_window_set_position (GTK_WINDOW (dialog), GTK_WIN_POS_CENTER);
+	g_signal_connect (dialog, "response", G_CALLBACK (xfapplet_about_dialog_response), NULL);
+	gtk_widget_show (dialog);
 }
 
 static void
