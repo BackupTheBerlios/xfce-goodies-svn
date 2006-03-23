@@ -450,6 +450,7 @@ xfapplet_about_dialog (XfcePanelPlugin *plugin, gpointer data)
 	GdkPixbuf	*pixbuf = NULL;
 	guint		 i;
 	static const XfAppletTranslators translators[] = {
+		{"Stephane Roy", "sroy@j2n.net", "fr"},
 		{"SZERVÑC Attila", "sas@321.hu", "hu",},
 		{"Daichi Kawahata", "daichi@xfce.org", "ja",},
 		{"Adriano Winter Bess", "awbess@gmail.com", "pt_BR",},
