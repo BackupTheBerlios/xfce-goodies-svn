@@ -453,6 +453,7 @@ xfapplet_about_dialog (XfcePanelPlugin *plugin, gpointer data)
 		{"Stephane Roy", "sroy@j2n.net", "fr"},
 		{"SZERVÑC Attila", "sas@321.hu", "hu",},
 		{"Daichi Kawahata", "daichi@xfce.org", "ja",},
+		{"Vincent Tunru", "imnotb@gmail.com", "nl",},
 		{"Adriano Winter Bess", "awbess@gmail.com", "pt_BR",},
 		{"Phan Vĩnh Thịnh", "teppi@vnlinux.org", "vi",},
 		{NULL,}

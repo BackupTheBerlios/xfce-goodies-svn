@@ -31,7 +31,7 @@ dnl check for standard header files
 AC_HEADER_STDC
 
 dnl Check for i18n support
-XDT_I18N([fr hu ja pt_BR vi])
+XDT_I18N([fr hu ja nl pt_BR vi])
 
 dnl Check for X11 installed
 XDT_CHECK_LIBX11_REQUIRE
