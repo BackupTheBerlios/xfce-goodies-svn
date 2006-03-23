@@ -28,6 +28,7 @@
 #include <bonobo/bonobo-ui-util.h>
 #include <bonobo/bonobo-exception.h>
 #include <bonobo/bonobo-ui-main.h>
+#include <gconf/gconf-client.h>
 #include <libxfce4util/libxfce4util.h>
 #include <libxfce4panel/xfce-panel-plugin.h>
 #include <libxfcegui4/libxfcegui4.h>
@@ -71,6 +72,34 @@ typedef struct {
 
 static void
 xfapplet_setup_empty (XfAppletPlugin *xap);
+
+static void
+xfapplet_cleanup_unused_gconf_keys ()
+{
+	GConfClient *client;
+	gchar	*dir;
+	gchar	*in_use_key;
+	int	 i = 0;
+
+	client = gconf_client_get_default ();
+	
+	while (1) {
+		dir = g_strdup_printf (XFAPPLET_GCONF_DIR "applet_%d", i++);
+		if (gconf_client_dir_exists (client, dir, NULL)) {
+			in_use_key = g_strdup_printf ("%s/in_use", dir);
+			if (!gconf_client_get_bool (client, in_use_key, NULL))
+				gconf_client_recursive_unset (client, dir, GCONF_UNSET_INCLUDING_SCHEMA_NAMES, NULL);
+			g_free (in_use_key);
+			g_free (dir);
+		}
+		else
+			break;
+	}
+
+	g_object_unref (client);
+
+	g_free (dir);
+}
 
 static GtkWidget*
 xfapplet_get_plugin_child (XfcePanelPlugin *plugin)
@@ -698,6 +727,8 @@ xfapplet_free(XfcePanelPlugin *plugin, XfAppletPlugin *xap)
 
 	xfapplet_cleanup_current (xap);
 
+	xfapplet_cleanup_unused_gconf_keys ();
+
 	g_free (xap);
 }
 
@@ -778,6 +809,8 @@ xfapplet_construct (XfcePanelPlugin *plugin)
 	xfce_textdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR, "UTF-8");
 
 	bonobo_ui_init (argv[0], VERSION, &argc, argv);
+
+	xfapplet_cleanup_unused_gconf_keys ();
 
 	xap = xfapplet_new (plugin);
 

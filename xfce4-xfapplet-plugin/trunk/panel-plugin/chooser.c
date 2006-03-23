@@ -53,23 +53,28 @@ typedef struct {
 } XfAppletChooserDialog;
 
 static gchar *
-xfapplet_find_unique_key ()
+xfapplet_find_unique_key (gchar *applet_name)
 {
-	GConfClient *client;
-	gchar       *key = NULL;
-	gchar       *in_use;
-	int          i = 0;
+	GConfClient	*client;
+	gchar		*key = NULL;
+	gchar		*in_use;
+	gchar		*name;
+	int		 i = 0;
 
 	client = gconf_client_get_default ();
 
 	do {
 		g_free (key);
-		key = g_strdup_printf ("/apps/xfapplet/applet_%d", i++);
+		key = g_strdup_printf (XFAPPLET_GCONF_DIR "applet_%d", i++);
 	} while (gconf_client_dir_exists (client, key, NULL));
 
 	in_use = g_strdup_printf ("%s/in_use", key);
 	gconf_client_set_bool (client, in_use, TRUE, NULL);
 	g_free (in_use);
+
+	name = g_strdup_printf ("%s/name", key);
+	gconf_client_set_string (client, name, applet_name, NULL);
+	g_free (name);
 
 	g_object_unref (client);
 
@@ -352,7 +357,7 @@ xfapplet_chooser_dialog_response (GtkWidget *dialog, int response, XfAppletChoos
 			xfapplet_cleanup_current (xap);
 			xap->iid = g_strdup (applet->iid);
 			xap->name = g_strdup (applet->name);
-			xap->gconf_key = xfapplet_find_unique_key ();
+			xap->gconf_key = xfapplet_find_unique_key (applet->name);
 			xfapplet_setup_full (xap);
 		}
 	}

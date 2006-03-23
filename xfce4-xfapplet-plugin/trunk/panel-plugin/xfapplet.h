@@ -24,6 +24,8 @@
 #include <libxfce4panel/xfce-panel-plugin.h>
 #include <GNOME_Panel.h>
 
+#define XFAPPLET_GCONF_DIR "/apps/xfapplet/"
+
 typedef struct {
 	XfcePanelPlugin   	*plugin;
 	gboolean           	 configured;
