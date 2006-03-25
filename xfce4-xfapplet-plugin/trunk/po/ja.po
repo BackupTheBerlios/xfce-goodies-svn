@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: xfce4-xfapplet-plugin 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-03-22 14:32-0300\n"
-"PO-Revision-Date: 2006-02-12 19:38+0900\n"
+"PO-Revision-Date: 2006-03-25 23:23+0900\n"
 "Last-Translator: Daichi Kawahata <daichi@xfce.org>\n"
 "Language-Team: Japanese <xfce-users-jp@ml.fdiary.net>\n"
 "MIME-Version: 1.0\n"
@@ -23,37 +23,37 @@ msgstr "Xfce アプレット"
 
 #: ../panel-plugin/chooser.c:452
 msgid "Choose an applet"
-msgstr "アプレットを選択して下さい"
+msgstr "アプレットを選択してください"
 
 #: ../panel-plugin/chooser.c:461
 msgid ""
 "Choose an applet from the list. If you have already chosen an applet "
 "previously, it will be substituted by the one you choose."
-msgstr ""
+msgstr "このリストからアプレットを選択してください。"
 
 #: ../panel-plugin/chooser.c:473
-#, fuzzy
 msgid "Available applets"
-msgstr "GNOME のアプレットを表示します。"
+msgstr "利用可能なアプレット"
 
 #: ../panel-plugin/xfapplet.c:125
 #, c-format
 msgid "'%s' has quit unexpectedly."
-msgstr ""
+msgstr "「%s」が突然終了しました。"
 
 #: ../panel-plugin/xfapplet.c:128
 msgid ""
 "If you don't reload the applet, XfApplet plugin will go back to its initial "
 "empty state."
 msgstr ""
+"このアプレットを再読込みしない場合、XfApplet は空の初期状態に戻されます。"
 
 #: ../panel-plugin/xfapplet.c:130
 msgid "Don't Reload"
-msgstr ""
+msgstr "再読込みしない"
 
 #: ../panel-plugin/xfapplet.c:131
 msgid "Reload"
-msgstr ""
+msgstr "再読込みする"
 
 #: ../panel-plugin/xfapplet.c:461
 msgid "Display Gnome applets on the Xfce4 Panel"
@@ -71,34 +71,12 @@ msgstr "翻訳者 (%s)"
 #: ../panel-plugin/xfapplet.c:558
 #, c-format
 msgid "'%s' could not be loaded."
-msgstr ""
+msgstr "「%s」を読み込めませんでした。"
 
 #: ../panel-plugin/xfapplet.c:561
 msgid "An internal error occurred and the applet could not be loaded."
-msgstr ""
+msgstr "内部エラーが発生してこのアプレットを読み込めませんでした。"
 
 #: ../panel-plugin/xfapplet.desktop.in.in.h:1
-#, fuzzy
 msgid "Display Gnome applets in the panel"
-msgstr "Xfce4 のパネルに GNOME アプレットを表示します"
-
-#~ msgid "query returned exception %s\n"
-#~ msgstr "問い合わせが例外 %s を返しました\n"
-
-#~ msgid "Choose an applet:"
-#~ msgstr "アプレットを選択して下さい:"
-
-#~ msgid "About"
-#~ msgstr "このプログラムについて"
-
-#~ msgid "Add New Item"
-#~ msgstr "アイテムを追加"
-
-#~ msgid "Customize Panel"
-#~ msgstr "パネルの設定"
-
-#~ msgid "Move"
-#~ msgstr "移動"
-
-#~ msgid "Remove"
-#~ msgstr "削除"
+msgstr "パネルに GNOME のアプレットを表示します"
