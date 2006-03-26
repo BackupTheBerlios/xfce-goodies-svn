@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xfce4-xfapplet-plugin 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-22 14:32-0300\n"
+"POT-Creation-Date: 2006-03-25 11:21-0300\n"
 "PO-Revision-Date: 2006-03-25 23:23+0900\n"
 "Last-Translator: Daichi Kawahata <daichi@xfce.org>\n"
 "Language-Team: Japanese <xfce-users-jp@ml.fdiary.net>\n"
@@ -17,63 +17,63 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #. creation of the dialog
-#: ../panel-plugin/chooser.c:431 ../panel-plugin/xfapplet.desktop.in.in.h:2
+#: ../panel-plugin/chooser.c:436 ../panel-plugin/xfapplet.desktop.in.in.h:2
 msgid "XfApplet"
 msgstr "Xfce アプレット"
 
-#: ../panel-plugin/chooser.c:452
+#: ../panel-plugin/chooser.c:457
 msgid "Choose an applet"
 msgstr "アプレットを選択してください"
 
-#: ../panel-plugin/chooser.c:461
+#: ../panel-plugin/chooser.c:466
 msgid ""
 "Choose an applet from the list. If you have already chosen an applet "
 "previously, it will be substituted by the one you choose."
 msgstr "このリストからアプレットを選択してください。"
 
-#: ../panel-plugin/chooser.c:473
+#: ../panel-plugin/chooser.c:478
 msgid "Available applets"
 msgstr "利用可能なアプレット"
 
-#: ../panel-plugin/xfapplet.c:125
+#: ../panel-plugin/xfapplet.c:154
 #, c-format
 msgid "'%s' has quit unexpectedly."
 msgstr "「%s」が突然終了しました。"
 
-#: ../panel-plugin/xfapplet.c:128
+#: ../panel-plugin/xfapplet.c:157
 msgid ""
 "If you don't reload the applet, XfApplet plugin will go back to its initial "
 "empty state."
 msgstr ""
 "このアプレットを再読込みしない場合、XfApplet は空の初期状態に戻されます。"
 
-#: ../panel-plugin/xfapplet.c:130
+#: ../panel-plugin/xfapplet.c:159
 msgid "Don't Reload"
 msgstr "再読込みしない"
 
-#: ../panel-plugin/xfapplet.c:131
+#: ../panel-plugin/xfapplet.c:160
 msgid "Reload"
 msgstr "再読込みする"
 
-#: ../panel-plugin/xfapplet.c:461
+#: ../panel-plugin/xfapplet.c:493
 msgid "Display Gnome applets on the Xfce4 Panel"
 msgstr "Xfce4 のパネルに GNOME アプレットを表示します"
 
-#: ../panel-plugin/xfapplet.c:464
+#: ../panel-plugin/xfapplet.c:496
 msgid "Author/Maintainer"
 msgstr "著作者/メインテナー"
 
-#: ../panel-plugin/xfapplet.c:468
+#: ../panel-plugin/xfapplet.c:500
 #, c-format
 msgid "Translator (%s)"
 msgstr "翻訳者 (%s)"
 
-#: ../panel-plugin/xfapplet.c:558
+#: ../panel-plugin/xfapplet.c:590
 #, c-format
 msgid "'%s' could not be loaded."
 msgstr "「%s」を読み込めませんでした。"
 
-#: ../panel-plugin/xfapplet.c:561
+#: ../panel-plugin/xfapplet.c:593
 msgid "An internal error occurred and the applet could not be loaded."
 msgstr "内部エラーが発生してこのアプレットを読み込めませんでした。"
 

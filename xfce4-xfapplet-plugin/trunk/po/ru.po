@@ -5,7 +5,7 @@
 # Andrey Fedoseev <andrey.fedoseev@gmail.com>, 2006.
 msgid ""
 msgstr ""
-"Project-Id-Version: xfce4-xfapplet-plugin\n"
+"Project-Id-Version: xfce4-xfapplet-plugin 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-03-25 11:21-0300\n"
 "PO-Revision-Date: 2006-03-25 15:41+0500\n"

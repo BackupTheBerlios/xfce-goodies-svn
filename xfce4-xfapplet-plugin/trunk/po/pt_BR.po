@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xfce4-xfapplet-plugin 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-22 14:32-0300\n"
+"POT-Creation-Date: 2006-03-25 11:21-0300\n"
 "PO-Revision-Date: 2006-03-22 14:26-0300\n"
 "Last-Translator: Adriano Winter Bess <awbess@gmail.com>\n"
 "Language-Team: Portuguese <ldp-br@bazar.conectiva.com.br>\n"
@@ -17,15 +17,15 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #. creation of the dialog
-#: ../panel-plugin/chooser.c:431 ../panel-plugin/xfapplet.desktop.in.in.h:2
+#: ../panel-plugin/chooser.c:436 ../panel-plugin/xfapplet.desktop.in.in.h:2
 msgid "XfApplet"
 msgstr "XfApplet"
 
-#: ../panel-plugin/chooser.c:452
+#: ../panel-plugin/chooser.c:457
 msgid "Choose an applet"
 msgstr "Escolha uma applet"
 
-#: ../panel-plugin/chooser.c:461
+#: ../panel-plugin/chooser.c:466
 msgid ""
 "Choose an applet from the list. If you have already chosen an applet "
 "previously, it will be substituted by the one you choose."
@@ -33,16 +33,16 @@ msgstr ""
 "Escolha uma applet da lista. Se você já havia escolhido uma applet "
 "anteriormente, ela será substituída pela que você escolher."
 
-#: ../panel-plugin/chooser.c:473
+#: ../panel-plugin/chooser.c:478
 msgid "Available applets"
 msgstr "Applets disponíveis"
 
-#: ../panel-plugin/xfapplet.c:125
+#: ../panel-plugin/xfapplet.c:154
 #, c-format
 msgid "'%s' has quit unexpectedly."
 msgstr "'%s' terminou inesperadamente."
 
-#: ../panel-plugin/xfapplet.c:128
+#: ../panel-plugin/xfapplet.c:157
 msgid ""
 "If you don't reload the applet, XfApplet plugin will go back to its initial "
 "empty state."
@@ -50,33 +50,33 @@ msgstr ""
 "Se você não recarregar a applet, o XfApplet irá retornar ao seu estado vazio "
 "inicial."
 
-#: ../panel-plugin/xfapplet.c:130
+#: ../panel-plugin/xfapplet.c:159
 msgid "Don't Reload"
 msgstr "Não Recarregar"
 
-#: ../panel-plugin/xfapplet.c:131
+#: ../panel-plugin/xfapplet.c:160
 msgid "Reload"
 msgstr "Recarregar"
 
-#: ../panel-plugin/xfapplet.c:461
+#: ../panel-plugin/xfapplet.c:493
 msgid "Display Gnome applets on the Xfce4 Panel"
 msgstr "Mostra applets do Gnome no painel do Xfce4"
 
-#: ../panel-plugin/xfapplet.c:464
+#: ../panel-plugin/xfapplet.c:496
 msgid "Author/Maintainer"
 msgstr "Autor/Mantenedor"
 
-#: ../panel-plugin/xfapplet.c:468
+#: ../panel-plugin/xfapplet.c:500
 #, c-format
 msgid "Translator (%s)"
 msgstr "Tradutor (%s)"
 
-#: ../panel-plugin/xfapplet.c:558
+#: ../panel-plugin/xfapplet.c:590
 #, c-format
 msgid "'%s' could not be loaded."
 msgstr "'%s' não pode ser carregada."
 
-#: ../panel-plugin/xfapplet.c:561
+#: ../panel-plugin/xfapplet.c:593
 msgid "An internal error occurred and the applet could not be loaded."
 msgstr "Ocorreu um erro interno e a applet não pode ser carregada."
 
