@@ -486,6 +486,7 @@ xfapplet_about_dialog (XfcePanelPlugin *plugin, gpointer data)
 		{"Adriano Winter Bess", "awbess@gmail.com", "pt_BR",},
 		{"Andrey Fedoseev", "andrey.fedoseev@gmail.com", "ru",},
 		{"Phan Vĩnh Thịnh", "teppi@vnlinux.org", "vi",},
+		{"Jick Nan", "jick.nan@gmail.com", "zh_CN",},
 		{NULL,}
 	};
 
