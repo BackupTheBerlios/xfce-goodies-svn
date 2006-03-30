@@ -4,11 +4,11 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xfce4-xfapplet-plugin 0.0.1\n"
+"Project-Id-Version: xfce4-xfapplet-plugin\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-03-25 11:21-0300\n"
-"PO-Revision-Date: 2006-03-01 23:31+0300\n"
-"Last-Translator: Phan Vĩnh Thịnh <teppi@vnlinux.org>\n"
+"PO-Revision-Date: 2006-03-30 01:59+0300\n"
+"Last-Translator: Phan Vinh Thinh <teppi@vnlinux.org>\n"
 "Language-Team: Vietnamese <none@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -29,30 +29,33 @@ msgid ""
 "Choose an applet from the list. If you have already chosen an applet "
 "previously, it will be substituted by the one you choose."
 msgstr ""
+"Chọn một applet từ danh sách. Nếu trước đó đã chọn một applet, thì nó sẽ bị "
+"thay thế."
 
 #: ../panel-plugin/chooser.c:478
-#, fuzzy
 msgid "Available applets"
-msgstr "Hiển thị các applet của Gnome"
+msgstr "Những applet có"
 
 #: ../panel-plugin/xfapplet.c:154
 #, c-format
 msgid "'%s' has quit unexpectedly."
-msgstr ""
+msgstr "'%s' thoát không theo mong muốn."
 
 #: ../panel-plugin/xfapplet.c:157
 msgid ""
 "If you don't reload the applet, XfApplet plugin will go back to its initial "
 "empty state."
 msgstr ""
+"Nếu không nạp lại applet, thì XfApplet sẽ quay trở lại trạng thái rỗng ban "
+"đầu."
 
 #: ../panel-plugin/xfapplet.c:159
 msgid "Don't Reload"
-msgstr ""
+msgstr "Không nạp lại"
 
 #: ../panel-plugin/xfapplet.c:160
 msgid "Reload"
-msgstr ""
+msgstr "Nạp lại"
 
 #: ../panel-plugin/xfapplet.c:493
 msgid "Display Gnome applets on the Xfce4 Panel"
@@ -70,16 +73,15 @@ msgstr "Người dịch (%s)"
 #: ../panel-plugin/xfapplet.c:590
 #, c-format
 msgid "'%s' could not be loaded."
-msgstr ""
+msgstr "Không nạp được '%s'."
 
 #: ../panel-plugin/xfapplet.c:593
 msgid "An internal error occurred and the applet could not be loaded."
-msgstr ""
+msgstr "Có lỗi nội bộ và không nạp được applet."
 
 #: ../panel-plugin/xfapplet.desktop.in.in.h:1
-#, fuzzy
 msgid "Display Gnome applets in the panel"
-msgstr "Hiển thị các applet của Gnome trên thanh Panel Xfce4"
+msgstr "Hiển thị applet của Gnome trên thanh panel"
 
 #~ msgid "query returned exception %s\n"
 #~ msgstr "yêu cầu cho ra kết quả ngoại lệ %s\n"
