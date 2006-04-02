@@ -1,3 +1,5 @@
+# $Id$
+#
 # Japanese translations for xfce4-xfapplet-plugin package.
 # Copyright (C) 2006 Adriano Winter Bess.
 # This file is distributed under the same license as the
@@ -8,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xfce4-xfapplet-plugin 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-25 11:21-0300\n"
+"POT-Creation-Date: 2006-04-01 18:30+0900\n"
 "PO-Revision-Date: 2006-03-25 23:23+0900\n"
 "Last-Translator: Daichi Kawahata <daichi@xfce.org>\n"
 "Language-Team: Japanese <xfce-users-jp@ml.fdiary.net>\n"
@@ -55,25 +57,25 @@ msgstr "再読込みしない"
 msgid "Reload"
 msgstr "再読込みする"
 
-#: ../panel-plugin/xfapplet.c:493
+#: ../panel-plugin/xfapplet.c:494
 msgid "Display Gnome applets on the Xfce4 Panel"
 msgstr "Xfce4 のパネルに GNOME アプレットを表示します"
 
-#: ../panel-plugin/xfapplet.c:496
+#: ../panel-plugin/xfapplet.c:497
 msgid "Author/Maintainer"
 msgstr "著作者/メインテナー"
 
-#: ../panel-plugin/xfapplet.c:500
+#: ../panel-plugin/xfapplet.c:501
 #, c-format
 msgid "Translator (%s)"
 msgstr "翻訳者 (%s)"
 
-#: ../panel-plugin/xfapplet.c:590
+#: ../panel-plugin/xfapplet.c:591
 #, c-format
 msgid "'%s' could not be loaded."
 msgstr "「%s」を読み込めませんでした。"
 
-#: ../panel-plugin/xfapplet.c:593
+#: ../panel-plugin/xfapplet.c:594
 msgid "An internal error occurred and the applet could not be loaded."
 msgstr "内部エラーが発生してこのアプレットを読み込めませんでした。"
 

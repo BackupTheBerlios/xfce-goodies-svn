@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xfce4-xfapplet-plugin 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-25 11:21-0300\n"
+"POT-Creation-Date: 2006-04-01 18:30+0900\n"
 "PO-Revision-Date: 2006-03-25 15:41+0500\n"
 "Last-Translator: Andrey Fedoseev <andrey.fedoseev@gmail.com>\n"
 "Language-Team: Russian\n"
@@ -60,25 +60,25 @@ msgstr "Не перезапускать"
 msgid "Reload"
 msgstr "Перезапустить"
 
-#: ../panel-plugin/xfapplet.c:493
+#: ../panel-plugin/xfapplet.c:494
 msgid "Display Gnome applets on the Xfce4 Panel"
 msgstr "Отображает апплеты Gnome на панели Xfce4"
 
-#: ../panel-plugin/xfapplet.c:496
+#: ../panel-plugin/xfapplet.c:497
 msgid "Author/Maintainer"
 msgstr "Автор/Сопровождающий"
 
-#: ../panel-plugin/xfapplet.c:500
+#: ../panel-plugin/xfapplet.c:501
 #, c-format
 msgid "Translator (%s)"
 msgstr "Переводчик (%s)"
 
-#: ../panel-plugin/xfapplet.c:590
+#: ../panel-plugin/xfapplet.c:591
 #, c-format
 msgid "'%s' could not be loaded."
 msgstr "'%s' не может быть загружен."
 
-#: ../panel-plugin/xfapplet.c:593
+#: ../panel-plugin/xfapplet.c:594
 msgid "An internal error occurred and the applet could not be loaded."
 msgstr "Произошла внутренняя ошибка и апплет не может быть загружен."
 

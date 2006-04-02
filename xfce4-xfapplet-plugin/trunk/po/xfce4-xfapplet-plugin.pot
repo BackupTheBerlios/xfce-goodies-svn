@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-25 11:21-0300\n"
+"POT-Creation-Date: 2006-04-01 18:30+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -54,25 +54,25 @@ msgstr ""
 msgid "Reload"
 msgstr ""
 
-#: ../panel-plugin/xfapplet.c:493
+#: ../panel-plugin/xfapplet.c:494
 msgid "Display Gnome applets on the Xfce4 Panel"
 msgstr ""
 
-#: ../panel-plugin/xfapplet.c:496
+#: ../panel-plugin/xfapplet.c:497
 msgid "Author/Maintainer"
 msgstr ""
 
-#: ../panel-plugin/xfapplet.c:500
+#: ../panel-plugin/xfapplet.c:501
 #, c-format
 msgid "Translator (%s)"
 msgstr ""
 
-#: ../panel-plugin/xfapplet.c:590
+#: ../panel-plugin/xfapplet.c:591
 #, c-format
 msgid "'%s' could not be loaded."
 msgstr ""
 
-#: ../panel-plugin/xfapplet.c:593
+#: ../panel-plugin/xfapplet.c:594
 msgid "An internal error occurred and the applet could not be loaded."
 msgstr ""
 
