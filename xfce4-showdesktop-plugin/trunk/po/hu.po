@@ -1,7 +1,8 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
-"POT-Creation-Date: \n"
+"Project-Id-Version: xfce4-showdesktop-plugin 0.4.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-10-24 23:07+0900\n"
 "PO-Revision-Date: 2006-02-14 00:38+0100\n"
 "Last-Translator: SZERVÑC Attila <sas@321.hu>\n"
 "Language-Team: hu\n"
@@ -16,8 +17,14 @@ msgid "Enable this option, if your panel is located on top or on the right."
 msgstr "Használd e lehetőséget, ha a panel fent vagy jobb oldalon van."
 
 #: panel-plugin/showdesktop.c:620
-msgid "Normally, the first mouse button is connected to the windowmanager showdesktop feature, if the WM supports it, and the middle mouse button is connected to the plugin internal showdesktop feature. You can reverse it with this option."
-msgstr "Általában az 1. egér gomb kezeli az ablakkezelő hasonló funkcióját, ha az támogatja azt és a középső gomb működteti ezt. Ezt válthatod e lehetőséggel."
+msgid ""
+"Normally, the first mouse button is connected to the windowmanager "
+"showdesktop feature, if the WM supports it, and the middle mouse button is "
+"connected to the plugin internal showdesktop feature. You can reverse it "
+"with this option."
+msgstr ""
+"Általában az 1. egér gomb kezeli az ablakkezelő hasonló funkcióját, ha az "
+"támogatja azt és a középső gomb működteti ezt. Ezt válthatod e lehetőséggel."
 
 #: panel-plugin/showdesktop.c:621
 msgid "If this option is enabled, the plugin consumes less space on the panel."
@@ -50,4 +57,3 @@ msgstr "Lehetőségek"
 #: panel-plugin/showdesktop.c:671
 msgid "Show Desktop"
 msgstr "Asztalra váltás"
-
