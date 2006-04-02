@@ -1,1 +1,48 @@
- * Needed for distcheck target
+2006-04-02  Daichi Kawahata <daichi@xfce.org>
+
+	* ja.po: Added Japanese translations.
+	* .cvsignore: Removed unnecessary file.
+
+2006-02-23  Daichi Kawahata <daichi@xfce.org>
+
+	* vi.po: Added Vietnamese translations by Phan Vinh Thinh
+	  <teppi@vnlinux.org>.
+
+2006-02-22  Daichi Kawahata <daichi@xfce.org>
+
+	* hu.po: Updated.
+
+2006-02-15  Daichi Kawahata <daichi@xfce.org>
+
+	* eu.po: Added Basque translations by Piarres Beobide
+	  <pi@beobide.net>.
+
+2006-02-11  Szervac Attila <sas@321.hu>
+
+	* hu.po: Add Hungarian Translations.
+
+2005-11-02  ByungHyun Choi <byunghyunchoi@hotmail.com>
+
+	* ko.po: Added Korean translations.
+
+2005-05-18  Andreas J. Guelzow <aguelzow@taliesin.ca>
+
+	* .cvsignore: Adjustments.
+
+2005-05-18  Jasper Huijsmans <jasper@xfce.org>
+
+	* nl.po: Add Dutch translation.
+
+2005-05-18  Jasper Huijsmans <jasper@xfce.org>
+
+	* ChangeLog, POTFILES.in, xfce4-modemlights-plugin.pot: Adjust
+	  configure.ac and fix distcheck target
+
+2005-05-18  Andreas J. Guelzow <aguelzow@taliesin.ca>
+
+	* .cvsignore: Added two files missed in the original import.
+
+2005-05-17  Andreas J. Guelzow <aguelzow@taliesin.ca>
+
+	* POTFILES.in: Initial revision.
+
