@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xfce4-quicklauncher-plugin 1.9.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-12 14:41+0900\n"
+"POT-Creation-Date: 2006-02-15 08:23+0900\n"
 "PO-Revision-Date: 2006-02-12 16:07+0900\n"
 "Last-Translator: Daichi Kawahata <daichi@xfce.org>\n"
 "Language-Team: Japanese <xfce-users-jp@ml.fdiary.net>\n"
@@ -36,15 +36,15 @@ msgstr "コマンド"
 msgid "Open icon"
 msgstr "アイコンを選択して下さい"
 
-#: ../panel-plugin/main.c:158 ../panel-plugin/quicklauncher.desktop.in.in.h:2
+#: ../panel-plugin/main.c:163 ../panel-plugin/quicklauncher.desktop.in.in.h:2
 msgid "Quicklauncher"
 msgstr "クイックランチャー"
 
-#: ../panel-plugin/main.c:161
+#: ../panel-plugin/main.c:166
 msgid "Allows you to add launchers easily and display them on many lines."
 msgstr "ランチャーを追加して複数行に表示します。"
 
-#: ../panel-plugin/main.c:163
+#: ../panel-plugin/main.c:168
 msgid "Other plugins available here"
 msgstr "ここに他のプラグインがあります"
 

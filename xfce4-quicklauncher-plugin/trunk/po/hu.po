@@ -38,8 +38,7 @@ msgstr "parancs"
 msgid "Open icon"
 msgstr "Ikon megnyitása"
 
-#: ../panel-plugin/main.c:163
-#: ../panel-plugin/quicklauncher.desktop.in.in.h:2
+#: ../panel-plugin/main.c:163 ../panel-plugin/quicklauncher.desktop.in.in.h:2
 msgid "Quicklauncher"
 msgstr "Gyorsindító"
 
@@ -54,4 +53,3 @@ msgstr "Más itt elérhető pluginok"
 #: ../panel-plugin/quicklauncher.desktop.in.in.h:1
 msgid "Program with several launchers"
 msgstr "Program különböző indítókkal"
-

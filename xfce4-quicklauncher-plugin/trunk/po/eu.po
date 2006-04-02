@@ -5,7 +5,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xfce4-quicklauncher-plugin\n"
+"Project-Id-Version: xfce4-quicklauncher-plugin 1.9.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-02-15 08:23+0900\n"
 "PO-Revision-Date: 2006-02-13 19:03+0100\n"
