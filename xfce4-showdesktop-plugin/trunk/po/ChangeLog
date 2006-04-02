@@ -1,64 +1,88 @@
-2005-06-24 21:37  Jean-Francois Wauthy <pollux@xfce.org>
+2006-04-02  Daichi Kawahata <daichi@xfce.org>
+
+	* ja.po: Added Japanese translations.
+
+2006-02-15  Daichi Kawahata <daichi@xfce.org>
+
+	* eu.po: Added Basque translations by Piarres Beobide
+	  <pi@beobide.net>.
+
+2006-02-13  Szervac Attila <sas@321.hu>
+
+	* hu.po: Add showdesktop hu.po.
+
+2005-10-24  Daichi Kawahata <daichi@xfce.org>
+
+	* ChangeLog: Added.
+	* de.po, fr.po, ko.po, lt.po, vi.po: Updated with `make
+	  update-po'. Modified initial comments, headers.
+	* es.po: Updated with `make update-po'. Converted charset to UTF-8
+	  from ISO-8859-1. Modified initial comments, headers.
+	* pl.po: Updated Polish translations by Piotr Malinski
+	  <admin@rk.edu.pl>.
+	* es.gmo, fr.gmo, ko.gmo, pl.gmo: Removed auto-generated files.
+
+2005-06-24  Jean-Francois Wauthy <pollux@xfce.org>
 
 	* vi.po: add VI translations
 
-2005-02-13 12:57  Jean-Francois Wauthy <pollux@xfce.org>
+2005-02-13  Jean-Francois Wauthy <pollux@xfce.org>
 
 	* lt.po: add LT translations
 
-2005-02-13 12:44  Jean-Francois Wauthy <pollux@xfce.org>
+2005-02-13  Jean-Francois Wauthy <pollux@xfce.org>
 
 	* fr.gmo, fr.po: add FR translations
 
-2005-01-25 10:12  Jean-Francois Wauthy <pollux@xfce.org>
+2005-01-25  Jean-Francois Wauthy <pollux@xfce.org>
 
 	* ko.gmo, ko.po: update KO translations
 
-2005-01-20 18:09  Benedikt Meurer <benny@xfce.org>
+2005-01-20  Benedikt Meurer <benny@xfce.org>
 
 	* de.po, es.gmo, es.po: Updated spanish translations (thanks to
 	  Rudy Godoy <rudy@kernel-panik.org>). Added missing m4 files.
 
-2004-10-10 15:41  Andre Lerche <a.lerche@gmx.net>
+2004-10-10  Andre Lerche <a.lerche@gmx.net>
 
 	* de.po: fixed typo in german translation
 
-2004-10-10 15:24  Andre Lerche <a.lerche@gmx.net>
+2004-10-10  Andre Lerche <a.lerche@gmx.net>
 
 	* de.po, es.gmo, es.po, ko.gmo, ko.po, pl.gmo, pl.po,
 	  xfce4-showdesktop.pot: preparing for new release and minor i18n
 	  fixes
 
-2004-07-24 12:10  Andre Lerche <a.lerche@gmx.net>
+2004-07-24  Andre Lerche <a.lerche@gmx.net>
 
 	* de.po, es.gmo, es.po, ko.gmo, ko.po, pl.gmo, pl.po,
 	  xfce4-showdesktop.pot: windowmanager showdesktop feature added
 
-2004-07-17 10:45  Benedikt Meurer <benny@xfce.org>
+2004-07-17  Benedikt Meurer <benny@xfce.org>
 
 	* es.gmo, es.po: Added es translations from Rudy Godoy
 	  <rudy@kernel-panik.org>.
 
-2004-06-26 08:25  Andre Lerche <a.lerche@gmx.net>
+2004-06-26  Andre Lerche <a.lerche@gmx.net>
 
 	* de.po, ko.gmo, ko.po, pl.gmo, pl.po, xfce4-showdesktop.pot:
 	  Added Option to show only 1 button
 
-2004-04-16 19:29  Andre Lerche <a.lerche@gmx.net>
+2004-04-16  Andre Lerche <a.lerche@gmx.net>
 
 	* de.po, ko.gmo, ko.po, pl.gmo, pl.po, xfce4-showdesktop.pot:
 	  fixed some compile errors
 
-2004-01-09 18:45  Andre Lerche <a.lerche@gmx.net>
+2004-01-09  Andre Lerche <a.lerche@gmx.net>
 
 	* pl.gmo, pl.po: added Polish translation by Andrzej
 	  Augustynowicz
 
-2003-11-24 18:33  Andre Lerche <a.lerche@gmx.net>
+2003-11-24  Andre Lerche <a.lerche@gmx.net>
 
 	* ko.gmo, ko.po: added Korean translation by David Choi
 
-2003-11-05 18:04  Andre Lerche <a.lerche@gmx.net>
+2003-11-05  Andre Lerche <a.lerche@gmx.net>
 
 	* Makefile.in.in, POTFILES.in, de.po, xfce4-showdesktop.pot:
 	  added i18n support

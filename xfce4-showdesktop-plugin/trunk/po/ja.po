@@ -1,0 +1,64 @@
+# Japanese translations for xfce4-showdesktop-plugin package.
+# Copyright (C) 2003-2004 Andre Lerche.
+# This file is distributed under the same license as the
+#   xfce4-showdesktop-plugin package.
+# Daichi Kawahata <daichi@xfce.org>, 2006.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: xfce4-showdesktop-plugin 0.4.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2004-10-10 17:20+0200\n"
+"PO-Revision-Date: 2006-01-05 17:42+0900\n"
+"Last-Translator: Daichi Kawahata <daichi@xfce.org>\n"
+"Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: panel-plugin/showdesktop.c:619
+msgid "Enable this option, if your panel is located on top or on the right."
+msgstr "パネルを上部か右側に置くと、このオプションが有効になります。"
+
+#: panel-plugin/showdesktop.c:620
+msgid ""
+"Normally, the first mouse button is connected to the windowmanager "
+"showdesktop feature, if the WM supports it, and the middle mouse button is "
+"connected to the plugin internal showdesktop feature. You can reverse it "
+"with this option."
+msgstr ""
+"ウィンドウマネージャーがサポートしていれば、通常マウスの左ボタンはデスクトッ"
+"プ表示機能に対応し、中央のボタンはこのプラグインに備わっているデスクトップ表"
+"示機能に対応します。このオプションでそれを逆にする事が可能です。"
+
+#: panel-plugin/showdesktop.c:621
+msgid "If this option is enabled, the plugin consumes less space on the panel."
+msgstr "このオプションを有効にすると、パネルでの消費スペースが小さくなります。"
+
+#: panel-plugin/showdesktop.c:622
+msgid "display one button only"
+msgstr "一つのボタンのみ表示する"
+
+#: panel-plugin/showdesktop.c:629
+msgid "swap commands"
+msgstr "コマンドを入れ替える"
+
+#: panel-plugin/showdesktop.c:634
+msgid "alternate button mode"
+msgstr "別のボタンモード"
+
+#: panel-plugin/showdesktop.c:639
+msgid "reduce size"
+msgstr "サイズを減らす"
+
+#: panel-plugin/showdesktop.c:644
+msgid "one toggle button"
+msgstr "一つのトグルボタン"
+
+#: panel-plugin/showdesktop.c:650
+msgid "Options"
+msgstr "オプション"
+
+#: panel-plugin/showdesktop.c:671
+msgid "Show Desktop"
+msgstr "デスクトップ表示"
