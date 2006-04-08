@@ -24,7 +24,7 @@ AC_PROG_INTLTOOL
 
 AC_HEADER_STDC
 
-XDT_I18N([de fr hu ja pl vi])
+XDT_I18N([de el fr hu ja pl vi])
 
 XDT_CHECK_PACKAGE([LIBXFCE4PANEL], [libxfce4panel-1.0], [4.3.0])
 
