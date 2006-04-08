@@ -1,0 +1,32 @@
+# Polish translations for xfce4-xmms-plugin package.
+# Copyright (C) 2005 Kemal Ilgar Eroglu.
+# This file is distributed under the same license as the xfce4-xmms-plugin package.
+# Piotr Makiński <admin@rk.edu.pl>, 2006.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: xfce4-xmms-plugin 0.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-01-04 23:52+0900\n"
+"PO-Revision-Date: 2006-04-08 13:26+0900\n"
+"Last-Translator: Piotr Makiński <admin@rk.edu.pl>\n"
+"Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../panel-plugin/xmms_plugin.c:749
+msgid "Properties"
+msgstr "Właściwości"
+
+#: ../panel-plugin/xmms_plugin.c:761
+msgid "Xfce4 XMMS Plugin Options"
+msgstr "Opcje wtyczki Xfce4 XMMS"
+
+#: ../panel-plugin/xfce4-xmms-plugin.desktop.in.in.h:1
+msgid "XMMS plugin for Xfce 4.4 panel"
+msgstr "Wtyczka XMMS dla Xfce 4.4"
+
+#: ../panel-plugin/xfce4-xmms-plugin.desktop.in.in.h:2
+msgid "Xfce4 XMMS Plugin"
+msgstr "Wtyczka XMMS dla Xfce 4.4"

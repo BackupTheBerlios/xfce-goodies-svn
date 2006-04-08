@@ -30,7 +30,7 @@ dnl check for standard header files
 AC_HEADER_STDC
 
 dnl Check for i18n support
-XDT_I18N([de eu hu ja ko lt vi])
+XDT_I18N([de eu hu ja ko lt pl vi])
 
 dnl required
 XDT_CHECK_PACKAGE([GTHREAD], [gthread-2.0], [2.4.0])
