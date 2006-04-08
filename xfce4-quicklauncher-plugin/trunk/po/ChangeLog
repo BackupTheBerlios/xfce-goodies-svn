@@ -1,3 +1,12 @@
+2006-04-08  Daichi Kawahata <daichi@xfce.org>
+
+	* pl.po: Added Polish translations by Piotr Malinski
+	  <admin@rk.edu.pl>.
+
+2006-04-02  Daichi Kawahata <daichi@xfce.org>
+
+	* xfce4-quicklauncher-plugin.pot, *.po: Updated.
+
 2006-02-12  Daichi Kawahata <daichi@xfce.org>
 
 	* ja.po: Added Japanese translations.
