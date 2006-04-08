@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xfce4-xfapplet-plugin 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-01 18:30+0900\n"
+"POT-Creation-Date: 2006-04-08 15:01-0300\n"
 "PO-Revision-Date: 2006-03-30 01:59+0300\n"
 "Last-Translator: Phan Vinh Thinh <teppi@vnlinux.org>\n"
 "Language-Team: Vietnamese <none@li.org>\n"
@@ -36,12 +36,12 @@ msgstr ""
 msgid "Available applets"
 msgstr "Những applet có"
 
-#: ../panel-plugin/xfapplet.c:154
+#: ../panel-plugin/xfapplet.c:148
 #, c-format
 msgid "'%s' has quit unexpectedly."
 msgstr "'%s' thoát không theo mong muốn."
 
-#: ../panel-plugin/xfapplet.c:157
+#: ../panel-plugin/xfapplet.c:151
 msgid ""
 "If you don't reload the applet, XfApplet plugin will go back to its initial "
 "empty state."
@@ -49,33 +49,33 @@ msgstr ""
 "Nếu không nạp lại applet, thì XfApplet sẽ quay trở lại trạng thái rỗng ban "
 "đầu."
 
-#: ../panel-plugin/xfapplet.c:159
+#: ../panel-plugin/xfapplet.c:153
 msgid "Don't Reload"
 msgstr "Không nạp lại"
 
-#: ../panel-plugin/xfapplet.c:160
+#: ../panel-plugin/xfapplet.c:154
 msgid "Reload"
 msgstr "Nạp lại"
 
-#: ../panel-plugin/xfapplet.c:494
+#: ../panel-plugin/xfapplet.c:477
 msgid "Display Gnome applets on the Xfce4 Panel"
 msgstr "Hiển thị các applet của Gnome trên thanh Panel Xfce4"
 
-#: ../panel-plugin/xfapplet.c:497
+#: ../panel-plugin/xfapplet.c:480
 msgid "Author/Maintainer"
 msgstr "Tác giả/Nhà duy trì"
 
-#: ../panel-plugin/xfapplet.c:501
+#: ../panel-plugin/xfapplet.c:484
 #, c-format
 msgid "Translator (%s)"
 msgstr "Người dịch (%s)"
 
-#: ../panel-plugin/xfapplet.c:591
+#: ../panel-plugin/xfapplet.c:574
 #, c-format
 msgid "'%s' could not be loaded."
 msgstr "Không nạp được '%s'."
 
-#: ../panel-plugin/xfapplet.c:594
+#: ../panel-plugin/xfapplet.c:577
 msgid "An internal error occurred and the applet could not be loaded."
 msgstr "Có lỗi nội bộ và không nạp được applet."
 

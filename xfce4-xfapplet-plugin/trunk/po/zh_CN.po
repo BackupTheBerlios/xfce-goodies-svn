@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xfce4-xfapplet-plugin 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-01 18:30+0900\n"
+"POT-Creation-Date: 2006-04-08 15:01-0300\n"
 "PO-Revision-Date: 2006-03-28 11:25+0800\n"
 "Last-Translator: Jick Nan <jick.nan@gmail.com>\n"
 "Language-Team: Chinese/Simplified <i18n-translation@lists.linux.net.cn>\n"
@@ -35,44 +35,44 @@ msgstr "请在列表中选择小型应用程序(applet)。"
 msgid "Available applets"
 msgstr "可用的小型应用程序"
 
-#: ../panel-plugin/xfapplet.c:154
+#: ../panel-plugin/xfapplet.c:148
 #, c-format
 msgid "'%s' has quit unexpectedly."
 msgstr "‘%s’异常退出。"
 
-#: ../panel-plugin/xfapplet.c:157
+#: ../panel-plugin/xfapplet.c:151
 msgid ""
 "If you don't reload the applet, XfApplet plugin will go back to its initial "
 "empty state."
 msgstr "如果你不重新加载小型应用程序，XfApplet 将返回初始空白状态。"
 
-#: ../panel-plugin/xfapplet.c:159
+#: ../panel-plugin/xfapplet.c:153
 msgid "Don't Reload"
 msgstr "不重新载入"
 
-#: ../panel-plugin/xfapplet.c:160
+#: ../panel-plugin/xfapplet.c:154
 msgid "Reload"
 msgstr "重新载入"
 
-#: ../panel-plugin/xfapplet.c:494
+#: ../panel-plugin/xfapplet.c:477
 msgid "Display Gnome applets on the Xfce4 Panel"
 msgstr "在 Xfce4 面板中显示 Gnome 小型应用程序"
 
-#: ../panel-plugin/xfapplet.c:497
+#: ../panel-plugin/xfapplet.c:480
 msgid "Author/Maintainer"
 msgstr "作者/维护者"
 
-#: ../panel-plugin/xfapplet.c:501
+#: ../panel-plugin/xfapplet.c:484
 #, c-format
 msgid "Translator (%s)"
 msgstr "翻译者 (%s)"
 
-#: ../panel-plugin/xfapplet.c:591
+#: ../panel-plugin/xfapplet.c:574
 #, c-format
 msgid "'%s' could not be loaded."
 msgstr "无法加载 '%s'。"
 
-#: ../panel-plugin/xfapplet.c:594
+#: ../panel-plugin/xfapplet.c:577
 msgid "An internal error occurred and the applet could not be loaded."
 msgstr "发生内部错误，无法加载小型应用程序。"
 
