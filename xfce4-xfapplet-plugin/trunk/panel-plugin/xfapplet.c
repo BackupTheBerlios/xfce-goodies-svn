@@ -64,12 +64,6 @@ enum {
 	PANEL_NEAR_LEFT
 };
 
-typedef struct {
-	gchar  *name;
-	gchar  *email;
-	gchar  *language;
-} XfAppletTranslators;
-
 static void
 xfapplet_setup_empty (XfAppletPlugin *xap);
 
@@ -478,18 +472,6 @@ xfapplet_about_dialog (XfcePanelPlugin *plugin, gpointer data)
 	GtkWidget	*dialog;
 	GdkPixbuf	*pixbuf = NULL;
 	guint		 i;
-	static const XfAppletTranslators translators[] = {
-		{"Stephane Roy", "sroy@j2n.net", "fr",},
-		{"SZERVÑC Attila", "sas@321.hu", "hu",},
-		{"Daichi Kawahata", "daichi@xfce.org", "ja",},
-		{"Vincent Tunru", "imnotb@gmail.com", "nl",},
-		{"Adriano Winter Bess", "awbess@gmail.com", "pt_BR",},
-		{"Andrey Fedoseev", "andrey.fedoseev@gmail.com", "ru",},
-		{"Phan Vĩnh Thịnh", "teppi@vnlinux.org", "vi",},
-		{"Jick Nan", "jick.nan@gmail.com", "zh_CN",},
-		{"Hydonsingore Cia", "hydonsingore@mail.educities.edu.tw", "zh_TW",},
-		{NULL,}
-	};
 
 	info = xfce_about_info_new ("XfApplet", VERSION " (r" REVISION ")",
 				    _("Display Gnome applets on the Xfce4 Panel"),

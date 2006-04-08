@@ -37,6 +37,14 @@ typedef struct {
 	Bonobo_PropertyBag	 prop_bag;
 } XfAppletPlugin;
 
+typedef struct {
+	gchar  *name;
+	gchar  *email;
+	gchar  *language;
+} XfAppletTranslators;
+
+extern XfAppletTranslators translators[];
+
 void		xfapplet_cleanup_current  (XfAppletPlugin *xap);
 
 void		xfapplet_chooser_dialog   (XfcePanelPlugin*, XfAppletPlugin*);

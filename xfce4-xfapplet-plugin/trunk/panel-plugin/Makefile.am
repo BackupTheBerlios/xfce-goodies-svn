@@ -6,6 +6,14 @@ xfce4_xfapplet_plugin_SOURCES = \
 	xfapplet.c \
 	chooser.c
 
+nodist_xfce4_xfapplet_plugin_SOURCES = \
+	trans.c
+
+trans.c: ../AUTHORS
+	echo -e '#include "xfapplet.h"\n\nXfAppletTranslators translators[] = {' > $@
+	grep ':' $< | sort | sed -n 's/[ ]*\([a-zA-Z_]*\):[ ]*\(.*\) <\([^>]*\)>/{"\2", "\3", "\1",},/p' >> $@
+	echo -e '{NULL,},};\n' >> $@
+
 xfce4_xfapplet_plugin_CFLAGS = \
 	@LIBPANELAPPLET_CFLAGS@ \
 	@LIBXFCE4PANEL_CFLAGS@ \
