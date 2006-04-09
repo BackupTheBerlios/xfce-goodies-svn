@@ -38,7 +38,7 @@ dnl Check for debugging support
 XDT_FEATURE_DEBUG()
 
 dnl For internationalisation
-XDT_I18N([el eu fr hu ja pl vi])
+XDT_I18N([el eu fr hu ja pl ru vi])
 
 AC_OUTPUT([  
 panel-plugin/Makefile
