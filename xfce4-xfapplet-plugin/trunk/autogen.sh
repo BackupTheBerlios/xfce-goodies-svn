@@ -18,6 +18,9 @@ EOF
   exit 1
 }
 
+linguas=`ls po/*.po | sed 's/po\/\([a-zA-Z_]*\).po/\1/' | tr '\n' ' '`
+sed -e "s/@LINGUAS@/${linguas}/g" < "configure.ac.in" > "configure.ac"
+
 exec xdt-autogen $@
 
 # vi:set ts=2 sw=2 et ai:
