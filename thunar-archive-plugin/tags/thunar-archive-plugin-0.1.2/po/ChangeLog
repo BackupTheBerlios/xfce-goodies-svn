@@ -1,0 +1,40 @@
+2006-04-16  Benedikt Meurer <benny@xfce.org>
+
+	* *.po: Update project version.
+
+2006-04-09  Daichi Kawahata <daichi@xfce.org>
+
+	* LINGUAS, zh_TW.po: Added Traditional Chinese translations by
+	  Hydonsingore Cia <hydonsingore@mail.educities.edu.tw>.
+
+2006-04-08	Daichi Kawahata <daichi@xfce.org>
+
+	* LINGUAS, el.po: Added Greek translations by Stavros Giannouris
+	  <stavrosg2002@freemail.gr>.
+	* LINGUAS, pl.po: Added Polish translations by Piotr Malinski
+	  <admin@rk.edu.pl>.
+
+2006-04-02	Daichi Kawahata <daichi@xfce.org>
+
+	* LINGUAS, fr.po: Added French translations by Stephane Roy
+	  <sroy@j2n.net>.
+	* ru.po: Updated.
+	* LINGUAS, ja.po: Added Japanese translations.
+
+2006-03-30	Benedikt Meurer <benny@xfce.org>
+
+	* LINGUAS: Add 'ru' here.
+	* ru.po: Add russian translations, thanks to Andrey Fedoseev
+	  <andrey.fedoseev@gmail.com>.
+
+2006-03-27	Benedikt Meurer <benny@xfce.org>
+
+	* LINGUAS: Add 'hu' here.
+	* de.po, hu.po: Update version.
+
+2006-03-26	Benedikt Meurer <benny@xfce.org>
+
+	* thunar-archive-plugin.pot: Merge new strings.
+	* de.po: Update german translations.
+
+# vi:set ts=8 sw=8 noet ai nocindent:

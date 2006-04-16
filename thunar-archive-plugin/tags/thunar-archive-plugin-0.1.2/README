@@ -1,0 +1,34 @@
+What is it?
+===========
+
+The thunar-archive-plugin is a plugin for the Thunar File Manager, which
+adds archive operations to the file context menus. Using this plugin you
+will be able to extract and create archive files from within Thunar using
+a single click.
+
+
+Required packages
+=================
+
+thunar-archive-plugin depends on the following packages:
+
+ - Thunar 0.2.2 or above
+ - file-roller 2.8 or above
+
+
+Installation
+============
+
+The file 'INSTALL' contains generic installation instructions. For more
+detailed information, visit the thunar-archive-plugin website at
+http://xfce.org/~benny/projects/thunar-archive-plugin/.
+
+
+How to report bugs?
+===================
+
+Bugs should be reported to the Xfce bug tracking system
+(http://bugzilla.xfce.org, product Thunar Plugins, component
+thunar-archive-plugin). You will need to create an
+account for yourself.
+

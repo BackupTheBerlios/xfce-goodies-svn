@@ -1,0 +1,43 @@
+2006-04-16	Benedikt Meurer <benny@xfce.org>
+
+	* === Released 0.1.2 ===
+	* NEWS, configure.in.in: Bump version.
+	* THANKS: Add missing translator credits.
+	* po/*.po: Update project version.
+
+2006-03-30	Benedikt Meurer <benny@xfce.org>
+
+	* THANKS, po/LINGUAS, po/ru.po: Add russian translations, thanks to
+	  Andrey Fedoseev <andrey.fedoseev@gmail.com>.
+	* configure.in.in, thunar-archive-plugin/Makefile.am: Check for
+	  thunar-vfs (which depends on libexo).
+	* thunar-archive-plugin/tap-provider.c: Schedule a "changed" event
+	  after the file-roller command is done, so the folder in which the
+	  archive operation was performed is refreshed immediatly without
+	  having to wait for FAM/Gamin. Bug #1626.
+
+2006-03-27	Benedikt Meurer <benny@xfce.org>
+
+	* po/LINGUAS: Add 'hu' here.
+	* po/de.po, po/hu.po: Update version.
+	* THANKS, Makefile.am: Add THANKS file.
+
+2006-03-26	Benedikt Meurer <benny@xfce.org>
+
+	* configure.in.in: Bump version to 0.1.1svn.
+
+2006-03-26	Benedikt Meurer <benny@xfce.org>
+
+	* configure.in.in: Set version to 0.1.0.
+	* NEWS: Update for 0.1.0.
+	* thunar-archive-plugin/tap-provider.c(tap_provider_get_file_actions):
+	  Add mnemonics for the actions.
+	* po/thunar-archive-plugin.pot: Merge new strings.
+	* po/de.po: Update german translations.
+	* README: Update content.
+
+2006-03-26	Benedikt Meurer <benny@xfce.org>
+
+	* Initial import.
+
+# vi:set ts=8 sw=8 noet ai nocindent:
