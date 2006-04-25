@@ -2,11 +2,14 @@ dnl configure.ac
 dnl
 dnl
 
-AC_INIT([panel-plugin/command.c])
+m4_define([minicmd_version],[0.4.0])
 
+AC_INIT([xfce4-minicmd-plugin],[minicmd_version()],
+	[xfce-goodies-dev@lists.berlios.de])
+
+MINICMD_VERSION=minicmd_version()
+AM_INIT_AUTOMAKE([xfce4-minicmd-plugin], [$MINICMD_VERSION])
 AM_CONFIG_HEADER([config.h])
-
-AM_INIT_AUTOMAKE([xfce4-minicmd-plugin], [0.3.0])
 
 AM_MAINTAINER_MODE
 
@@ -18,21 +21,23 @@ AC_MINIX
 dnl Check for basic programs
 AC_PROG_CC
 AC_PROG_INSTALL
+AC_PROG_INTLTOOL
 AC_PROG_LIBTOOL
 
 dnl Check for standard header files
 AC_HEADER_STDC
 
 dnl configure the panel plugin
-XFCE_PANEL_PLUGIN([XFCE4_PANEL], [4.1.90])
+XDT_CHECK_PACKAGE([LIBXFCE4PANEL],[libxfce4panel-1.0],[4.3.20])
 
-dnl link to libxfce4util
-PKG_CHECK_MODULES(LIB_XFCE4_UTIL, libxfce4util-1.0)
+dnl Translations
+XDT_I18N()
 
 dnl Check for debugging support
-BM_DEBUG_SUPPORT
+XDT_FEATURE_DEBUG()
 
 AC_OUTPUT([
 Makefile
 panel-plugin/Makefile
+po/Makefile.in
 ])

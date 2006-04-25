@@ -1,0 +1,7 @@
+[Xfce Panel]
+Type=X-XFCE-PanelPlugin
+Encoding=UTF-8
+_Name=MiniCommand
+_Comment=A miniature commandline that sits in your panel
+Icon=gnome-terminal
+X-XFCE-Module=@INTERNAL_PLUGIN_PATH@/libminicmd.so

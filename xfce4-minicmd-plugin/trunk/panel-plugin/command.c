@@ -61,6 +61,9 @@
 #include <config.h>
 #endif
 
+#include <stdlib.h>
+#include <string.h>
+
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 
@@ -68,10 +71,8 @@
 #include <gdk/gdkkeysyms.h>
 
 #include <libxfce4util/libxfce4util.h>
-
-#include <libxfcegui4/dialogs.h>
-#include <panel/plugins.h>
-#include <panel/xfce.h>
+#include <libxfcegui4/libxfcegui4.h>
+#include <libxfce4panel/xfce-panel-plugin.h>
 
 #ifndef PATH_MAX
 #define DEFAULT_LENGTH 1024
@@ -276,8 +277,6 @@ static void free_history(GList *history)
     GList *tmp;
     XFCommand *hitem;
 
-    DBG("");
-
     tmp = History;
     while(tmp) {
         hitem = (XFCommand *)tmp->data;
@@ -430,16 +429,6 @@ static gboolean entry_keypress_cb(GtkWidget *entry, GdkEventKey *event, gpointer
     }
 }
 
-static void runcl(GtkWidget * entry, gpointer data)
-{
-    const gchar *cmd = gtk_entry_get_text(GTK_ENTRY(entry));
-    if (do_run(cmd, FALSE)) {
-        // save history
-        put_history(cmd, FALSE, History);
-    }
-    gtk_entry_set_text(GTK_ENTRY(entry), "");
-};
-
 /*
  * command_new: Initialises the widgets
  */
@@ -457,15 +446,23 @@ static t_command *command_new(void)
 
     gtk_widget_show(command->entry);
     gtk_container_add(GTK_CONTAINER(command->ebox), command->entry);
-    // g_signal_connect(command->entry, "activate", G_CALLBACK(runcl), command);
     g_signal_connect(command->entry, "key-press-event", G_CALLBACK(entry_keypress_cb), command);
 
     g_signal_connect (command->entry, "button-press-event", G_CALLBACK(entry_buttonpress_cb), NULL);
     
     return (command);
-};
+}
 
-static gboolean command_control_new(Control * ctrl)
+
+static void command_free(XfcePanelPlugin *plug, gpointer data)
+{
+    t_command *command;
+    g_return_if_fail(data != NULL);
+    command = (t_command *) data;
+    g_free(command);
+}
+
+static void command_construct(XfcePanelPlugin * plug)
 {
     t_command *command;
 
@@ -476,98 +473,11 @@ static gboolean command_control_new(Control * ctrl)
 
     Fileman = get_fileman();
 
-    gtk_container_add(GTK_CONTAINER(ctrl->base), command->ebox);
-
-    ctrl->data = (gpointer) command;
-    ctrl->with_popup = FALSE;
-
-    gtk_widget_set_size_request(ctrl->base, -1, -1);
-
-    return (TRUE);
-};
-
-static void command_free(Control * ctrl)
-{
-    t_command *command;
-
-    g_return_if_fail(ctrl != NULL);
-    g_return_if_fail(ctrl->data != NULL);
-
-    command = (t_command *) ctrl->data;
-
-    g_free(command);
-};
-
-static void command_read_config(Control * ctrl, xmlNodePtr parent)
-{
-    /*
-     * TODO:
-     * optional "run in terminal" checkbox
-     * optional "run in terminal" by some prefix, like "t links" (links in terminal)
-     * optional "run button" (possible themable image button)
-     * history (with optional xfrun4 history support
-     * auto completion
-     * */
-};
-
-static void command_write_config(Control * ctrl, xmlNodePtr parent)
-{
-    /* do something useful here */
-};
-
-static void command_attach_callback(Control * ctrl, const gchar * signal,
-                                    GCallback cb, gpointer data)
-{
-    t_command *command;
-
-    command = (t_command *) ctrl->data;
-    g_signal_connect(command->ebox, signal, cb, data);
-    g_signal_connect(command->entry, signal, cb, data);
-};
-
-static void command_set_size(Control * ctrl, int size)
-{
-    /* do the resize of entry :) */
-};
-
-/* options dialog */
-static void command_add_options(Control * ctrl, GtkContainer * con,
-                                GtkWidget * done)
-{
-    /* read command_read_config for my TODOs */
-};
-
-/* initialization */
-G_MODULE_EXPORT void xfce_control_class_init(ControlClass * cc)
-{
-    /* these are required */
-    cc->name = _("minicmd");
-    cc->caption = _("Mini Command line");
-
-    cc->create_control = (CreateControlFunc) command_control_new;
-
-    cc->free = command_free;
-    cc->attach_callback = command_attach_callback;
-
-    /* options; don't define if you don't have any ;) */
-    cc->read_config = command_read_config;
-    cc->write_config = command_write_config;
-    cc->create_options = NULL;
-    /* cc->create_options           = command_add_options; */
-
-    /* Don't use this function at all if you want xfce to
-     * do the sizing.
-     * Just define the set_size function to NULL, or rather, don't 
-     * set it to something else.
-     */
-    cc->set_size = command_set_size;
-
-    /* unused in the sample:
-     * ->set_orientation
-     * ->set_theme
-     */
-
+    gtk_container_add(GTK_CONTAINER(plug), command->ebox);
+    xfce_panel_plugin_add_action_widget(plug, command->ebox);
+ 
+    g_signal_connect(plug, "free-data", G_CALLBACK(command_free), command);
 }
 
-/* required! defined in panel/plugins.h */
-XFCE_PLUGIN_CHECK_INIT
+XFCE_PANEL_PLUGIN_REGISTER_INTERNAL(command_construct);
+
