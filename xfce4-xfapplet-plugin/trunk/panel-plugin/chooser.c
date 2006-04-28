@@ -52,6 +52,8 @@ typedef struct {
 	XfAppletPlugin	*xap;
 } XfAppletChooserDialog;
 
+static GtkWidget *chooser_dialog = NULL;
+
 static gchar *
 xfapplet_find_unique_key (gchar *applet_name)
 {
@@ -364,6 +366,7 @@ xfapplet_chooser_dialog_response (GtkWidget *dialog, int response, XfAppletChoos
 
 	g_signal_handler_disconnect (dialog, chooser->destroy_id);	
 	gtk_widget_destroy (dialog);
+	chooser_dialog = NULL;
 	xfapplet_free_applet_list (chooser->applets);
 	xfce_panel_plugin_unblock_menu (xap->plugin);
 	g_free (chooser);
@@ -425,6 +428,11 @@ xfapplet_chooser_dialog (XfcePanelPlugin *plugin, XfAppletPlugin *xap)
 	GdkColor		*color;
 	gchar			*markup;
 	gulong			 signal;
+
+	if (chooser_dialog) {
+		gtk_window_present (GTK_WINDOW (chooser_dialog));
+		return;
+	}
 
 	xfce_panel_plugin_block_menu (plugin);
 
@@ -533,6 +541,7 @@ xfapplet_chooser_dialog (XfcePanelPlugin *plugin, XfAppletPlugin *xap)
 	}
 
 	gtk_widget_show_all (dialog);
+	chooser_dialog = dialog;
 	g_signal_handler_disconnect (info_label, signal);
 }
 
