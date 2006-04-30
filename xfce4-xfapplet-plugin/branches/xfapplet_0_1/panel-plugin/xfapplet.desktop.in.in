@@ -1,0 +1,7 @@
+[Xfce Panel]
+Type=X-XFCE-PanelPlugin
+Encoding=UTF-8
+_Name=XfApplet
+_Comment=Display Gnome applets in the panel
+Icon=xfapplet1
+X-XFCE-Exec=@PLUGIN_PATH@/xfce4-xfapplet-plugin
