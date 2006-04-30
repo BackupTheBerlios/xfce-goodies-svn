@@ -6,9 +6,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xfce4-xfapplet-plugin 0.0.1\n"
+"Project-Id-Version: xfce4-xfapplet-plugin 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-08 15:01-0300\n"
+"POT-Creation-Date: 2006-04-30 11:29-0300\n"
 "PO-Revision-Date: 2006-04-06 00:39+0800\n"
 "Last-Translator: Hydonsingore Cia <hydonsingore@mail.educities.edu.tw>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -17,15 +17,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #. creation of the dialog
-#: ../panel-plugin/chooser.c:436 ../panel-plugin/xfapplet.desktop.in.in.h:2
+#: ../panel-plugin/chooser.c:444 ../panel-plugin/xfapplet.desktop.in.in.h:2
 msgid "XfApplet"
 msgstr "XfApplet"
 
-#: ../panel-plugin/chooser.c:457
+#: ../panel-plugin/chooser.c:465
 msgid "Choose an applet"
 msgstr "選擇一個 applet"
 
-#: ../panel-plugin/chooser.c:466
+#: ../panel-plugin/chooser.c:474
 msgid ""
 "Choose an applet from the list. If you have already chosen an applet "
 "previously, it will be substituted by the one you choose."
@@ -33,7 +33,7 @@ msgstr ""
 "從清單中選擇一個 applet。如果您之前已經選取一個 applet，您目前所選者會取而代"
 "之。"
 
-#: ../panel-plugin/chooser.c:478
+#: ../panel-plugin/chooser.c:486
 msgid "Available applets"
 msgstr "可用的 applets"
 

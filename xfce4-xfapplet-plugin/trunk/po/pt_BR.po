@@ -5,9 +5,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: xfce4-xfapplet-plugin 0.0.1\n"
+"Project-Id-Version: xfce4-xfapplet-plugin 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-08 15:01-0300\n"
+"POT-Creation-Date: 2006-04-30 11:29-0300\n"
 "PO-Revision-Date: 2006-03-22 14:26-0300\n"
 "Last-Translator: Adriano Winter Bess <awbess@gmail.com>\n"
 "Language-Team: Portuguese <ldp-br@bazar.conectiva.com.br>\n"
@@ -17,15 +17,15 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #. creation of the dialog
-#: ../panel-plugin/chooser.c:436 ../panel-plugin/xfapplet.desktop.in.in.h:2
+#: ../panel-plugin/chooser.c:444 ../panel-plugin/xfapplet.desktop.in.in.h:2
 msgid "XfApplet"
 msgstr "XfApplet"
 
-#: ../panel-plugin/chooser.c:457
+#: ../panel-plugin/chooser.c:465
 msgid "Choose an applet"
 msgstr "Escolha uma applet"
 
-#: ../panel-plugin/chooser.c:466
+#: ../panel-plugin/chooser.c:474
 msgid ""
 "Choose an applet from the list. If you have already chosen an applet "
 "previously, it will be substituted by the one you choose."
@@ -33,7 +33,7 @@ msgstr ""
 "Escolha uma applet da lista. Se você já havia escolhido uma applet "
 "anteriormente, ela será substituída pela que você escolher."
 
-#: ../panel-plugin/chooser.c:478
+#: ../panel-plugin/chooser.c:486
 msgid "Available applets"
 msgstr "Applets disponíveis"
 

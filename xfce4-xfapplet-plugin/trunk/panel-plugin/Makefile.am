@@ -4,9 +4,7 @@ plugin_PROGRAMS = xfce4-xfapplet-plugin
 xfce4_xfapplet_plugin_SOURCES = \
 	xfapplet.h \
 	xfapplet.c \
-	chooser.c
-
-nodist_xfce4_xfapplet_plugin_SOURCES = \
+	chooser.c \
 	trans.c
 
 trans.c: ../AUTHORS

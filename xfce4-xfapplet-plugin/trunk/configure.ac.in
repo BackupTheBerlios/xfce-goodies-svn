@@ -3,7 +3,7 @@ dnl xfce4-xfapplet-plugin: a plugin for the Xfce 4 panel capable of displaying
 dnl			   Gnome applets.
 
 dnl version info
-m4_define([xfapplet_version], [0.0.1])
+m4_define([xfapplet_version], [0.1.0])
 
 dnl init autoconf
 AC_INIT([xfce4-xfapplet-plugin], [xfapplet_version], [awbess@gmail.com])
@@ -62,7 +62,7 @@ XDT_CHECK_PACKAGE([LIBXFCEGUI4], [libxfcegui4-1.0], [4.2.0])
 dnl check for debugging support
 XDT_FEATURE_DEBUG
 
-REVISION=`LC_ALL=C svn info | head -n 4 | tail -n 1 | cut -d " " -f 2`
+REVISION=`LC_ALL=C svn info | grep Revision | cut -d ' ' -f 2`
 AC_DEFINE_UNQUOTED([REVISION], "${REVISION}", [svn revision number])
 AC_SUBST([REVISION])
 

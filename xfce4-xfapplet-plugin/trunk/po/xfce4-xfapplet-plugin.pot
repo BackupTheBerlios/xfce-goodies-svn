@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-08 15:01-0300\n"
+"POT-Creation-Date: 2006-04-30 11:29-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,21 +17,21 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #. creation of the dialog
-#: ../panel-plugin/chooser.c:436 ../panel-plugin/xfapplet.desktop.in.in.h:2
+#: ../panel-plugin/chooser.c:444 ../panel-plugin/xfapplet.desktop.in.in.h:2
 msgid "XfApplet"
 msgstr ""
 
-#: ../panel-plugin/chooser.c:457
+#: ../panel-plugin/chooser.c:465
 msgid "Choose an applet"
 msgstr ""
 
-#: ../panel-plugin/chooser.c:466
+#: ../panel-plugin/chooser.c:474
 msgid ""
 "Choose an applet from the list. If you have already chosen an applet "
 "previously, it will be substituted by the one you choose."
 msgstr ""
 
-#: ../panel-plugin/chooser.c:478
+#: ../panel-plugin/chooser.c:486
 msgid "Available applets"
 msgstr ""
 
