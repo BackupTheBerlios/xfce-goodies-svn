@@ -5,13 +5,13 @@ dnl
 dnl 2006 Stefan Ott <stefan@desire.ch>
 dnl
 
-m4_define([radio_version],[0.1.0])
+m4_define([radio_plugin_version],[0.2.0])
 
-AC_INIT([xfce4-radio-plugin], [radio_version()],
+AC_INIT([xfce4-radio-plugin], [radio_plugin_version()],
 	[xfce-goodies-dev@lists.berlios.de])
 
-RADIO_VERSION=radio_version()
-AM_INIT_AUTOMAKE([xfce4-radio-plugin], [$RADIO_VERSION])
+RADIO_PLUGIN_VERSION=radio_plugin_version()
+AM_INIT_AUTOMAKE([xfce4-radio-plugin], [$RADIO_PLUGIN_VERSION])
 AM_CONFIG_HEADER([config.h])
 
 AM_MAINTAINER_MODE
@@ -24,16 +24,20 @@ AC_MINIX
 dnl Check for basic programs
 AC_PROG_CC
 AC_PROG_INSTALL
-AC_PROG_LIBTOOL
+AC_PROG_INTLTOOL
 
 dnl Check for standard header files
 AC_HEADER_STDC
 
+dnl check for i18n support
+XDT_I18N([de])
+
 dnl configure the panel plugin
-XFCE_PANEL_PLUGIN([XFCE4_PANEL], [4.0.0])
+XDT_CHECK_PACKAGE([LIBXFCE4PANEL], [libxfce4panel-1.0], [4.3.22])
 
 AC_OUTPUT([
 Makefile
 panel-plugin/Makefile
 icons/Makefile
+po/Makefile.in
 ])
