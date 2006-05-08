@@ -316,27 +316,28 @@ parse_freq_and_tune (const char* freq_char, radio_gui* data)
 	return FALSE;
 }
 
-// TODO: reorganize / clean code
-static void radio_tune_gui(GtkEditable* menu_item, void *pointer) {
+static void
+radio_tune_gui (GtkEditable *menu_item, void *pointer)
+{
         radio_gui* data = (radio_gui*) pointer;
-	GtkWindow* win = GTK_WINDOW(gtk_widget_get_toplevel(data->box));
-	GtkWidget* dialog = gtk_dialog_new_with_buttons(_("Tune radio"),
+	GtkWindow* win = GTK_WINDOW (gtk_widget_get_toplevel (data->box));
+	GtkWidget* dialog = gtk_dialog_new_with_buttons (_("Tune radio"),
 				NULL, GTK_DIALOG_DESTROY_WITH_PARENT,
 				GTK_STOCK_OK, GTK_RESPONSE_OK,
 				GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, NULL);
-	GtkWidget* box = GTK_DIALOG(dialog)->vbox;
+	GtkWidget* box = GTK_DIALOG (dialog)->vbox;
 
-	GtkWidget* label = gtk_label_new(_("Frequency [MHz]:"));
-	gtk_widget_show(label);
-	gtk_box_pack_start(GTK_BOX(box), label, FALSE, FALSE, 0);
+	GtkWidget* label = gtk_label_new (_("Frequency [MHz]:"));
+	gtk_widget_show (label);
+	gtk_box_pack_start (GTK_BOX (box), label, FALSE, FALSE, 0);
 
-	GtkWidget* freq = gtk_entry_new_with_max_length(5);
-	gtk_widget_show(freq);
-	gtk_box_pack_start(GTK_BOX(box), freq, FALSE, FALSE, 0);
+	GtkWidget* freq = gtk_entry_new_with_max_length (5);
+	gtk_widget_show (freq);
+	gtk_box_pack_start (GTK_BOX (box), freq, FALSE, FALSE, 0);
 
 	int retval;
 	for (;;) {
-		retval = gtk_dialog_run(GTK_DIALOG(dialog));
+		retval = gtk_dialog_run (GTK_DIALOG (dialog));
 
 		if (	retval == GTK_RESPONSE_CANCEL || 
 			retval == GTK_RESPONSE_DELETE_EVENT ||
@@ -344,16 +345,16 @@ static void radio_tune_gui(GtkEditable* menu_item, void *pointer) {
 				break;
 		}
 
-		const char* freq_char = gtk_entry_get_text(GTK_ENTRY(freq));
-		if (parse_freq_and_tune(freq_char, data)) break;
+		const char* freq_char = gtk_entry_get_text (GTK_ENTRY (freq));
+		if (parse_freq_and_tune (freq_char, data)) break;
 	
-		GtkWidget* warn = gtk_message_dialog_new(win, 0,
+		GtkWidget* warn = gtk_message_dialog_new (win, 0,
 					GTK_MESSAGE_ERROR, GTK_BUTTONS_OK,
 						_("Illegal frequency."));
-		gtk_dialog_run(GTK_DIALOG(warn));
-		gtk_widget_destroy(warn);
+		gtk_dialog_run (GTK_DIALOG (warn));
+		gtk_widget_destroy (warn);
 	}
-	gtk_widget_destroy(dialog);
+	gtk_widget_destroy (dialog);
 }
 
 static void

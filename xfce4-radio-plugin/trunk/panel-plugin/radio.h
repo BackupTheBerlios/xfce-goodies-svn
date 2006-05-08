@@ -48,7 +48,7 @@ typedef enum {
 
 struct radio_preset_st {
 	int			freq;
-	char			name[MAX_PRESET_NAME_LENGTH];
+	char			name [MAX_PRESET_NAME_LENGTH];
 	struct radio_preset_st*	next;
 };
 
@@ -68,8 +68,8 @@ typedef struct {
 	int			freq;
 	int			fd;
 	int			freqfact;
-	char			device[MAX_DEVICE_NAME_LENGTH];
-	char			command[MAX_COMMAND_LENGTH];
+	char			device [MAX_DEVICE_NAME_LENGTH];
+	char			command [MAX_COMMAND_LENGTH];
 	radio_preset*		presets;
 	mouse_scroll_reaction	scroll;
 
