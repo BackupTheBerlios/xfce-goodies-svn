@@ -16,12 +16,3 @@ is also the place to set the frequency you'd like to tune your radio to.
 
 The mouse wheel allows you to change frequency or station preset. You can
 choose your preferred behaviour in the properties dialog (right-click menu).
-
-
-KNOWN ISSUES
-------------
-Your station presets are currently only saved to disk if you change something
-in the properties dialog afterwards. This probably won't be fixed with Xfce 4.2
-as there simply doesn't seem to be a way for the plugin to get its settings
-saved and Xfce only saves them after changes have been made in the properties
-dialog. It will be fixed in the Xfce 4.4 release, though.
