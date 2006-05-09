@@ -18,12 +18,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. 
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <ctype.h>
 #include <string.h>
 
 #include "radio.h"
 
 #include <libxfcegui4/dialogs.h>
+
 
 static int
 radio_get_signal (int fd)
@@ -79,12 +84,15 @@ update_tooltip (radio_gui* data)
 		sprintf(text, "Tuned to %5.1f", (float) data->freq / 100);
 	}
 	gtk_tooltips_set_tip (data->tooltips, ebox, text, NULL);
+
+	free (text);
 }
 
 static void
 update_label (radio_gui* data)
 {
 	char *label = malloc (MAX_LABEL_LENGTH + 1);
+
 	if (data->on) {
 		sprintf (label, "%5.1f", ((float) data->freq) / 100);
 		update_tooltip (data);
@@ -225,13 +233,13 @@ rename_preset (GtkEditable* menu_item, void *pointer)
 	radio_gui* data = (radio_gui*) pointer;
 	radio_preset* preset = find_preset_by_freq (data->freq, data);
 	if (!preset) return;
-	GtkWidget* dialog = gtk_dialog_new_with_buttons(_("Add preset"),
+	GtkWidget* dialog = gtk_dialog_new_with_buttons (_("Add preset"),
 				NULL, GTK_DIALOG_DESTROY_WITH_PARENT,
 				GTK_STOCK_OK, GTK_RESPONSE_OK,
 				GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, NULL);
 	GtkWidget* box = GTK_DIALOG (dialog)->vbox;
 
-	GtkWidget* label = gtk_label_new(_("Station name:"));
+	GtkWidget* label = gtk_label_new (_("Station name:"));
 	gtk_widget_show (label);
 	gtk_box_pack_start (GTK_BOX (box), label, FALSE, FALSE, 0);
 
@@ -256,7 +264,7 @@ add_preset_dialog (GtkEditable* menu_item, void *pointer)
 {
         radio_gui* data = (radio_gui*) pointer;
 	GtkWindow* win = GTK_WINDOW (gtk_widget_get_toplevel (data->box));
-	GtkWidget* dialog = gtk_dialog_new_with_buttons(_("Add preset"),
+	GtkWidget* dialog = gtk_dialog_new_with_buttons (_("Add preset"),
 				NULL, GTK_DIALOG_DESTROY_WITH_PARENT,
 				GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
 				GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL);
@@ -896,6 +904,8 @@ read_config (XfcePanelPlugin *plugin, radio_gui *data)
 static void
 radio_plugin_construct (XfcePanelPlugin *plugin)
 {
+	xfce_textdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR, "UTF-8");
+
 	radio_gui *data = plugin_control_new (plugin);
 	read_config(plugin, data);
 	
