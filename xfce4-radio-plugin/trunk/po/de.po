@@ -28,7 +28,7 @@ msgstr "Fehler beim Öffnen des Geräts"
 #: ../panel-plugin/radio.c:231 ../panel-plugin/radio.c:262
 #: ../panel-plugin/radio.c:425
 msgid "Add preset"
-msgstr "Preset hinzufügen"
+msgstr "Sender speichern"
 
 #: ../panel-plugin/radio.c:237 ../panel-plugin/radio.c:268
 msgid "Station name:"
@@ -36,7 +36,7 @@ msgstr "Sendername"
 
 #: ../panel-plugin/radio.c:289
 msgid "There is already a preset with this frequency."
-msgstr "Es existiert bereits ein Preset mit dieser Frequenz."
+msgstr "Es existiert bereits ein Sender mit dieser Frequenz."
 
 #: ../panel-plugin/radio.c:327
 msgid "Tune radio"
@@ -52,15 +52,15 @@ msgstr "Ungültige Frequenz"
 
 #: ../panel-plugin/radio.c:396
 msgid "Presets"
-msgstr "Presets"
+msgstr "Sender"
 
 #: ../panel-plugin/radio.c:432
 msgid "Delete active preset"
-msgstr "Aktuelles Preset löschen"
+msgstr "Aktuellen Sender löschen"
 
 #: ../panel-plugin/radio.c:439
 msgid "Rename active preset"
-msgstr "Aktuelles Preset umbenennen"
+msgstr "Aktuellen Sender umbenennen"
 
 #: ../panel-plugin/radio.c:451
 msgid "Tune to frequency"
@@ -100,4 +100,4 @@ msgstr "Frequenz"
 
 #: ../panel-plugin/radio.c:767
 msgid "preset"
-msgstr "Preset"
+msgstr "Sender"
