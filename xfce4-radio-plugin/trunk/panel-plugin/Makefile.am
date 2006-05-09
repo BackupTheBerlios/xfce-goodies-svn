@@ -2,6 +2,7 @@ plugindir = $(libexecdir)/xfce4/panel-plugins
 plugin_PROGRAMS = xfce4-radio-plugin
 
 xfce4_radio_plugin_CFLAGS =						\
+	-DPACKAGE_LOCALE_DIR=\"$(localedir)\"				\
 	@LIBXFCE4PANEL_CFLAGS@
 
 xfce4_radio_plugin_LDFLAGS =						\
