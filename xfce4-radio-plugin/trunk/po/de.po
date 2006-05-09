@@ -6,11 +6,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-05-09 03:06+0200\n"
+"POT-Creation-Date: 2006-05-09 04:16+0200\n"
 "PO-Revision-Date: 2006-05-09 03:06+0200\n"
 "Last-Translator: Stefan Ott <stefan@desire.ch>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=iso-8859-1\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../panel-plugin/radio.c:73
@@ -23,12 +23,12 @@ msgstr "- aus -"
 
 #: ../panel-plugin/radio.c:113
 msgid "Error opening radio device"
-msgstr "Fehler beim ffnen des Gerts"
+msgstr "Fehler beim Öffnen des Geräts"
 
 #: ../panel-plugin/radio.c:231 ../panel-plugin/radio.c:262
 #: ../panel-plugin/radio.c:425
 msgid "Add preset"
-msgstr "Preset hinzufgen"
+msgstr "Preset hinzufügen"
 
 #: ../panel-plugin/radio.c:237 ../panel-plugin/radio.c:268
 msgid "Station name:"
@@ -40,7 +40,7 @@ msgstr "Es existiert bereits ein Preset mit dieser Frequenz."
 
 #: ../panel-plugin/radio.c:327
 msgid "Tune radio"
-msgstr "Frequenz whlen"
+msgstr "Frequenz wählen"
 
 #: ../panel-plugin/radio.c:333
 msgid "Frequency [MHz]:"
@@ -48,7 +48,7 @@ msgstr "Frequenz [MHz]:"
 
 #: ../panel-plugin/radio.c:356
 msgid "Illegal frequency."
-msgstr "Ungltige Frequenz"
+msgstr "Ungültige Frequenz"
 
 #: ../panel-plugin/radio.c:396
 msgid "Presets"
@@ -56,7 +56,7 @@ msgstr "Presets"
 
 #: ../panel-plugin/radio.c:432
 msgid "Delete active preset"
-msgstr "Aktuelles Preset lschen"
+msgstr "Aktuelles Preset löschen"
 
 #: ../panel-plugin/radio.c:439
 msgid "Rename active preset"
@@ -64,7 +64,7 @@ msgstr "Aktuelles Preset umbenennen"
 
 #: ../panel-plugin/radio.c:451
 msgid "Tune to frequency"
-msgstr "Frequenz whlen"
+msgstr "Frequenz wählen"
 
 #: ../panel-plugin/radio.c:680
 msgid "Properties"
@@ -72,11 +72,11 @@ msgstr "Einstellungen"
 
 #: ../panel-plugin/radio.c:699
 msgid "V4L device"
-msgstr "V4L Gert"
+msgstr "V4L Gerät"
 
 #: ../panel-plugin/radio.c:705
 msgid "Display signal strength"
-msgstr "Signalqualitt anzeigen"
+msgstr "Signalqualität anzeigen"
 
 #: ../panel-plugin/radio.c:716
 msgid "yes"
@@ -88,11 +88,11 @@ msgstr "nein"
 
 #: ../panel-plugin/radio.c:735
 msgid "Execute command after shutdown"
-msgstr "Befehl nach dem Ausschalten ausfhren"
+msgstr "Befehl nach dem Ausschalten ausführen"
 
 #: ../panel-plugin/radio.c:747
 msgid "Mouse scrolling changes"
-msgstr "Maus-Scrollen ndert"
+msgstr "Maus-Scrollen ändert"
 
 #: ../panel-plugin/radio.c:759
 msgid "frequency"
