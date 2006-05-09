@@ -29,11 +29,14 @@ AC_PROG_INTLTOOL
 dnl Check for standard header files
 AC_HEADER_STDC
 
+dnl configure the panel plugin
+XDT_CHECK_PACKAGE([LIBXFCE4PANEL], [libxfce4panel-1.0], [4.3.22])
+
 dnl check for i18n support
 XDT_I18N([de])
 
-dnl configure the panel plugin
-XDT_CHECK_PACKAGE([LIBXFCE4PANEL], [libxfce4panel-1.0], [4.3.22])
+dnl Check for debugging support
+XDT_FEATURE_DEBUG()
 
 AC_OUTPUT([
 Makefile
