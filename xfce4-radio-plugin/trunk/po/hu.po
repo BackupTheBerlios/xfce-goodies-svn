@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2006-05-09 09:57+0100\n"
+"PO-Revision-Date: 2006-05-09 13:19+0100\n"
 "Last-Translator: SZERVÑC Attila <sas@321.hu>\n"
 "Language-Team: hu\n"
 "MIME-Version: 1.0\n"
@@ -28,7 +28,7 @@ msgstr "Hiba a rádió eszköz megnyitásakor"
 #: ../panel-plugin/radio.c:262
 #: ../panel-plugin/radio.c:425
 msgid "Add preset"
-msgstr ""
+msgstr "Adó hozzáadása"
 
 #: ../panel-plugin/radio.c:237
 #: ../panel-plugin/radio.c:268
@@ -53,15 +53,15 @@ msgstr "Rossz frekvencia."
 
 #: ../panel-plugin/radio.c:396
 msgid "Presets"
-msgstr ""
+msgstr "Adók"
 
 #: ../panel-plugin/radio.c:432
 msgid "Delete active preset"
-msgstr ""
+msgstr "Jelen adó törlése"
 
 #: ../panel-plugin/radio.c:439
 msgid "Rename active preset"
-msgstr ""
+msgstr "Jelen adó átnevezése"
 
 #: ../panel-plugin/radio.c:451
 msgid "Tune to frequency"
@@ -97,9 +97,9 @@ msgstr "Egér görgetés változások"
 
 #: ../panel-plugin/radio.c:759
 msgid "frequency"
-msgstr "ferkvencia"
+msgstr "frekvencia"
 
 #: ../panel-plugin/radio.c:767
 msgid "preset"
-msgstr ""
+msgstr "adó"
 
