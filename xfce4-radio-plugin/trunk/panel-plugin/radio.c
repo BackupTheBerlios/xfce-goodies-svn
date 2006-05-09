@@ -365,6 +365,22 @@ radio_tune_gui (GtkEditable *menu_item, void *pointer)
 	gtk_widget_destroy (dialog);
 }
 
+static XfceRc *
+get_config_file_write_handle (radio_gui *data)
+{
+	XfcePanelPlugin *plugin = data->plugin;
+	char *file;
+	XfceRc *rc;
+
+	if (!(file = xfce_panel_plugin_save_location (plugin, TRUE)))
+		return NULL;
+
+	rc = xfce_rc_simple_open (file, FALSE);
+	g_free (file);
+
+	return rc;
+}
+
 static void
 remove_preset (GtkEditable* menu_item, void *pointer)
 {
@@ -372,7 +388,28 @@ remove_preset (GtkEditable* menu_item, void *pointer)
 	radio_preset *preset;
 
 	preset = pop_preset (find_preset_by_freq (data->freq, data), data);
+
+	XfceRc *rc;
+	if (rc = get_config_file_write_handle (data)) {
+		char buf[6];
+		sprintf(buf, "%d", preset->freq);
+
+		// TODO: only delete the entry - seems broken
+		//xfce_rc_set_group	(rc, "presets");
+		//xfce_rc_delete_entry	(rc, buf, TRUE);
+		xfce_rc_delete_group (rc, "presets", FALSE);
+
+		if (xfce_rc_has_entry (rc, buf)) {
+			printf("dammit, failed\n");
+		}
+
+		xfce_rc_close (rc);
+	}
+
 	free (preset);
+
+	// TODO: becomes unneccessary as soon as the above TODO has been fixed
+	write_config (data->plugin, data);
 }
 
 static void
@@ -536,8 +573,6 @@ mouse_scroll(GtkWidget* src, GdkEventScroll *event, radio_gui* data)
 			}
 		}
 	}
-	// TODO: remove the following line
-	read_config (data->plugin, data);
 }
 
 static radio_gui *
@@ -809,39 +844,30 @@ radio_plugin_set_size (XfcePanelPlugin *plugin, int size, radio_gui *data)
 static void
 write_config (XfcePanelPlugin *plugin, radio_gui *data)
 {
-	char *file;
 	XfceRc *rc;
+	if (rc = get_config_file_write_handle (data)) {
+		xfce_rc_set_group	(rc, "radio plugin");
 
-	if (!(file = xfce_panel_plugin_save_location (plugin, TRUE)))
-		return;
+		xfce_rc_write_entry	(rc, "dev", data->device);
+		xfce_rc_write_entry	(rc, "cmd", data->command);
+		xfce_rc_write_int_entry (rc, "frq", data->freq);
+		xfce_rc_write_int_entry (rc, "scroll", data->scroll);
+		xfce_rc_write_bool_entry(rc, "show_signal", data->show_signal);
 
-	rc = xfce_rc_simple_open (file, FALSE);
-	g_free (file);
+		xfce_rc_set_group	(rc, "presets");
 
-	if (!rc)
-		return;
+		radio_preset *preset = data->presets, *prev;
 
-	xfce_rc_set_group	(rc, "radio plugin");
+		char buf[6];
 
-	xfce_rc_write_entry	(rc, "dev", data->device);
-	xfce_rc_write_entry	(rc, "cmd", data->command);
-	xfce_rc_write_int_entry (rc, "frq", data->freq);
-	xfce_rc_write_int_entry (rc, "scroll", data->scroll);
-	xfce_rc_write_bool_entry(rc, "show_signal", data->show_signal);
+		while (preset != NULL) {
+			sprintf(buf, "%d", preset->freq);
+			xfce_rc_write_entry (rc, buf, preset->name);
+			preset = preset->next;
+		}
 
-	xfce_rc_set_group	(rc, "presets");
-
-	radio_preset *preset = data->presets, *prev;
-
-	char buf[6];
-
-	while (preset != NULL) {
-		sprintf(buf, "%d", preset->freq);
-		xfce_rc_write_entry (rc, buf, preset->name);
-		preset = preset->next;
+		xfce_rc_close (rc);
 	}
-
-	xfce_rc_close (rc);
 }
 
 static void
@@ -897,7 +923,6 @@ read_config (XfcePanelPlugin *plugin, radio_gui *data)
 		}
 	}
 
-	// TODO: free value (?)
 	g_strfreev (entries);
 }
 
