@@ -907,7 +907,7 @@ radio_plugin_construct (XfcePanelPlugin *plugin)
 	xfce_textdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR, "UTF-8");
 
 	radio_gui *data = plugin_control_new (plugin);
-	read_config(plugin, data);
+	read_config (plugin, data);
 	
 	xfce_panel_plugin_menu_show_configure (plugin);
 
