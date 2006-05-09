@@ -1,0 +1,8 @@
+[Xfce Panel]
+Type=X-XFCE-PanelPlugin
+Encoding=UTF-8
+_Name=Radio Plugin
+_Comment=V4l radio plugin
+Icon=xfce-radio
+X-XFCE-Exec=@PLUGIN_PATH@/xfce4-radio-plugin
+

@@ -1,0 +1,105 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2006-05-09 13:19+0100\n"
+"Last-Translator: SZERVÑC Attila <sas@321.hu>\n"
+"Language-Team: hu\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Poedit-Language: Hungarian\n"
+"X-Poedit-Country: HUNGARY\n"
+
+#: ../panel-plugin/radio.c:73
+msgid "Not tuned"
+msgstr "Nincs behangolva"
+
+#: ../panel-plugin/radio.c:95
+msgid "- off -"
+msgstr "- ki -"
+
+#: ../panel-plugin/radio.c:113
+msgid "Error opening radio device"
+msgstr "Hiba a rádió eszköz megnyitásakor"
+
+#: ../panel-plugin/radio.c:231
+#: ../panel-plugin/radio.c:262
+#: ../panel-plugin/radio.c:425
+msgid "Add preset"
+msgstr "Adó hozzáadása"
+
+#: ../panel-plugin/radio.c:237
+#: ../panel-plugin/radio.c:268
+msgid "Station name:"
+msgstr "Állomás neve:"
+
+#: ../panel-plugin/radio.c:289
+msgid "There is already a preset with this frequency."
+msgstr "Ez már be van állítva a frekvenciával."
+
+#: ../panel-plugin/radio.c:327
+msgid "Tune radio"
+msgstr "Rádió hangolása"
+
+#: ../panel-plugin/radio.c:333
+msgid "Frequency [MHz]:"
+msgstr "Frekvencia [MHz]:"
+
+#: ../panel-plugin/radio.c:356
+msgid "Illegal frequency."
+msgstr "Rossz frekvencia."
+
+#: ../panel-plugin/radio.c:396
+msgid "Presets"
+msgstr "Adók"
+
+#: ../panel-plugin/radio.c:432
+msgid "Delete active preset"
+msgstr "Jelen adó törlése"
+
+#: ../panel-plugin/radio.c:439
+msgid "Rename active preset"
+msgstr "Jelen adó átnevezése"
+
+#: ../panel-plugin/radio.c:451
+msgid "Tune to frequency"
+msgstr "Frekvenciára hangolás"
+
+#: ../panel-plugin/radio.c:680
+msgid "Properties"
+msgstr "Tulajdonságok"
+
+#: ../panel-plugin/radio.c:699
+msgid "V4L device"
+msgstr "V4L eszköz"
+
+#: ../panel-plugin/radio.c:705
+msgid "Display signal strength"
+msgstr "Jel erősség kijelzése"
+
+#: ../panel-plugin/radio.c:716
+msgid "yes"
+msgstr "igen"
+
+#: ../panel-plugin/radio.c:725
+msgid "no"
+msgstr "nem"
+
+#: ../panel-plugin/radio.c:735
+msgid "Execute command after shutdown"
+msgstr "Parancs futtatása kikapcsolás után"
+
+#: ../panel-plugin/radio.c:747
+msgid "Mouse scrolling changes"
+msgstr "Egér görgetés változások"
+
+#: ../panel-plugin/radio.c:759
+msgid "frequency"
+msgstr "frekvencia"
+
+#: ../panel-plugin/radio.c:767
+msgid "preset"
+msgstr "adó"
+
