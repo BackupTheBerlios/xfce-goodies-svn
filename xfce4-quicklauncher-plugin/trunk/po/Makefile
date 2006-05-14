@@ -19,7 +19,7 @@
 
 GETTEXT_PACKAGE = xfce4-quicklauncher-plugin
 PACKAGE = xfce4-quicklauncher-plugin
-VERSION = 1.9.1
+VERSION = 1.9.2
 
 SHELL = /bin/sh
 
@@ -38,7 +38,7 @@ localedir = $(libdir)/locale
 gnulocaledir = $(datadir)/locale
 gettextsrcdir = $(datadir)/glib-2.0/gettext/po
 subdir = po
-install_sh = /home/nic/nic/Projects/XFCE-Goodies/dev/quicklauncher/xfce4-quicklauncher-plugin/install-sh
+install_sh = /home/nic/nic/Projects/XFCE-Goodies/dev/xfce4-quiclauncher-plugin/install-sh
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 
 INSTALL = /usr/bin/install -c
@@ -56,7 +56,7 @@ MSGMERGE = XGETTEXT_ARGS="$(XGETTEXT_ARGS)" INTLTOOL_EXTRACT=$(INTLTOOL_EXTRACT)
 GENPOT   = XGETTEXT_ARGS="$(XGETTEXT_ARGS)" INTLTOOL_EXTRACT=$(INTLTOOL_EXTRACT) srcdir=$(srcdir) $(INTLTOOL_UPDATE) --gettext-package $(GETTEXT_PACKAGE) --pot
 
 DEFS = -DHAVE_CONFIG_H
-CFLAGS = -g -O2 -g3 -Werror -Wall -DG_DISABLE_DEPRECATED -DXFCE_DISABLE_DEPRECATED
+CFLAGS = -g -O2 -g -Wall -DXFCE_DISABLE_DEPRECATED
 CPPFLAGS = 
 
 INCLUDES = -I.. -I$(top_srcdir)/intl
@@ -64,8 +64,8 @@ INCLUDES = -I.. -I$(top_srcdir)/intl
 COMPILE = $(CC) -c $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS) $(XCFLAGS)
 
 SOURCES = 
-POFILES =  fr.po hu.po ja.po
-GMOFILES =  fr.gmo hu.gmo ja.gmo
+POFILES =  el.po eu.po fr.po hu.po ja.po pl.po ru.po vi.po
+GMOFILES =  el.gmo eu.gmo fr.gmo hu.gmo ja.gmo pl.gmo ru.gmo vi.gmo
 DISTFILES = ChangeLog Makefile.in.in POTFILES.in \
 $(POFILES) $(SOURCES)
 EXTRA_DISTFILES = POTFILES.skip Makevars LINGUAS
@@ -75,7 +75,7 @@ POTFILES = \
 	../panel-plugin/main.c \
 	../panel-plugin/quicklauncher.desktop.in.in
 
-CATALOGS =  fr.gmo hu.gmo ja.gmo
+CATALOGS =  el.gmo eu.gmo fr.gmo hu.gmo ja.gmo pl.gmo ru.gmo vi.gmo
 CATOBJEXT = .gmo
 INSTOBJEXT = .mo
 

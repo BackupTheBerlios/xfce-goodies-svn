@@ -36,7 +36,7 @@
 #define UNREF(x)				if((x)) {g_object_unref((x));}
 
 
-/*static char *icons_categories_names[XFCE_N_BUILTIN_ICON_CATEGORIES+2] = 
+/*static char *icons_categories_names[XFCE_N_BUILTIN_ICON_CATEGORIES+2] =
 	{"Unknown", "Editor", "Filemanager", "Utilities", "Games", "Help", "Multimedia", \
 	"Internet", "Graphics", "Printer", "Productivity", "Sound", "Terminal", \
 	"Development", "Settings", "System", "Wine", "Stock", "Extern"};
@@ -44,10 +44,10 @@
 
 
 typedef struct
-{  
+{
 	GList *launchers;
 	GtkWidget *table;
-	XfcePanelPlugin *plugin;	
+	XfcePanelPlugin *plugin;
 	gint icon_size;
 	GtkOrientation orientation;
 	gint nb_lines;
@@ -81,7 +81,7 @@ t_qck_launcher_opt_dlg;
 
 
 typedef struct
-{  
+{
 	GtkWidget *widget;
 	GtkWidget *image;
 	GdkPixbuf  *def_img;
@@ -92,7 +92,7 @@ typedef struct
 	gchar *icon_name;
 	gint icon_id;
 	t_quicklauncher *quicklauncher;
-	gulong command_ids[4];  
+	gulong command_ids[4];
 }
 t_launcher;
 
@@ -100,12 +100,12 @@ t_launcher;
 GdkPixbuf *
 _create_pixbuf(gint id, const gchar* name, gint size);
 
-t_launcher* launcher_new (const gchar *command, gint icon_id, 
+t_launcher* launcher_new (const gchar *command, gint icon_id,
 						const gchar *icon_name, t_quicklauncher *quicklauncher);
 
 void launcher_free (t_launcher *launcher);
 
-void launcher_update_command(t_launcher *launcher); 
+void launcher_update_command(t_launcher *launcher);
 
 void launcher_update_icon(t_launcher *launcher, gint size) ;
 

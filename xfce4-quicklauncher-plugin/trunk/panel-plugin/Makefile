@@ -77,26 +77,26 @@ DATA = $(desktop_DATA)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} /home/nic/nic/Projects/XFCE-Goodies/dev/quicklauncher/xfce4-quicklauncher-plugin/missing --run aclocal-1.9
+ACLOCAL = ${SHELL} /home/nic/nic/Projects/XFCE-Goodies/dev/xfce4-quiclauncher-plugin/missing --run aclocal-1.9
 AMDEP_FALSE = #
 AMDEP_TRUE = 
-AMTAR = ${SHELL} /home/nic/nic/Projects/XFCE-Goodies/dev/quicklauncher/xfce4-quicklauncher-plugin/missing --run tar
+AMTAR = ${SHELL} /home/nic/nic/Projects/XFCE-Goodies/dev/xfce4-quiclauncher-plugin/missing --run tar
 AR = ar
-AUTOCONF = ${SHELL} /home/nic/nic/Projects/XFCE-Goodies/dev/quicklauncher/xfce4-quicklauncher-plugin/missing --run autoconf
-AUTOHEADER = ${SHELL} /home/nic/nic/Projects/XFCE-Goodies/dev/quicklauncher/xfce4-quicklauncher-plugin/missing --run autoheader
-AUTOMAKE = ${SHELL} /home/nic/nic/Projects/XFCE-Goodies/dev/quicklauncher/xfce4-quicklauncher-plugin/missing --run automake-1.9
+AUTOCONF = ${SHELL} /home/nic/nic/Projects/XFCE-Goodies/dev/xfce4-quiclauncher-plugin/missing --run autoconf
+AUTOHEADER = ${SHELL} /home/nic/nic/Projects/XFCE-Goodies/dev/xfce4-quiclauncher-plugin/missing --run autoheader
+AUTOMAKE = ${SHELL} /home/nic/nic/Projects/XFCE-Goodies/dev/xfce4-quiclauncher-plugin/missing --run automake-1.9
 AWK = gawk
-CATALOGS =  fr.gmo hu.gmo ja.gmo
+CATALOGS =  el.gmo eu.gmo fr.gmo hu.gmo ja.gmo pl.gmo ru.gmo vi.gmo
 CATOBJEXT = .gmo
 CC = gcc
 CCDEPMODE = depmode=gcc3
-CFLAGS = -g -O2 -g3 -Werror -Wall -DG_DISABLE_DEPRECATED -DXFCE_DISABLE_DEPRECATED
+CFLAGS = -g -O2 -g -Wall -DXFCE_DISABLE_DEPRECATED
 CPP = gcc -E
 CPPFLAGS = 
 CXX = g++
 CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -g -O2 -g3 -Werror -Wall -DG_DISABLE_DEPRECATED -DXFCE_DISABLE_DEPRECATED
+CXXFLAGS = -g -O2 -g -Wall -DXFCE_DISABLE_DEPRECATED
 CYGPATH_W = echo
 DATADIRNAME = share
 DEFS = -DHAVE_CONFIG_H
@@ -110,7 +110,7 @@ EXEEXT =
 F77 = gfortran
 FFLAGS = -g -O2
 GETTEXT_PACKAGE = xfce4-quicklauncher-plugin
-GMOFILES =  fr.gmo hu.gmo ja.gmo
+GMOFILES =  el.gmo eu.gmo fr.gmo hu.gmo ja.gmo pl.gmo ru.gmo vi.gmo
 GMSGFMT = /usr/bin/gmsgfmt
 HAVE_CYGWIN_FALSE = 
 HAVE_CYGWIN_TRUE = #
@@ -152,25 +152,29 @@ LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIBXFCE4PANEL_CFLAGS = -I/usr/include/xfce4/ -I/usr/include/xfce4 -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/pango-1.0 -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/atk-1.0  
 LIBXFCE4PANEL_LIBS = -lxfce4panel -lxfcegui4 -lgtk-x11-2.0 -lxfce4util -lgdk-x11-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lm -lpangocairo-1.0 -lpango-1.0 -lcairo -lgobject-2.0 -lgmodule-2.0 -ldl -lglib-2.0  
 LIBXFCE4PANEL_REQUIRED_VERSION = 4.3.20
-LIBXFCE4PANEL_VERSION = 4.3.28
+LIBXFCE4PANEL_VERSION = 4.3.90.2
+LIBXFCEGUI4_CFLAGS = -I/usr/include/xfce4 -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/pango-1.0 -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/atk-1.0  
+LIBXFCEGUI4_LIBS = -lxfcegui4 -lgtk-x11-2.0 -lxfce4util -lgdk-x11-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lm -lpangocairo-1.0 -lpango-1.0 -lcairo -lgobject-2.0 -lgmodule-2.0 -ldl -lglib-2.0  
+LIBXFCEGUI4_REQUIRED_VERSION = 4.3.20
+LIBXFCEGUI4_VERSION = 4.3.90.2svn-21553
 LN_S = ln -s
 LTLIBOBJS = 
 MAINT = 
 MAINTAINER_MODE_FALSE = #
 MAINTAINER_MODE_TRUE = 
-MAKEINFO = ${SHELL} /home/nic/nic/Projects/XFCE-Goodies/dev/quicklauncher/xfce4-quicklauncher-plugin/missing --run makeinfo
+MAKEINFO = ${SHELL} /home/nic/nic/Projects/XFCE-Goodies/dev/xfce4-quiclauncher-plugin/missing --run makeinfo
 MKINSTALLDIRS = ./mkinstalldirs
 MSGFMT = /usr/bin/msgfmt
 OBJEXT = o
 PACKAGE = xfce4-quicklauncher-plugin
 PACKAGE_BUGREPORT = masse_nicolas@yahoo.fr
 PACKAGE_NAME = xfce4-quicklauncher-plugin
-PACKAGE_STRING = xfce4-quicklauncher-plugin 1.9.1
+PACKAGE_STRING = xfce4-quicklauncher-plugin 1.9.2
 PACKAGE_TARNAME = xfce4-quicklauncher-plugin
-PACKAGE_VERSION = 1.9.1
+PACKAGE_VERSION = 1.9.2
 PATH_SEPARATOR = :
 PKG_CONFIG = /usr/bin/pkg-config
-POFILES =  fr.po hu.po ja.po
+POFILES =  el.po eu.po fr.po hu.po ja.po pl.po ru.po vi.po
 POSUB = po
 PO_IN_DATADIR_FALSE = 
 PO_IN_DATADIR_TRUE = 
@@ -179,7 +183,7 @@ SET_MAKE =
 SHELL = /bin/sh
 STRIP = strip
 USE_NLS = yes
-VERSION = 1.9.1
+VERSION = 1.9.2
 XGETTEXT = /usr/bin/xgettext
 XGETTEXT_ARGS = --keyword=Q_
 ac_ct_AR = ar
@@ -212,7 +216,7 @@ host_os = linux-gnu
 host_vendor = pc
 includedir = ${prefix}/include
 infodir = ${prefix}/info
-install_sh = /home/nic/nic/Projects/XFCE-Goodies/dev/quicklauncher/xfce4-quicklauncher-plugin/install-sh
+install_sh = /home/nic/nic/Projects/XFCE-Goodies/dev/xfce4-quiclauncher-plugin/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${prefix}/share/locale
@@ -236,14 +240,16 @@ libquicklauncher_la_LDFLAGS = \
 
 libquicklauncher_la_SOURCES = \
 	callbacks.c							\
-	main.c						
+	main.c
 
 libquicklauncher_la_CFLAGS = \
 	-DPACKAGE_LOCALE_DIR=\"$(localedir)\"				\
-	-I/usr/include/xfce4/ -I/usr/include/xfce4 -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/pango-1.0 -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/atk-1.0  
+	-I/usr/include/xfce4/ -I/usr/include/xfce4 -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/pango-1.0 -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/atk-1.0  		\
+	-I/usr/include/xfce4 -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/pango-1.0 -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/atk-1.0  
 
 libquicklauncher_la_LIBADD = \
-	-lxfce4panel -lxfcegui4 -lgtk-x11-2.0 -lxfce4util -lgdk-x11-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lm -lpangocairo-1.0 -lpango-1.0 -lcairo -lgobject-2.0 -lgmodule-2.0 -ldl -lglib-2.0  
+	-lxfce4panel -lxfcegui4 -lgtk-x11-2.0 -lxfce4util -lgdk-x11-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lm -lpangocairo-1.0 -lpango-1.0 -lcairo -lgobject-2.0 -lgmodule-2.0 -ldl -lglib-2.0  		\
+	-lxfcegui4 -lgtk-x11-2.0 -lxfce4util -lgdk-x11-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lm -lpangocairo-1.0 -lpango-1.0 -lcairo -lgobject-2.0 -lgmodule-2.0 -ldl -lglib-2.0  
 
 
 # .desktop file

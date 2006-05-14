@@ -29,6 +29,7 @@
 #include "types.h"
 #include "callbacks.h"
 #include <glib/gprintf.h>
+#include <libxfcegui4/libxfcegui4.h>
 #include <string.h>
 
 
@@ -46,58 +47,58 @@ void launcher_save_config(t_launcher *launcher, XfceRc *rcfile, guint16 num);
  *                     Panel Plugin Interface               *
  * -------------------------------------------------------------------- */
 
-static void 
+static void
 quicklauncher_construct (XfcePanelPlugin *plugin);
 
-static void 
+static void
 quicklauncher_orientation_changed(XfcePanelPlugin *plugin,
 									GtkOrientation orientation,
                                     t_quicklauncher *quicklauncher);
-static gboolean 
+static gboolean
 quicklauncher_set_size(XfcePanelPlugin *plugin,gint size,
 						t_quicklauncher *quicklauncher);
 
-static void 
+static void
 quicklauncher_free_data(XfcePanelPlugin *plugin,t_quicklauncher *quicklauncher);
 
-static void 
+static void
 quicklauncher_save(XfcePanelPlugin *plugin, t_quicklauncher *quicklauncher);
 
-static void 
+static void
 quicklauncher_configure(XfcePanelPlugin *plugin, t_quicklauncher *quicklauncher);
 
-static void 
+static void
 quicklauncher_about(XfcePanelPlugin *plugin, t_quicklauncher *quicklauncher);
 
 XFCE_PANEL_PLUGIN_REGISTER_INTERNAL(quicklauncher_construct);
 
 /* create widgets and connect to signals */
-static void 
+static void
 quicklauncher_construct (XfcePanelPlugin *plugin)
 {
     t_quicklauncher *quicklauncher = quicklauncher_new(plugin);
     xfce_textdomain(GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR, "UTF-8");
 
-    g_signal_connect (plugin, "orientation-changed", 
+    g_signal_connect (plugin, "orientation-changed",
                       G_CALLBACK (quicklauncher_orientation_changed), quicklauncher);
-    
-    g_signal_connect (plugin, "size-changed", 
+
+    g_signal_connect (plugin, "size-changed",
                       G_CALLBACK (quicklauncher_set_size), quicklauncher);
-    
-    g_signal_connect (plugin, "free-data", 
+
+    g_signal_connect (plugin, "free-data",
                       G_CALLBACK (quicklauncher_free_data), quicklauncher);
-    
-    g_signal_connect (plugin, "save", 
+
+    g_signal_connect (plugin, "save",
                       G_CALLBACK (quicklauncher_save), quicklauncher);
-    
+
     xfce_panel_plugin_menu_show_configure (plugin);
-    g_signal_connect (plugin, "configure-plugin", 
+    g_signal_connect (plugin, "configure-plugin",
                       G_CALLBACK (quicklauncher_configure), quicklauncher);
 
    xfce_panel_plugin_menu_show_about(plugin);
-   g_signal_connect (plugin, "about", 
+   g_signal_connect (plugin, "about",
                       G_CALLBACK (quicklauncher_about), quicklauncher);
-   
+
 }
 
 
@@ -119,8 +120,8 @@ gboolean quicklauncher_set_size(XfcePanelPlugin *plugin, gint size,
 	for(liste = quicklauncher->launchers;
 		liste ; liste = g_list_next(liste) )
 	{
-		launcher_update_icon((t_launcher*)liste->data, quicklauncher->icon_size);		
-		gtk_container_set_border_width( GTK_CONTAINER( ( (t_launcher*)liste->data)->widget), 
+		launcher_update_icon((t_launcher*)liste->data, quicklauncher->icon_size);
+		gtk_container_set_border_width( GTK_CONTAINER( ( (t_launcher*)liste->data)->widget),
 										(int)quicklauncher->icon_size/8);
 		//printf("%d %d \n",(int) 0.75 * size/quicklauncher->nb_lines, (int)quicklauncher->icon_size/8);
 	}
@@ -143,10 +144,10 @@ void quicklauncher_save(XfcePanelPlugin *plugin, t_quicklauncher *quicklauncher)
 	}
 }
 
-void 
+void
 quicklauncher_configure(XfcePanelPlugin *plugin, t_quicklauncher *quicklauncher)
 {
-	xfce_panel_plugin_block_menu(plugin); 
+	xfce_panel_plugin_block_menu(plugin);
 	t_qck_launcher_opt_dlg* dlg = create_qck_launcher_dlg();
 	qck_launcher_opt_dlg_set_quicklauncher(quicklauncher);
 	gtk_dialog_run(GTK_DIALOG(dlg->dialog));
@@ -154,7 +155,7 @@ quicklauncher_configure(XfcePanelPlugin *plugin, t_quicklauncher *quicklauncher)
 }
 
 
-void 
+void
 quicklauncher_about(XfcePanelPlugin *plugin, t_quicklauncher *quicklauncher)
 {
 	GtkWidget *about;
@@ -167,7 +168,7 @@ quicklauncher_about(XfcePanelPlugin *plugin, t_quicklauncher *quicklauncher)
 	gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(about), "http://xfce-goodies.berlios.de");
 	gtk_about_dialog_set_website_label(GTK_ABOUT_DIALOG(about), _("Other plugins available here"));
 	gtk_dialog_run(GTK_DIALOG(about));
-	gtk_widget_destroy (about); 
+	gtk_widget_destroy (about);
 }
 
 
@@ -180,7 +181,7 @@ quicklauncher_add_element(t_quicklauncher *quicklauncher, t_launcher *launcher)
 {
 	quicklauncher->launchers = g_list_append(quicklauncher->launchers, (gpointer)launcher);
 	xfce_panel_plugin_add_action_widget(quicklauncher->plugin, launcher->widget);
-	quicklauncher->nb_launcher++; 
+	quicklauncher->nb_launcher++;
 }
 
 
@@ -202,15 +203,15 @@ quicklauncher_organize(t_quicklauncher *quicklauncher)
 	DBG ("Organize quicklauncher");
 	gint i, j, launch_per_line, nb_lines;
 	GList *toplace;
-	
+
 	g_assert( (!quicklauncher->table || GTK_IS_TABLE(quicklauncher->table)) && GTK_IS_CONTAINER(quicklauncher->plugin));
-	if (quicklauncher->launchers) 
+	if (quicklauncher->launchers)
 	{
-		nb_lines = MIN(quicklauncher->nb_lines, quicklauncher->nb_launcher); 
+		nb_lines = MIN(quicklauncher->nb_lines, quicklauncher->nb_launcher);
 		toplace = g_list_first(quicklauncher->launchers);
 		if(quicklauncher->nb_launcher % quicklauncher->nb_lines == 0)
 			launch_per_line = quicklauncher->nb_launcher / quicklauncher->nb_lines;
-		else 
+		else
 			launch_per_line = quicklauncher->nb_launcher / quicklauncher->nb_lines+1;
 		if (quicklauncher->orientation != GTK_ORIENTATION_HORIZONTAL)
 		{
@@ -220,7 +221,7 @@ quicklauncher_organize(t_quicklauncher *quicklauncher)
 		}
 		if (quicklauncher->table)
 			gtk_table_resize(GTK_TABLE(quicklauncher->table), nb_lines, launch_per_line);
-		
+
 		j = quicklauncher->nb_launcher;
 		for (i=0; i < nb_lines; ++i)
 		{
@@ -240,14 +241,14 @@ quicklauncher_organize(t_quicklauncher *quicklauncher)
 void
 quicklauncher_empty_widgets(t_quicklauncher *quicklauncher)
 {
-	GList *launcher;	
+	GList *launcher;
 	if (quicklauncher->table)
 	{
 		for( launcher = g_list_first(quicklauncher->launchers);
 			 launcher; launcher = g_list_next(launcher) )
-			gtk_container_remove(GTK_CONTAINER(quicklauncher->table), 
+			gtk_container_remove(GTK_CONTAINER(quicklauncher->table),
 								((t_launcher*)launcher->data)->widget);
-	}	
+	}
 }
 
 
@@ -266,7 +267,7 @@ quicklauncher_empty(t_quicklauncher *quicklauncher)
 }
 
 
-void 
+void
 quicklauncher_set_nblines(t_quicklauncher *quicklauncher, gint nb_lines)
 {
 	if (nb_lines != quicklauncher->nb_lines)
@@ -285,21 +286,21 @@ quicklauncher_load_default(t_quicklauncher *quicklauncher)
 {
 	t_launcher *launcher;
 	quicklauncher->nb_lines = 2;
-	
-	launcher = launcher_new("xflock4", XFCE_ICON_CATEGORY_SYSTEM, 
+
+	launcher = launcher_new("xflock4", XFCE_ICON_CATEGORY_SYSTEM,
 							NULL, quicklauncher);
 	quicklauncher_add_element(quicklauncher, launcher);
-	launcher = launcher_new("xfce-setting-show", XFCE_ICON_CATEGORY_SETTINGS, 
+	launcher = launcher_new("xfce-setting-show", XFCE_ICON_CATEGORY_SETTINGS,
 							NULL, quicklauncher);
 	quicklauncher_add_element(quicklauncher, launcher);
-	launcher = launcher_new("xfce4-appfinder", XFCE_ICON_CATEGORY_UTILITY, 
+	launcher = launcher_new("xfce4-appfinder", XFCE_ICON_CATEGORY_UTILITY,
 							NULL, quicklauncher);
 	quicklauncher_add_element(quicklauncher, launcher);
-	launcher = launcher_new("xfhelp4", XFCE_ICON_CATEGORY_HELP, 
+	launcher = launcher_new("xfhelp4", XFCE_ICON_CATEGORY_HELP,
 							NULL, quicklauncher);
 	quicklauncher_add_element(quicklauncher, launcher);
 	//g_assert(quicklauncher->nb_launcher == 4);
-}	
+}
 
 
 t_quicklauncher *
@@ -307,14 +308,14 @@ quicklauncher_new (XfcePanelPlugin *plugin)
 {
 	DBG ("create quicklauncher");
 	t_quicklauncher *quicklauncher;
-	
+
 	quicklauncher = g_new0(t_quicklauncher, 1);
 	gchar *filename = xfce_panel_plugin_save_location(plugin, TRUE);
-	
+	quicklauncher->icon_size = (gint) (0.75 * xfce_panel_plugin_get_size(plugin)/2);
+	DBG ("icon size: %d", quicklauncher->icon_size);
 	if((!filename) || (!quicklauncher_load_config(quicklauncher, filename) ) )
 		quicklauncher_load_default(quicklauncher);
-	
-	quicklauncher->icon_size = (gint) 0.75 * xfce_panel_plugin_get_size(plugin)/2;
+
 	quicklauncher->orientation = xfce_panel_plugin_get_orientation(plugin);
 	quicklauncher->plugin = plugin;
 	quicklauncher->table = g_object_ref(gtk_table_new(2, 2, TRUE));
@@ -322,7 +323,7 @@ quicklauncher_new (XfcePanelPlugin *plugin)
 	gtk_container_add( GTK_CONTAINER(quicklauncher->plugin), quicklauncher->table);
 	xfce_panel_plugin_add_action_widget(quicklauncher->plugin, quicklauncher->table);
 	gtk_widget_show(quicklauncher->table);
-	
+
 	quicklauncher_organize(quicklauncher);
 	return quicklauncher;
 }
@@ -333,7 +334,7 @@ quicklauncher_free(t_quicklauncher *quicklauncher)
 {
 	g_list_foreach(quicklauncher->launchers, (GFunc) launcher_free, NULL);
 	g_list_free(quicklauncher->launchers);
-	
+
 	g_object_unref(quicklauncher->table);
 	g_free(quicklauncher);
 }
@@ -341,7 +342,7 @@ quicklauncher_free(t_quicklauncher *quicklauncher)
 
 gboolean quicklauncher_load_config(t_quicklauncher *quicklauncher, const gchar* filename)
 {
-	
+
 	XfceRc* rcfile;
 	if( (rcfile = xfce_rc_simple_open(filename, TRUE) ))
 	{
@@ -354,10 +355,10 @@ gboolean quicklauncher_load_config(t_quicklauncher *quicklauncher, const gchar* 
 			t_launcher *launcher = launcher_load_config(rcfile, i, quicklauncher);
 			quicklauncher_add_element(quicklauncher, launcher);
 			i--;
-			if(!i)	
+			if(!i)
 				return TRUE;
 		}
-	} 
+	}
 	return FALSE;
 }
 
@@ -367,7 +368,7 @@ quicklauncher_save_config(t_quicklauncher *quicklauncher, const gchar* filename)
 	guint16 i = quicklauncher->nb_launcher; //hope it always works
 	XfceRc* rcfile = xfce_rc_simple_open(filename, FALSE);
 	if(!rcfile) return;
-	
+
 	xfce_rc_set_group(rcfile, NULL);
 	xfce_rc_write_int_entry(rcfile, "nb_lines", quicklauncher->nb_lines);
 	xfce_rc_write_int_entry(rcfile, "nb_launcher", quicklauncher->nb_launcher);
@@ -375,7 +376,7 @@ quicklauncher_save_config(t_quicklauncher *quicklauncher, const gchar* filename)
 	GList* liste;
 	for( liste = quicklauncher->launchers; liste; liste = g_list_next(liste), --i)
 		launcher_save_config((t_launcher*)liste->data, rcfile, i);
-	
+
 	g_assert(i == 0);
 	xfce_rc_close(rcfile);
 }
@@ -403,10 +404,10 @@ gboolean
 launcher_clicked (GtkWidget *event_box, GdkEventButton *event, t_launcher *launcher)
 {
 	int size = 1.25 * launcher->quicklauncher->icon_size;
-	if (event->button != 1) 
+	if (event->button != 1)
 		return FALSE;
-	if (event->type == GDK_BUTTON_PRESS) 
-	{ 
+	if (event->type == GDK_BUTTON_PRESS)
+	{
 		g_assert(launcher->zoomed_img);
 		if(event->x < 0 || event->x > size || event->y < 0 || event->y > size)
 			return FALSE;
@@ -430,29 +431,29 @@ launcher_clicked (GtkWidget *event_box, GdkEventButton *event, t_launcher *launc
 	return TRUE;
 }
 
-gboolean    
+gboolean
 launcher_passthrought(GtkWidget *widget, GdkEventCrossing *event, t_launcher *launcher)
 {
 	if (event->type == GDK_ENTER_NOTIFY)
 	{
 		int size = 1.25 * launcher->quicklauncher->icon_size;
 		if (!launcher->zoomed_img)
-			launcher->zoomed_img = gdk_pixbuf_scale_simple(launcher->def_img, size, size, GDK_INTERP_BILINEAR);
+			launcher->zoomed_img = gdk_pixbuf_scale_simple(launcher->def_img, size, size, GDK_INTERP_HYPER);
 		gtk_container_set_border_width(GTK_CONTAINER (widget), 0);
 		gtk_image_set_from_pixbuf (GTK_IMAGE(launcher->image), launcher->zoomed_img);
 	}
-	else 
+	else
 	{
 		gtk_image_set_from_pixbuf (GTK_IMAGE(launcher->image), launcher->def_img);
-		gtk_container_set_border_width(GTK_CONTAINER (widget), 
+		gtk_container_set_border_width(GTK_CONTAINER (widget),
 										(int)(launcher->quicklauncher->icon_size/8));
 	}
 	return TRUE;
 }
 
 
-void 
-launcher_update_icon(t_launcher *launcher, gint size) 
+void
+launcher_update_icon(t_launcher *launcher, gint size)
 {
 	DBG ("size: %d", size);
 	UNREF(launcher->def_img);
@@ -464,15 +465,15 @@ launcher_update_icon(t_launcher *launcher, gint size)
 	gtk_widget_set_size_request(launcher->image, size, size);
 }
 
-void 
+void
 launcher_update_icons(gpointer data, gint* size)
 {
 	launcher_update_icon((t_launcher*)data, *size); //used with g_list_foreach as a GFunc =>could be removed
 }
 
 
-void 
-launcher_update_command(t_launcher *launcher) 
+void
+launcher_update_command(t_launcher *launcher)
 {
 	if (launcher->command_ids[0] )
 	{
@@ -482,26 +483,26 @@ launcher_update_command(t_launcher *launcher)
 		g_signal_handler_disconnect(launcher->widget, launcher->command_ids[3]);
 	}
 	gtk_tooltips_set_tip(launcher->tooltip, launcher->widget, launcher->command, launcher->command);
-	launcher->command_ids[0] = g_signal_connect(launcher->widget, "button_press_event", 
+	launcher->command_ids[0] = g_signal_connect(launcher->widget, "button_press_event",
 												G_CALLBACK(launcher_clicked), launcher);
-	launcher->command_ids[1] = g_signal_connect(launcher->widget, "button-release-event", 
+	launcher->command_ids[1] = g_signal_connect(launcher->widget, "button-release-event",
 												G_CALLBACK(launcher_clicked), launcher);
-	launcher->command_ids[2] = g_signal_connect(launcher->widget, "enter-notify-event", 
+	launcher->command_ids[2] = g_signal_connect(launcher->widget, "enter-notify-event",
 												G_CALLBACK(launcher_passthrought), launcher);
-	launcher->command_ids[3] = g_signal_connect(launcher->widget, "leave-notify-event", 
+	launcher->command_ids[3] = g_signal_connect(launcher->widget, "leave-notify-event",
 												G_CALLBACK(launcher_passthrought), launcher);
 }
 
 void create_launcher(t_launcher	*launcher)
-{	
+{
 	launcher->widget = g_object_ref(gtk_event_box_new());
 	launcher->image = g_object_ref(gtk_image_new());
 	launcher->tooltip = gtk_tooltips_new();
-	gtk_container_set_border_width(GTK_CONTAINER (launcher->widget), 
+	gtk_container_set_border_width(GTK_CONTAINER (launcher->widget),
 								(int)launcher->quicklauncher->icon_size/8);
 	gtk_container_add (GTK_CONTAINER (launcher->widget), launcher->image);
 	gtk_event_box_set_above_child(GTK_EVENT_BOX(launcher->widget), FALSE);
-	
+
 	launcher_update_icon(launcher, launcher->quicklauncher->icon_size);
 	g_assert(!launcher->command_ids[0]);
 	launcher_update_command(launcher) ;
@@ -514,20 +515,13 @@ launcher_new (const gchar *command, gint icon_id, const gchar *icon_name, t_quic
 {
     t_launcher *launcher;
 	launcher = g_new0 (t_launcher, 1);
-	
     if(command)
-	{
-		launcher->command = g_malloc( (strlen(command)+1)*sizeof(gchar) );
-		launcher->command = strcpy(launcher->command, command);
-	}
+		launcher->command = g_strdup(command);
 	else launcher->command = NULL;
 	launcher->icon_id = icon_id;
 	if (icon_name)
-	{
-		launcher->icon_name = g_malloc( (strlen(icon_name)+1)*sizeof(gchar) );
-		launcher->icon_name =strcpy(launcher->icon_name, icon_name);
-	}
-	else launcher->icon_name = NULL; 	
+		launcher->icon_name = g_strdup(icon_name);
+	else launcher->icon_name = NULL;
 	launcher->quicklauncher = quicklauncher;
 	create_launcher(launcher);
 	return launcher;
@@ -539,15 +533,15 @@ launcher_free (t_launcher *launcher)
 	if(!launcher) return;
 	UNREF(launcher->def_img);
 	UNREF(launcher->zoomed_img);
-	UNREF(launcher->clicked_img); 
+	UNREF(launcher->clicked_img);
 	//g_object_unref(launcher->tooltip);
 	g_object_unref(launcher->widget);
 	g_object_unref(launcher->image);
-	
+
 	//gtk_widget_destroy(launcher->widget); //useless: handled by gtk
 	g_free(launcher->icon_name);
 	g_free(launcher->command);
-	
+
     g_free (launcher);
 }
 
@@ -556,24 +550,24 @@ launcher_load_config(XfceRc *rcfile, gint num, t_quicklauncher *quicklauncher)
 {
 	char group[15];
 	t_launcher *launcher;
-	g_sprintf(group, "launcher_%d%c", num,0); 
+	g_sprintf(group, "launcher_%d%c", num,0);
 	xfce_rc_set_group(rcfile, group);
-	
+
 	launcher = g_new0 (t_launcher, 1);
 	launcher->quicklauncher = quicklauncher;
 	launcher->command = g_strdup(xfce_rc_read_entry(rcfile, "command", NULL));
 	launcher->icon_name = g_strdup(xfce_rc_read_entry(rcfile, "icon_name", NULL));
 	launcher->icon_id = xfce_rc_read_int_entry(rcfile, "icon_id", 0);
-	
+
 	create_launcher(launcher);
 	return launcher;
 }
 
-void 
+void
 launcher_save_config(t_launcher *launcher, XfceRc *rcfile, guint16 num)
 {
 	char group[15];
-	g_sprintf(group, "launcher_%d%c", num,0); 
+	g_sprintf(group, "launcher_%d%c", num,0);
 	xfce_rc_set_group(rcfile, group);
 	xfce_rc_write_entry(rcfile, "command", launcher->command);
 	if(launcher->icon_name)

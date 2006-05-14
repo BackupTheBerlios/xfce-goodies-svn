@@ -10,16 +10,18 @@ libquicklauncher_la_LDFLAGS =							\
 
 libquicklauncher_la_SOURCES =							\
 	callbacks.c							\
-	main.c						
-	
+	main.c
+
 
 libquicklauncher_la_CFLAGS =							\
 	-DPACKAGE_LOCALE_DIR=\"$(localedir)\"				\
-	@LIBXFCE4PANEL_CFLAGS@
+	@LIBXFCE4PANEL_CFLAGS@		\
+	@LIBXFCEGUI4_CFLAGS@
 
 libquicklauncher_la_LIBADD = 							\
-	@LIBXFCE4PANEL_LIBS@
-	
+	@LIBXFCE4PANEL_LIBS@		\
+	@LIBXFCEGUI4_LIBS@
+
 # .desktop file
 #
 # Some automake trickery here. Because we cannot use $(libexecdir) in the
@@ -29,7 +31,7 @@ libquicklauncher_la_LIBADD = 							\
 
 desktop_in_in_files = quicklauncher.desktop.in.in
 desktop_in_files = $(desktop_in_in_files:.desktop.in.in=.desktop.in)
-	
+
 desktopdir = $(datadir)/xfce4/panel-plugins
 desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
 @INTLTOOL_DESKTOP_RULE@
@@ -39,7 +41,7 @@ EXTRA_DIST = 								\
 
 DISTCLEANFILES =							\
 	$(desktop_DATA) $(desktop_in_files)
-	
+
 # get full path into .desktop file
 %.desktop.in: %.desktop.in.in
 	sed -e "s^@INTERNAL_PLUGIN_PATH@^$(libdir)/xfce4/panel-plugins^" \
