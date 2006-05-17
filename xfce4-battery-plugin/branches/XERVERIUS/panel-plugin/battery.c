@@ -206,7 +206,7 @@ battery_widget_progressbar (BatteryPlugin *battery,
         return;
 
     if (bat->percentage < 0 || bat->percentage > 100)
-        return
+        return;
     
     gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (battery->progressbar), 
                                    bat->percentage / 100.0);
