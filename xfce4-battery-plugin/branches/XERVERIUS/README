@@ -1,0 +1,6 @@
+xfce4-battery-plugin is a battery monitor for the Xfce
+panel. All the battery(-ies) information is retreived
+from HAL.
+
+Notes:
+This plugin is optimzed for 1 battery, using G_(UN)LIKELY

@@ -1,0 +1,8 @@
+# List of source files containing translatable strings.
+
+panel-plugin/battery-hal.c
+panel-plugin/battery-dialogs.c
+panel-plugin/battery.c
+
+# Files added by intltool-prepare.
+panel-plugin/battery.desktop.in.in

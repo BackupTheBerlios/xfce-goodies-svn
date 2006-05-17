@@ -1,0 +1,14 @@
+- Improve the warning dialog
+  - After close, popup a couple of minutes later
+  - "Don't show this warning again" option
+
+- Create our own "remaining time" calculate function,
+  using some kind of argoritm
+  
+- Support for suspend and hibernate through HAL
+
+- Add support for power usage (Watts) to give the user
+  an idea of the power usage of his/her laptop
+
+- Add dialog (on widget click) to give a detailed list of
+  the battery(-ies) and they status

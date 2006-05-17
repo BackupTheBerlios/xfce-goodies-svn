@@ -1,0 +1,50 @@
+2006-05-17 22:09 Nick Schermer
+  * Added USE_NEW_DIALOG if your libxfcegui4 version
+    is high enough.
+  * battery variable is not "external" anymore, but the
+    size of the plugin seems to grow from 870Kb to 1.1Mb
+    (with debug enabled), so I'm not very happy about it.
+  * Enabled Info dialog again.
+
+2006-05-14 22:11 Nick Schermer
+  * Define vars before doing anything else
+  * Coding style improvements
+  * Remove battery property signals, because we're
+    monitoring all property changes
+
+2006-05-14 20:48 Nick Schermer
+  * Changed a lot in the HAL backend, various extra
+    checks and warnings
+  * Use the goto command to clean stuff up
+  * Use g_warning instead of battery_error
+  * Release 0.0.5
+
+2006-05-12 7:47 Nick Schermer
+  * Changed the HAL store property behaviour, this
+    will work for everyone hopefully
+  * Box border to 4 px like all other plugins
+    (mixer has 5 px, but that's just too much)
+  * Release 0.0.4
+
+2006-05-11 18:27 Nick Schermer
+  * Revert the Xfce Dialog for the testers, I'll
+    restore this when 4.4 beta 2 is there
+  * Added BUGS document
+  * Release 0.0.3
+
+2006-05-10 21:30 Nick Schermer
+  * Released version 0.0.2
+
+2006-05-10 21:04 Nick Schermer
+  * Fully multiple battery compatible
+  * HAL fixes for other laptops (thanks to Eulex)
+  * Started adding new dialog, when you click the
+    plugin a dialog will popup with all battery(-ies)
+    status and information
+  * Added new libxfcegui4 Xfce dialog
+
+2006-05-04 22:11 Nick Schermer
+  * Released version 0.0.1
+
+2006-04-13 21:44 Nick Schermer
+  * I've started writing the plugin

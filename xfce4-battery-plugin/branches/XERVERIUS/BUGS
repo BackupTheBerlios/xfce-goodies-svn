@@ -1,0 +1,13 @@
+When the plugin does not display the right values or update, you
+can help fixing the problem by sending the following information:
+
+- Battery information: "lshal | grep battery"
+- Information from the HAL monitor:
+  - Run "lshal -m" in a terminal
+  - Discharge the battery from a couple of minutes
+  - Plugin / out the adapter
+  - Press Ctrl + C to end the monitoring
+
+Copy the information obtained from the steps above, put it in a document
+and send it to nick@xfce.org or create a bug report
+(http://bugzilla.xfce.org)
