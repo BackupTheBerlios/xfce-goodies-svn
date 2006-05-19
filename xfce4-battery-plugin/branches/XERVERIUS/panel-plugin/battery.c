@@ -178,7 +178,7 @@ battery_widget_label (BatteryPlugin *battery,
     strperc = g_strdup_printf ("%d%%", bat->percentage);
     
     if (G_LIKELY (bat->time > 0))
-        strtime = g_strdup_printf ("%d:%02d", bat->time / 60, bat->time % 60);
+        strtime = g_strdup_printf ("%d:%02d", bat->time / 3600, bat->time / 60 % 60);
     else
         strtime = g_strdup ("0:00");
 
