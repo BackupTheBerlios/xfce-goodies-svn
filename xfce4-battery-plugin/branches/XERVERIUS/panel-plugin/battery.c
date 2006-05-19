@@ -115,8 +115,8 @@ battery_widget_icon (BatteryPlugin *battery,
     gint       psize;
     GdkPixbuf *pixbuf = NULL;
 
-    if (!battery->show_icon ||
-            !GTK_IS_WIDGET (battery->icon))
+    if (G_UNLIKELY (!battery->show_icon ||
+                    !GTK_IS_WIDGET (battery->icon)))
         return;
     
     /* Generate the icon name */
@@ -171,7 +171,7 @@ battery_widget_label (BatteryPlugin *battery,
     if (!(battery->show_percentage | battery->show_time))
         return;
     
-    if (!GTK_IS_WIDGET (battery->label))
+    if (G_LIKELY (!GTK_IS_WIDGET (battery->label)))
         return;
     
     small = xfce_panel_plugin_get_size (battery->plugin) <= SMALL_PANEL_SIZE;
@@ -202,11 +202,8 @@ static void
 battery_widget_progressbar (BatteryPlugin *battery,
                             BatteryStatus *bat)
 {
-    if (!battery->show_progressbar ||
-            !GTK_IS_WIDGET (battery->progressbar))
-        return;
-
-    if (bat->percentage < 0 || bat->percentage > 100)
+    if (G_UNLIKELY (!battery->show_progressbar ||
+                    !GTK_IS_WIDGET (battery->progressbar)))
         return;
     
     gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (battery->progressbar), 

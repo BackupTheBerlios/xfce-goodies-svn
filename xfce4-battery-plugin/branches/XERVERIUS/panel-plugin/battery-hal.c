@@ -51,9 +51,9 @@ battery_store_propery (LibHalContext *ctx,
         return;
     }
   
-    if (G_LIKELY (libhal_device_property_exists  (ctx, udi, "battery.remaining_time", &error)     &&
-                  libhal_device_get_property_int (ctx, udi, "battery.remaining_time", &error) > 0 &&
-                  libhal_device_get_property_int (ctx, udi, "battery.remaining_time", &error) != bat->time))
+    if (G_LIKELY (libhal_device_property_exists  (ctx, udi, "battery.remaining_time", &error)       &&
+                  libhal_device_get_property_int (ctx, udi, "battery.remaining_time", &error) > 0 ) &&
+                  libhal_device_get_property_int (ctx, udi, "battery.remaining_time", &error) != bat->time)
     {
         bat->time = libhal_device_get_property_int (ctx, udi, "battery.remaining_time", &error);
         return;
@@ -98,7 +98,7 @@ hal_property_modified (LibHalContext *ctx,
     {
         bat = g_ptr_array_index (battery->batteries, i);
     
-        if (strcmp (bat->udi, udi) == 0)
+        if (G_LIKELY (strcmp (bat->udi, udi) == 0))
         {
             battery_store_propery (ctx, udi, key, bat, error);
             battery_update_plugin (battery);
@@ -107,7 +107,7 @@ hal_property_modified (LibHalContext *ctx,
         }
     }
     
-    if (dbus_error_is_set (&error))
+    if (G_UNLIKELY (dbus_error_is_set (&error)))
     {
         DBG ("DBus Error: %s: %s", error.name, error.message);
         dbus_error_free (&error);
@@ -295,7 +295,7 @@ battery_stop_monitor (BatteryPlugin *battery)
         dbus_connection_unref (dbus_connection);
     }
     
-    if (dbus_error_is_set (&error))
+    if (G_UNLIKELY (dbus_error_is_set (&error)))
     {
         DBG ("DBus Error: %s: %s", error.name, error.message);
         dbus_error_free (&error);
@@ -358,6 +358,8 @@ battery_start_monitor (BatteryPlugin *battery)
     nobatteries:
         
         g_warning (_("No batteries where found on your system"));
+        
+        /* fall-through */
         
     free:
         
