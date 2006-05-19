@@ -188,7 +188,7 @@ battery_refresh_settings (BatteryStatus *bat,
     bat->percentage    = libhal_device_get_property_int  (context, udi, "battery.charge_level.percentage", &error);
 
     if (G_LIKELY (libhal_device_property_exists          (context, udi, "battery.remaining_time", &error) &&
-                  libhal_device_property_int             (context, udi, "battery.remaining_time", &error) > 0))
+                  libhal_device_get_property_int         (context, udi, "battery.remaining_time", &error) > 0))
         bat->time      = libhal_device_get_property_int  (context, udi, "battery.remaining_time", &error);
     else
         bat->time      = 0;
