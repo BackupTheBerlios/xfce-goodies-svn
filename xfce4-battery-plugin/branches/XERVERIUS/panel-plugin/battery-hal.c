@@ -178,6 +178,23 @@ battery_add_dummies (BatteryPlugin *battery)
 #endif
 
 static void
+battery_refresh_settings (BatteryStatus *bat,
+                          const gchar   *udi,
+                          DBusError      error)
+{
+    bat->charging      = !libhal_device_get_property_bool(context, udi, "battery.rechargeable.is_discharging", &error);
+    bat->present       = libhal_device_get_property_bool (context, udi, "battery.present", &error);
+
+    bat->percentage    = libhal_device_get_property_int  (context, udi, "battery.charge_level.percentage", &error);
+
+    if (G_LIKELY (libhal_device_property_exists          (context, udi, "battery.remaining_time", &error) &&
+                  libhal_device_property_int             (context, udi, "battery.remaining_time", &error) > 0))
+        bat->time      = libhal_device_get_property_int  (context, udi, "battery.remaining_time", &error);
+    else
+        bat->time      = 0;
+}
+
+static void
 battery_add (BatteryPlugin *battery,
              const gchar   *udi)
 {
@@ -189,22 +206,13 @@ battery_add (BatteryPlugin *battery,
     bat = g_new0 (BatteryStatus, 1);
 
     bat->udi           = g_strdup (udi);
-    bat->charging      = !libhal_device_get_property_bool(context, udi, "battery.rechargeable.is_discharging", &error);
-    bat->present       = libhal_device_get_property_bool (context, udi, "battery.present", &error);
-
-    bat->percentage    = libhal_device_get_property_int  (context, udi, "battery.charge_level.percentage", &error);
-
-    if (G_LIKELY (libhal_device_property_exists          (context, udi, "battery.remaining_time", &error) &&
-                  libhal_device_property_exists          (context, udi, "battery.remaining_time", &error) > 0))
-        bat->time      = libhal_device_get_property_int  (context, udi, "battery.remaining_time", &error);
-    else
-        bat->time      = 0;
-
     bat->active_action = NONE;
+
+    battery_refresh_settings (bat, udi, error);
 
     g_ptr_array_add (battery->batteries, bat);
 
-    if (dbus_error_is_set (&error))
+    if (G_UNLIKELY (dbus_error_is_set (&error)))
     {
         DBG ("DBus Error: %s: %s", error.name, error.message);
         dbus_error_free (&error);
@@ -221,7 +229,7 @@ battery_initilize_batteries (BatteryPlugin *battery)
 
     device_names = libhal_find_device_by_capability (context, "battery", &num_devices, NULL);
 
-    if (device_names == NULL || num_devices == 0)
+    if (G_UNLIKELY (device_names == NULL || num_devices == 0))
     {
         DBG ("Unable to get device list or no batteries found");
         return FALSE;
@@ -230,9 +238,7 @@ battery_initilize_batteries (BatteryPlugin *battery)
     DBG ("%d batter%s found", num_devices, num_devices > 1 ? "ies" : "y");
     
     for (i = 0;i < num_devices;i++)
-    {
         battery_add (battery, device_names [i]);
-    }
     
     libhal_free_string_array (device_names);
     
@@ -245,20 +251,45 @@ battery_initilize_batteries (BatteryPlugin *battery)
 }
 
 void
+battery_rescan_batteries (BatteryPlugin *battery)
+{
+    gint           i;
+    DBusError      error;
+    BatteryStatus *bat;
+
+    dbus_error_init (&error);
+
+    for (i = 0; i < battery->batteries->len; ++i)
+    {
+        bat = g_ptr_array_index (battery->batteries, i);
+
+        if (G_LIKELY (libhal_device_exists (context, bat->udi, &error)))
+            if (G_LIKELY (libhal_device_rescan (context, bat->udi, &error)))
+                battery_refresh_settings (bat, bat->udi, error);
+    }
+    
+    if (G_UNLIKELY (dbus_error_is_set (&error)))
+    {
+        DBG ("DBus Error: %s: %s", error.name, error.message);
+        dbus_error_free (&error);
+    }
+}
+
+void
 battery_stop_monitor (BatteryPlugin *battery)
 {
     DBusError error;
     dbus_error_init (&error);
 
-    if (context)
+    if (G_LIKELY (context))
     {
         libhal_ctx_shutdown (context, &error);
         libhal_ctx_free (context);
     }
     
-    if (dbus_connection)
+    if (G_LIKELY (dbus_connection))
     {
-        if (dbus_connection_get_is_connected (dbus_connection))
+        if (G_LIKELY (dbus_connection_get_is_connected (dbus_connection)))
             dbus_connection_disconnect (dbus_connection);
         
         dbus_connection_unref (dbus_connection);
@@ -270,7 +301,7 @@ battery_stop_monitor (BatteryPlugin *battery)
         dbus_error_free (&error);
     }
 
-    DBG ("Monitor Stoped and Freed");
+    DBG ("Monitor Stopped and Freed");
 }
 
 gboolean
@@ -288,24 +319,24 @@ battery_start_monitor (BatteryPlugin *battery)
     /* Connect dbus to the main loop */
     dbus_connection_setup_with_g_main (dbus_connection, NULL);
     
-    if ((context = libhal_ctx_new ()) == NULL)
+    if (G_UNLIKELY ((context = libhal_ctx_new ()) == NULL))
         goto failed;
     
     libhal_ctx_set_user_data (context, battery);
     
-    if (!libhal_ctx_set_dbus_connection (context, dbus_connection))
+    if (G_UNLIKELY (!libhal_ctx_set_dbus_connection (context, dbus_connection)))
         goto failed;
     
-    if (!libhal_ctx_init (context, &error))
+    if (G_UNLIKELY (!libhal_ctx_init (context, &error)))
         goto failed;
     
      /* Set callback to monitor the device changes */
     libhal_ctx_set_device_property_modified (context, hal_property_modified);
     
-    if (battery_initilize_batteries(battery) == FALSE)
+    if (G_UNLIKELY (battery_initilize_batteries(battery) == FALSE))
         goto nobatteries;
     
-    if (!libhal_device_property_watch_all (context, &error))
+    if (G_UNLIKELY (!libhal_device_property_watch_all (context, &error)))
         goto failed;
     
     return TRUE;

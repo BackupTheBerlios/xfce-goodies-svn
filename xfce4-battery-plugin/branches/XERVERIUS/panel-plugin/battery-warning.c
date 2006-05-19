@@ -58,6 +58,7 @@ battery_warning_response (GtkWidget     *dialog,
 {
     g_object_set_data (G_OBJECT (battery->plugin), "warning", NULL);
 
+    /* "Don't show again" button clicked */
     if (response == GTK_RESPONSE_OK)
         battery_warning_stop ();
 

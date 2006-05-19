@@ -23,12 +23,15 @@
 #define _BATTERY_HAL_H
 
 void
-battery_remove        (BatteryStatus *bat);
-
-gboolean
-battery_start_monitor (BatteryPlugin *battery);
+battery_remove           (BatteryStatus *bat);
 
 void
-battery_stop_monitor  (BatteryPlugin *battery);
+battery_rescan_batteries (BatteryPlugin *battery);
+
+gboolean
+battery_start_monitor    (BatteryPlugin *battery);
+
+void
+battery_stop_monitor     (BatteryPlugin *battery);
 
 #endif /* _BATTERY_HAL_H */

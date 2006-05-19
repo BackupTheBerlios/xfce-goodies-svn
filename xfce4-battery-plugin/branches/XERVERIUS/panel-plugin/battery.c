@@ -658,10 +658,22 @@ battery_orientation_changed (XfcePanelPlugin *plugin,
     battery_widgets (battery);
 }
 
+static void
+battery_manual_update (GtkWidget     *mi,
+                       BatteryPlugin *battery)
+{
+    if (G_LIKELY (battery->running))
+    {
+        battery_rescan_batteries (battery);
+        battery_update_plugin (battery);
+    }
+}
+
 static BatteryPlugin *
 battery_plugin_new (XfcePanelPlugin *plugin)
 {
     BatteryPlugin *battery;
+    GtkWidget *mi;
 
     battery = g_new0 (BatteryPlugin, 1);
     battery->plugin = plugin;
@@ -673,20 +685,27 @@ battery_plugin_new (XfcePanelPlugin *plugin)
 
     battery_open (battery);
 
-    if (battery_start_monitor (battery) == FALSE)
+    if (G_UNLIKELY (battery_start_monitor (battery) == FALSE))
     {
         battery_error_widget (battery);
+        return battery;
     }
-    else
-    {
-        /* Check if the default battery exists */
-        if (battery->show_battery + 1 > battery->batteries->len)
-            battery->show_battery = 0;
-        
-        battery->running = TRUE;
-        
-        battery_widgets (battery);
-    }
+    
+    /* Check if the default battery exists */
+    if (battery->show_battery + 1 > battery->batteries->len)
+        battery->show_battery = 0;
+    
+    /* Tell everyone hal is running and batteries are all fine */
+    battery->running = TRUE;
+    
+    /* Add refresh options to right click menu */
+    mi = gtk_image_menu_item_new_from_stock ("gtk-refresh", NULL);
+    gtk_widget_show (mi);
+    g_signal_connect(mi, "activate", 
+        G_CALLBACK(battery_manual_update), battery);
+    xfce_panel_plugin_menu_insert_item (plugin, GTK_MENU_ITEM (mi));
+    
+    battery_widgets (battery);
     
     return battery;
 }
