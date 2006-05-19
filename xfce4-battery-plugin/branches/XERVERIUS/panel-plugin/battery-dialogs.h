@@ -25,7 +25,4 @@
 void
 battery_configure (XfcePanelPlugin *plugin, BatteryPlugin *battery);
 
-void
-battery_warning   (BatteryPlugin *battery, const gchar *text);
-
 #endif /* _BATTERY_DIALOGS_H */

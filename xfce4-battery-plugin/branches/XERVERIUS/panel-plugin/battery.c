@@ -36,6 +36,7 @@
 #include "battery.h"
 #include "battery-hal.h"
 #include "battery-dialogs.h"
+#include "battery-warning.h"
 #include "battery-overview.h"
 
 static void
@@ -302,43 +303,6 @@ battery_error_widget (BatteryPlugin *battery)
 }
 
 /* Battery Actions */
-static void
-battery_display_warning (BatteryPlugin *battery,
-                         ActionType     type)
-{
-    switch (type)
-    {
-        case CHARGED:
-            battery_warning (battery,
-                             _("<b>"
-                               "Your battery is now fully charged."
-                               "</b>"
-                               "\n\n"
-                               "You should consider plugging out your AC cable to not overcharge your battery."));
-            break;
-        
-        case LOW:
-            battery_warning (battery,
-                             _("<b>"
-                               "Your battery is running low."
-                               "</b>"
-                               "\n\n"
-                               "You should consider plugging in or shutting down your computer soon to avoid possible data loss."));
-            break;
-    
-        case CRITICAL:
-            battery_warning (battery,
-                             _("<b>"
-                               "Your battery has reached critical status."
-                               "</b>"
-                               "\n\n"
-                               "You should plug in or shutdown your computer now to avoid possible data loss."));
-            break;
-    
-        default:
-            break;
-    }
-}
 
 static void
 battery_run_action (ActionType     type,
@@ -349,7 +313,7 @@ battery_run_action (ActionType     type,
     switch (action)
     {
         case MESSAGE:
-            battery_display_warning (battery, type);
+            battery_warning (battery, type);
             break;
         
         case COMMAND:
@@ -433,6 +397,12 @@ battery_update_plugin (BatteryPlugin *battery)
             {
                 if (bat->active_action != NONE)
                 {
+                    /* Stop the warning timout */
+                    battery_warning_stop ();
+                    
+                    /* Reset the current battery action */
+                    bat->active_action = NONE;
+                    
                     /* Check if the warning message is shown, if so, destroy it */
                     GtkWidget *warning = g_object_get_data (G_OBJECT (battery->plugin), "warning");
                     
@@ -442,15 +412,12 @@ battery_update_plugin (BatteryPlugin *battery)
                         g_object_set_data (G_OBJECT (battery->plugin), "warning", NULL);
                         gtk_widget_destroy (warning);
                     }
-                    
-                    /* Reset the current battery action */
-                    bat->active_action = NONE;
                 }
             }
         }
         else if (G_LIKELY (bat->present)) /* Not charging, but present in system */
         {
-            if (G_UNLIKELY (bat->percentage <= battery->perc_critical))
+            if (bat->percentage <= battery->perc_critical)
             {
                 if (bat->active_action != CRITICAL)
                 {
@@ -463,7 +430,7 @@ battery_update_plugin (BatteryPlugin *battery)
                                         battery->command_critical);
                 }
             }
-            else if (G_UNLIKELY (bat->percentage <= battery->perc_low))
+            else if (bat->percentage <= battery->perc_low)
             {
                 if (bat->active_action != LOW)
                 {
@@ -480,17 +447,21 @@ battery_update_plugin (BatteryPlugin *battery)
             {
                 if (bat->active_action != NONE)
                 {
+                    /* Stop the warning timout */
+                    battery_warning_stop ();
+                    
+                    /* Reset the current battery action */
+                    bat->active_action = NONE;
+                    
                     /* Check if the warning message is shown, if so, destroy it */
                     GtkWidget *warning = g_object_get_data (G_OBJECT (battery->plugin), "warning");
                     
                     if (G_UNLIKELY (warning))
                     {
+                        DBG ("Destroy dialog");
                         g_object_set_data (G_OBJECT (battery->plugin), "warning", NULL);
                         gtk_widget_destroy (warning);
                     }
-                    
-                    /* Reset the current battery action */
-                    bat->active_action = NONE;
                 }
             }
         }
@@ -616,6 +587,9 @@ battery_free (XfcePanelPlugin *plugin,
 
     /* Stop HAL Monitor */
     battery_stop_monitor (battery);
+    
+    /* Stop battery warning timout */
+    battery_warning_stop ();
 
     /* Destroy windows (properties, warnings, errors  */
     configure = g_object_get_data (G_OBJECT (plugin), "configure");
@@ -668,7 +642,7 @@ battery_set_size (XfcePanelPlugin *plugin,
     /* Reset icon name so it will be updated */
     g_free (battery->iconname);
     battery->iconname = g_strdup ("");
-            
+
     battery_update_plugin (battery);
     
     return TRUE;

@@ -35,7 +35,6 @@
 #include "battery.h"
 #include "battery-hal.h"
 
-
 static LibHalContext  *context;
 static DBusConnection *dbus_connection;
 

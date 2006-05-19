@@ -8,6 +8,8 @@ xfce4_battery_plugin_SOURCES =  \
 	battery-hal.c           \
 	battery-dialogs.h       \
 	battery-dialogs.c       \
+	battery-warning.h       \
+	battery-warning.c       \
         battery-overview.h      \
         battery-overview.c
 

@@ -19,16 +19,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef _BATTERY_HAL_H
-#define _BATTERY_HAL_H
+#ifndef _BATTERY_WARNING_H
+#define _BATTERY_WARNING_H
 
 void
-battery_remove        (BatteryStatus *bat);
-
-gboolean
-battery_start_monitor (BatteryPlugin *battery);
+battery_warning_stop (void);
 
 void
-battery_stop_monitor  (BatteryPlugin *battery);
+battery_warning (BatteryPlugin *battery, ActionType type);
 
-#endif /* _BATTERY_HAL_H */
+#endif /* _BATTERY_WARNING_H */

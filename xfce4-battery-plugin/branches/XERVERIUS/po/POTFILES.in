@@ -2,6 +2,7 @@
 
 panel-plugin/battery-hal.c
 panel-plugin/battery-dialogs.c
+panel-plugin/battery-warning.c
 panel-plugin/battery.c
 
 # Files added by intltool-prepare.
