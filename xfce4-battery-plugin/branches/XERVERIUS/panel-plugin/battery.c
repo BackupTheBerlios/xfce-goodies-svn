@@ -107,19 +107,11 @@ battery_icon_group (gint percentage)
         return "100";
 }
 
-static void
-battery_widget_icon (BatteryPlugin *battery,
-                     BatteryStatus *bat)
+gchar *
+battery_icon_name (BatteryStatus *bat)
 {
-    gchar     *name;
-    gint       psize;
-    GdkPixbuf *pixbuf = NULL;
+    gchar *name;
 
-    if (G_UNLIKELY (!battery->show_icon ||
-                    !GTK_IS_WIDGET (battery->icon)))
-        return;
-    
-    /* Generate the icon name */
     if (G_UNLIKELY (!bat->present))
         name = g_strdup ("battery-missing");
     
@@ -135,6 +127,23 @@ battery_widget_icon (BatteryPlugin *battery,
         name = g_strconcat ("battery-discharging-",
                             battery_icon_group (bat->percentage),
                             NULL);
+    
+    return name;
+}
+
+static void
+battery_widget_icon (BatteryPlugin *battery,
+                     BatteryStatus *bat)
+{
+    gchar     *name;
+    gint       psize;
+    GdkPixbuf *pixbuf = NULL;
+
+    if (G_UNLIKELY (!battery->show_icon ||
+                    !GTK_IS_WIDGET (battery->icon)))
+        return;
+    
+    name = battery_icon_name (bat);    
     
     /* Only update icon if it's different from new one */
     if (G_UNLIKELY (strcmp (battery->iconname, name) != 0))

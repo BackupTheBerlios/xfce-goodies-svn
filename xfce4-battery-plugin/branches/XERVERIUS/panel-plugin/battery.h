@@ -83,6 +83,9 @@ typedef struct
 }
 BatteryPlugin;
 
+gchar *
+battery_icon_name     (BatteryStatus *bat);
+
 void
 battery_widgets       (BatteryPlugin *battery);
 

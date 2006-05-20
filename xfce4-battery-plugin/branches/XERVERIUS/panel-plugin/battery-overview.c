@@ -34,6 +34,28 @@
 #include "battery.h"
 
 static void
+battery_add_overview (GtkWidget     *box,
+                      BatteryStatus *bat)
+{
+    //GtkWidget *hbox, *vbox, *label, *expander, *icon;
+    GtkWidget *hbox, *icon;
+    gchar *name;
+
+    hbox = gtk_hbox_new (FALSE, BORDER);
+    gtk_box_pack_start (GTK_BOX (box), hbox, FALSE, FALSE, 0);
+
+    name = battery_icon_name (bat);
+
+    icon = gtk_image_new_from_icon_name (name, GTK_ICON_SIZE_DIALOG);
+    gtk_box_pack_start (GTK_BOX (hbox), icon, FALSE, TRUE, 0);
+    gtk_misc_set_alignment (GTK_MISC (icon), 0.5, 0);
+    gtk_misc_set_padding (GTK_MISC (icon), 10, 10);
+
+    g_free (name);
+
+}
+
+static void
 battery_overview_response (GtkWidget     *dialog, 
                            gint           response,
                            BatteryPlugin *battery)
@@ -48,7 +70,9 @@ battery_overview (GtkWidget      *widget,
                   GdkEventButton *ev, 
                   BatteryPlugin  *battery)
 {
-    GtkWidget *dialog, *window, *dialog_vbox;
+    GtkWidget     *dialog, *window, *dialog_vbox;
+    gint           i;
+    BatteryStatus *bat;
 
 #ifndef USE_NEW_DIALOG
     GtkWidget *header;
@@ -94,6 +118,13 @@ battery_overview (GtkWidget      *widget,
     gtk_container_set_border_width (GTK_CONTAINER (header), BORDER);
     gtk_box_pack_start (GTK_BOX (dialog_vbox), header, FALSE, TRUE, 0);
 #endif
+
+    for (i = 0; i < battery->batteries->len; ++i)
+    {
+        bat = g_ptr_array_index (battery->batteries, i);
+    
+        battery_add_overview (dialog_vbox, bat);
+    }
 
     g_signal_connect(dialog, "response",
         G_CALLBACK(battery_overview_response), battery);
