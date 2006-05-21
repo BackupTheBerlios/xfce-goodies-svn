@@ -22,7 +22,11 @@
 #ifndef _BATTERY_DIALOGS_H
 #define _BATTERY_DIALOGS_H
 
+G_BEGIN_DECLS
+
 void
 battery_configure (XfcePanelPlugin *plugin, BatteryPlugin *battery);
+
+G_END_DECLS
 
 #endif /* _BATTERY_DIALOGS_H */

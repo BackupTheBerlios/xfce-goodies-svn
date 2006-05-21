@@ -172,7 +172,7 @@ static void
 combobox_changed (GtkComboBox    *combobox,
                   BatteryOptions *options)
 {
-    gint active = gtk_combo_box_get_active (combobox);
+    guint active = gtk_combo_box_get_active (combobox);
 
     if (GTK_WIDGET(combobox) == options->combo_critical)
     {
@@ -202,7 +202,7 @@ static void
 spin_button_changed (GtkWidget      *button,
                      BatteryOptions *options)
 {
-    gint value = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON(button)); 
+    guint value = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON(button)); 
 
     if (button == options->spin_critical)
         options->battery->perc_critical = value;
@@ -355,7 +355,7 @@ battery_configure (XfcePanelPlugin *plugin,
 #endif
 
     GtkSizeGroup   *sg_buttons, *sg_labels;
-    gint            i;
+    guint           i;
     gchar          *name;
     BatteryOptions *options;
 

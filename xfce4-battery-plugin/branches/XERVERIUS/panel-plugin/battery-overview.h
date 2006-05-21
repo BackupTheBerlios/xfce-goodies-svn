@@ -22,7 +22,11 @@
 #ifndef _BATTERY_OVERVIEW_H
 #define _BATTERY_OVERVIEW_H
 
+G_BEGIN_DECLS
+
 gboolean
 battery_overview (GtkWidget *widget, GdkEventButton *ev, BatteryPlugin *battery);
+
+G_END_DECLS
 
 #endif /* _BATTERY_OVERVIEW_H */

@@ -79,7 +79,7 @@ hal_property_modified (LibHalContext *ctx,
                        dbus_bool_t    is_removed,
                        dbus_bool_t    is_added)
 {
-    gint           i;
+    unsigned int   i;
     DBusError      error;
     BatteryPlugin *battery;
     BatteryStatus *bat;
@@ -94,7 +94,7 @@ hal_property_modified (LibHalContext *ctx,
 
     dbus_error_init (&error);
     
-    for (i = 0; i < battery->batteries->len; ++i)
+    for (i = battery->batteries->len; i--; )
     {
         bat = g_ptr_array_index (battery->batteries, i);
     
@@ -253,13 +253,13 @@ battery_initilize_batteries (BatteryPlugin *battery)
 void
 battery_rescan_batteries (BatteryPlugin *battery)
 {
-    gint           i;
+    guint          i;
     DBusError      error;
     BatteryStatus *bat;
 
     dbus_error_init (&error);
 
-    for (i = 0; i < battery->batteries->len; ++i)
+    for (i = battery->batteries->len; i--;)
     {
         bat = g_ptr_array_index (battery->batteries, i);
 

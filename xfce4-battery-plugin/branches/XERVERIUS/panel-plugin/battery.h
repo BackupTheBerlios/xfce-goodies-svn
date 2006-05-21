@@ -22,6 +22,8 @@
 #ifndef _BATTERY_H
 #define _BATTERY_H
 
+G_BEGIN_DECLS
+
 typedef enum
 {
     NOTHING = 0,
@@ -42,15 +44,15 @@ ActionType;
 
 typedef struct
 {
-    gchar    *udi;             /* /org/freedesktop/Hal/devices/acpi_BAT0 */
+    gchar         *udi; /* /org/freedesktop/Hal/devices/acpi_BAT0 */
     
-    gboolean  charging;
-    gboolean  present;
+    gboolean       charging;
+    gboolean       present;
 
-    ActionType active_action;
+    ActionType     active_action;
 
-    gint   time;
-    gint   percentage;
+    gint           time;
+    guint          percentage;
 }
 BatteryStatus;
 
@@ -59,27 +61,25 @@ typedef struct
     XfcePanelPlugin   *plugin;
     gboolean           running;
 
-    /* HAL Stuff 873,3 Kb */
-
     /* Array with all the batteries */
     GPtrArray         *batteries;
 
     /* Widgets */
-    GtkWidget *ebox, *icon, *progressbar, *label;
-    GtkTooltips *tooltip;
+    GtkWidget         *ebox, *icon, *progressbar, *label;
+    GtkTooltips       *tooltip;
 
     /* Widget Settings */
-    gchar *iconname;
-    gint   show_battery;
+    gchar             *iconname;
+    guint              show_battery;
 
     /* Settings: Appearance */
-    gboolean  show_icon, show_progressbar, show_percentage, show_time;
-    gboolean  tip_time;
+    gboolean           show_icon, show_progressbar, show_percentage, show_time;
+    gboolean           tip_time;
 
     /* Settings: Actions */
-    gint      perc_critical, perc_low;
-    Action    action_critical, action_low, action_charged;
-    gchar    *command_critical, *command_low, *command_charged;
+    guint              perc_critical, perc_low;
+    Action             action_critical, action_low, action_charged;
+    gchar             *command_critical, *command_low, *command_charged;
 }
 BatteryPlugin;
 
@@ -94,5 +94,7 @@ battery_update_plugin (BatteryPlugin *battery);
 
 void
 battery_save          (XfcePanelPlugin *plugin, BatteryPlugin *battery);
+
+G_END_DECLS
 
 #endif /* _BATTERY_H */

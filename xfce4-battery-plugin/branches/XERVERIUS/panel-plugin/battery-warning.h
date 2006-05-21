@@ -22,10 +22,14 @@
 #ifndef _BATTERY_WARNING_H
 #define _BATTERY_WARNING_H
 
+G_BEGIN_DECLS
+
 void
 battery_warning_stop (void);
 
 void
 battery_warning (BatteryPlugin *battery, ActionType type);
+
+G_END_DECLS
 
 #endif /* _BATTERY_WARNING_H */

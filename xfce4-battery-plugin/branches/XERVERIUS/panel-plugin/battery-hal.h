@@ -22,6 +22,8 @@
 #ifndef _BATTERY_HAL_H
 #define _BATTERY_HAL_H
 
+G_BEGIN_DECLS
+
 void
 battery_remove           (BatteryStatus *bat);
 
@@ -33,5 +35,7 @@ battery_start_monitor    (BatteryPlugin *battery);
 
 void
 battery_stop_monitor     (BatteryPlugin *battery);
+
+G_END_DECLS
 
 #endif /* _BATTERY_HAL_H */

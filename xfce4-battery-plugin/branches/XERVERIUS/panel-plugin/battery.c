@@ -70,10 +70,10 @@ battery_tooltip (BatteryPlugin *battery,
     }
     else if (bat->present)/* Discharging */
     {
-        if (battery->tip_time && G_LIKELY (bat->time > 3600))
+        if (battery->tip_time && bat->time > 3600)
             g_string_append_printf (tooltip, _("%d hr %d min (%d%%) remaining"), bat->time / 3600, bat->time / 60 % 60, bat->percentage);
         
-        else if (battery->tip_time && G_LIKELY (bat->time > 0))
+        else if (battery->tip_time && bat->time > 0)
             g_string_append_printf (tooltip, _("%d min (%d%%) remaining"), bat->time / 60, bat->percentage);
         
         else
@@ -86,7 +86,7 @@ battery_tooltip (BatteryPlugin *battery,
 }
 
 static const gchar *
-battery_icon_group (gint percentage)
+battery_icon_group (guint percentage)
 {
     if (percentage      <= 10)
         return "000";
@@ -136,7 +136,7 @@ battery_widget_icon (BatteryPlugin *battery,
                      BatteryStatus *bat)
 {
     gchar     *name;
-    gint       psize;
+    guint      psize;
     GdkPixbuf *pixbuf = NULL;
 
     if (G_UNLIKELY (!battery->show_icon ||
@@ -288,7 +288,7 @@ battery_widgets (BatteryPlugin *battery)
 void
 battery_error_widget (BatteryPlugin *battery)
 {
-    gint       psize;
+    guint      psize;
     GdkPixbuf *pixbuf = NULL;
 
     DBG ("Display the error widget");
@@ -346,7 +346,7 @@ battery_run_action (ActionType     type,
 void
 battery_update_plugin (BatteryPlugin *battery)
 {
-    gint           i;
+    guint          i;
     GString       *tooltip;
     BatteryStatus *bat;
     
@@ -574,12 +574,12 @@ static void
 battery_free (XfcePanelPlugin *plugin,
               BatteryPlugin   *battery)
 {
-    gint           i;
+    guint          i;
     BatteryStatus *bat;
     GtkWidget     *configure, *warning, *overview;
 
     /* Remove the batteries array */
-    for (i = 0; i < battery->batteries->len; ++i)
+    for (i = battery->batteries->len; i--;)
     {
         bat = g_ptr_array_index (battery->batteries, i);
         g_ptr_array_remove_fast (battery->batteries, bat);
@@ -679,7 +679,7 @@ static BatteryPlugin *
 battery_plugin_new (XfcePanelPlugin *plugin)
 {
     BatteryPlugin *battery;
-    GtkWidget *mi;
+    GtkWidget     *mi;
 
     battery = g_new0 (BatteryPlugin, 1);
     battery->plugin = plugin;

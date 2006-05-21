@@ -33,17 +33,38 @@
 
 #include "battery.h"
 
+static gchar *
+battery_get_status (BatteryStatus *bat)
+{
+    gchar *status;
+
+    if (G_UNLIKELY (!bat->present))
+        status = g_strdup (_("Battery Not Present"));
+    
+    else if (G_UNLIKELY (((bat->percentage == 100) && bat->charging)))
+        status = g_strdup (_("Battery Fully Charged"));
+    
+    else if (bat->charging)
+        status = g_strdup (_("Battery Charging"));
+    
+    else
+        status = g_strdup (_("Battery Discharging"));
+
+    return status;
+}
+
 static void
 battery_add_overview (GtkWidget     *box,
                       BatteryStatus *bat)
 {
-    //GtkWidget *hbox, *vbox, *label, *expander, *icon;
-    GtkWidget *hbox, *icon;
-    gchar *name;
+    GtkWidget *hbox, *vbox, *label, *icon, *ibox, *expander;
+    gchar *name, *status, *percentage, *time;
 
     hbox = gtk_hbox_new (FALSE, BORDER);
     gtk_box_pack_start (GTK_BOX (box), hbox, FALSE, FALSE, 0);
-
+    gtk_container_set_border_width (GTK_CONTAINER (hbox), BORDER);
+    
+    /* Battery Icon */
     name = battery_icon_name (bat);
 
     icon = gtk_image_new_from_icon_name (name, GTK_ICON_SIZE_DIALOG);
@@ -53,6 +74,70 @@ battery_add_overview (GtkWidget     *box,
 
     g_free (name);
 
+    vbox = gtk_vbox_new (FALSE, 2);
+    gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
+
+    /* Status box */
+    ibox = gtk_hbox_new (FALSE, BORDER*2);
+    gtk_box_pack_start (GTK_BOX (vbox), ibox, TRUE, TRUE, 0);
+
+    label = gtk_label_new (_("<b>Status:</b>"));
+    gtk_box_pack_start (GTK_BOX (ibox), label, FALSE, FALSE, 0);
+    gtk_label_set_use_markup (GTK_LABEL (label), TRUE);
+    gtk_misc_set_alignment (GTK_MISC (label), 0, 0.5);
+
+    status = battery_get_status (bat);
+
+    label = gtk_label_new (status);
+    gtk_box_pack_start (GTK_BOX (ibox), label, FALSE, FALSE, 0);
+    
+    g_free (status);
+    
+    /* Percentage */
+    ibox = gtk_hbox_new (FALSE, BORDER*2);
+    gtk_box_pack_start (GTK_BOX (vbox), ibox, TRUE, TRUE, 0);
+
+    label = gtk_label_new (_("<b>Percentage:</b>"));
+    gtk_box_pack_start (GTK_BOX (ibox), label, FALSE, FALSE, 0);
+    gtk_label_set_use_markup (GTK_LABEL (label), TRUE);
+    gtk_misc_set_alignment (GTK_MISC (label), 0, 0.5);
+    
+    percentage = g_strdup_printf ("%d%%", bat->percentage);
+    
+    label = gtk_label_new (percentage);
+    gtk_box_pack_start (GTK_BOX (ibox), label, FALSE, FALSE, 0);
+    
+    g_free (percentage);
+    
+    /* Time remaining */
+    if (bat->time > 3600)
+        time = g_strdup_printf (_("%d hr %d min"), bat->time / 3600, bat->time / 60 % 60);
+    else if (bat->time > 0)
+        time = g_strdup_printf (_("%d min"), bat->time / 60);
+    else
+        time = NULL;
+    
+    if (time)
+    {    
+        ibox = gtk_hbox_new (FALSE, BORDER*2);
+        gtk_box_pack_start (GTK_BOX (vbox), ibox, TRUE, TRUE, 0);
+
+        label = gtk_label_new (_("<b>Remaining Time:</b>"));
+        gtk_box_pack_start (GTK_BOX (ibox), label, FALSE, FALSE, 0);
+        gtk_label_set_use_markup (GTK_LABEL (label), TRUE);
+        gtk_misc_set_alignment (GTK_MISC (label), 0, 0.5);
+    
+        label = gtk_label_new (time);
+        gtk_box_pack_start (GTK_BOX (ibox), label, FALSE, FALSE, 0);
+    
+        g_free (time);
+    }
+    
+    expander = gtk_expander_new (NULL);
+    gtk_box_pack_start (GTK_BOX (vbox), expander, TRUE, TRUE, 0);
+    
+    label = gtk_label_new (_("More..."));
+    gtk_expander_set_label_widget (GTK_EXPANDER (expander), label);
 }
 
 static void
@@ -71,7 +156,7 @@ battery_overview (GtkWidget      *widget,
                   BatteryPlugin  *battery)
 {
     GtkWidget     *dialog, *window, *dialog_vbox;
-    gint           i;
+    guint          i;
     BatteryStatus *bat;
 
 #ifndef USE_NEW_DIALOG
