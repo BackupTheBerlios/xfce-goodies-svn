@@ -35,20 +35,44 @@
 #include "battery.h"
 #include "battery-hal.h"
 
+#define MAX_UPDATE_INTERVAL 0.5
+
+static GTimer         *update_timer;
 static LibHalContext  *context;
 static DBusConnection *dbus_connection;
 
-static void
+static gboolean
 battery_store_propery (LibHalContext *ctx,
                        const char    *udi,
                        const char    *key,
                        BatteryStatus *bat,
                        DBusError      error)
 {
+    /* Change battery charge state or present state */
+    if (G_UNLIKELY (strcmp (key, "battery.rechargeable.is_discharging") == 0))
+    {
+        bat->charging = !libhal_device_get_property_bool (ctx, udi, "battery.rechargeable.is_discharging", &error);
+        return TRUE;
+    }
+    
+    if (G_UNLIKELY (strcmp (key, "battery.present") == 0))
+    {
+        bat->present  = libhal_device_get_property_bool (ctx, udi, "battery.present", &error);
+        return TRUE;
+    }
+
+    /* Timer. Sometimes HAL Sends > 3 Signals when something changed. We're using just the
+       first time to get all info so the widgets are updated once to save cpu time */
+    /* Maybe we can also use this time to caculate the remaining time */
+    if (g_timer_elapsed (update_timer, NULL) > MAX_UPDATE_INTERVAL)
+        g_timer_reset (update_timer);
+    else
+        return FALSE;
+    
+    /* Store new percentage and time */
     if (bat->percentage != libhal_device_get_property_int (ctx, udi, "battery.charge_level.percentage", &error))
     {
         bat->percentage = libhal_device_get_property_int (ctx, udi, "battery.charge_level.percentage", &error);
-        return;
     }
   
     if (G_LIKELY (libhal_device_property_exists  (ctx, udi, "battery.remaining_time", &error)       &&
@@ -56,20 +80,9 @@ battery_store_propery (LibHalContext *ctx,
                   libhal_device_get_property_int (ctx, udi, "battery.remaining_time", &error) != bat->time)
     {
         bat->time = libhal_device_get_property_int (ctx, udi, "battery.remaining_time", &error);
-        return;
     }
     
-    if (G_UNLIKELY (strcmp (key, "battery.rechargeable.is_discharging") == 0))
-    {
-        bat->charging = !libhal_device_get_property_bool (ctx, udi, "battery.rechargeable.is_discharging", &error);
-        return;
-    }
-    
-    if (G_UNLIKELY (strcmp (key, "battery.present") == 0))
-    {
-        bat->present  = libhal_device_get_property_bool (ctx, udi, "battery.present", &error);
-        return;
-    }
+    return TRUE;
 }
 
 static void
@@ -100,8 +113,8 @@ hal_property_modified (LibHalContext *ctx,
     
         if (G_LIKELY (strcmp (bat->udi, udi) == 0))
         {
-            battery_store_propery (ctx, udi, key, bat, error);
-            battery_update_plugin (battery);
+            if (battery_store_propery (ctx, udi, key, bat, error))
+                battery_update_plugin (battery);
             
             break;
         }
@@ -281,6 +294,8 @@ battery_stop_monitor (BatteryPlugin *battery)
     DBusError error;
     dbus_error_init (&error);
 
+    g_timer_destroy (update_timer);
+
     if (G_LIKELY (context))
     {
         libhal_ctx_shutdown (context, &error);
@@ -311,6 +326,9 @@ battery_start_monitor (BatteryPlugin *battery)
 
     DBusError error;
     dbus_error_init (&error);
+
+    update_timer = g_timer_new ();
+    g_timer_start (update_timer);
     
     dbus_connection = dbus_bus_get (DBUS_BUS_SYSTEM, &error);
     if (G_UNLIKELY (dbus_connection == NULL))
