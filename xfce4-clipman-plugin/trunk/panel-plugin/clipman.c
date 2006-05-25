@@ -902,6 +902,7 @@ clipman_new (XfcePanelPlugin *plugin)
     clipman->plugin = plugin;
     
     clipman->tooltip = gtk_tooltips_new ();
+    g_object_ref (clipman->tooltip);
     
     clipman_read (clipman);
     
@@ -961,10 +962,12 @@ clipman_free (XfcePanelPlugin *plugin,
     }
     g_ptr_array_free (clipman->clips, TRUE);
 
+    gtk_tooltips_set_tip (clipman->tooltip, clipman->button, NULL, NULL);
+    g_object_unref (clipman->tooltip);
+    
     gtk_widget_destroy (clipman->icon);
     gtk_widget_destroy (clipman->button);
     
-    g_free (clipman->tooltip);
     clipman->plugin = NULL;
     
     DBG ("Plugin Freed");
