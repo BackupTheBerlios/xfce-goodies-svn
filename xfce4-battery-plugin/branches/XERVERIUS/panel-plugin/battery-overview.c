@@ -32,6 +32,7 @@
 #include <libxfce4panel/xfce-panel-plugin.h>
 
 #include "battery.h"
+#include "battery-hal.h"
 
 static gchar *
 battery_get_status (BatteryStatus *bat)
@@ -54,60 +55,61 @@ battery_get_status (BatteryStatus *bat)
 }
 
 static void
-battery_add_overview (GtkWidget     *box,
-                      BatteryStatus *bat)
+battery_add_overview_item (GtkWidget    *vbox,
+                           GtkSizeGroup *sg,
+                           const gchar  *title,
+                           const gchar  *value)
+
 {
-    GtkWidget *hbox, *vbox, *label, *icon, *ibox, *expander;
-    gchar *name, *status, *percentage, *time;
+    GtkWidget *hbox, *label;
+    
+    if (G_LIKELY (value))
+    {
+	hbox = gtk_hbox_new (FALSE, BORDER*2);
+        gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, TRUE, 0);
+
+        label = gtk_label_new (title);
+        gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
+        gtk_label_set_use_markup (GTK_LABEL (label), TRUE);
+        gtk_misc_set_alignment (GTK_MISC (label), 0, 0.5);
+    
+        gtk_size_group_add_widget (sg, label);
+    
+        label = gtk_label_new (value);
+        gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
+    }
+}
+
+static void
+battery_add_overview (GtkWidget     *box,
+                      BatteryStatus *bat,
+                      GtkSizeGroup  *sg)
+{
+    GtkWidget   *hbox, *vbox, *label, *image, *expander;
+    const gchar *icon, *status, *percentage, *time, *vendor, *technology, *designcap, *path;
 
     hbox = gtk_hbox_new (FALSE, BORDER);
     gtk_box_pack_start (GTK_BOX (box), hbox, FALSE, FALSE, 0);
     gtk_container_set_border_width (GTK_CONTAINER (hbox), BORDER);
     
     /* Battery Icon */
-    name = battery_icon_name (bat);
+    icon = battery_icon_name (bat);
 
-    icon = gtk_image_new_from_icon_name (name, GTK_ICON_SIZE_DIALOG);
-    gtk_box_pack_start (GTK_BOX (hbox), icon, FALSE, TRUE, 0);
-    gtk_misc_set_alignment (GTK_MISC (icon), 0.5, 0);
-    gtk_misc_set_padding (GTK_MISC (icon), 10, 10);
-
-    g_free (name);
+    image = gtk_image_new_from_icon_name (icon, GTK_ICON_SIZE_DIALOG);
+    gtk_box_pack_start (GTK_BOX (hbox), image, FALSE, TRUE, 0);
+    gtk_misc_set_alignment (GTK_MISC (image), 0.5, 0);
+    gtk_misc_set_padding (GTK_MISC (image), 10, 10);
 
     vbox = gtk_vbox_new (FALSE, 2);
     gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
 
     /* Status box */
-    ibox = gtk_hbox_new (FALSE, BORDER*2);
-    gtk_box_pack_start (GTK_BOX (vbox), ibox, TRUE, TRUE, 0);
-
-    label = gtk_label_new (_("<b>Status:</b>"));
-    gtk_box_pack_start (GTK_BOX (ibox), label, FALSE, FALSE, 0);
-    gtk_label_set_use_markup (GTK_LABEL (label), TRUE);
-    gtk_misc_set_alignment (GTK_MISC (label), 0, 0.5);
-
     status = battery_get_status (bat);
-
-    label = gtk_label_new (status);
-    gtk_box_pack_start (GTK_BOX (ibox), label, FALSE, FALSE, 0);
-    
-    g_free (status);
+    battery_add_overview_item (vbox, sg, _("<b>Status</b>"), status);
     
     /* Percentage */
-    ibox = gtk_hbox_new (FALSE, BORDER*2);
-    gtk_box_pack_start (GTK_BOX (vbox), ibox, TRUE, TRUE, 0);
-
-    label = gtk_label_new (_("<b>Percentage:</b>"));
-    gtk_box_pack_start (GTK_BOX (ibox), label, FALSE, FALSE, 0);
-    gtk_label_set_use_markup (GTK_LABEL (label), TRUE);
-    gtk_misc_set_alignment (GTK_MISC (label), 0, 0.5);
-    
     percentage = g_strdup_printf ("%d%%", bat->percentage);
-    
-    label = gtk_label_new (percentage);
-    gtk_box_pack_start (GTK_BOX (ibox), label, FALSE, FALSE, 0);
-    
-    g_free (percentage);
+    battery_add_overview_item (vbox, sg, _("<b>Percentage</b>"), percentage);
     
     /* Time remaining */
     if (bat->time > 3600)
@@ -115,29 +117,37 @@ battery_add_overview (GtkWidget     *box,
     else if (bat->time > 0)
         time = g_strdup_printf (_("%d min"), bat->time / 60);
     else
-        time = NULL;
+	time = NULL;
     
-    if (time)
-    {    
-        ibox = gtk_hbox_new (FALSE, BORDER*2);
-        gtk_box_pack_start (GTK_BOX (vbox), ibox, TRUE, TRUE, 0);
-
-        label = gtk_label_new (_("<b>Remaining Time:</b>"));
-        gtk_box_pack_start (GTK_BOX (ibox), label, FALSE, FALSE, 0);
-        gtk_label_set_use_markup (GTK_LABEL (label), TRUE);
-        gtk_misc_set_alignment (GTK_MISC (label), 0, 0.5);
-    
-        label = gtk_label_new (time);
-        gtk_box_pack_start (GTK_BOX (ibox), label, FALSE, FALSE, 0);
-    
-        g_free (time);
-    }
+    battery_add_overview_item (vbox, sg, _("<b>Time</b>"), time);
     
     expander = gtk_expander_new (NULL);
     gtk_box_pack_start (GTK_BOX (vbox), expander, TRUE, TRUE, 0);
     
     label = gtk_label_new (_("More..."));
     gtk_expander_set_label_widget (GTK_EXPANDER (expander), label);
+    
+    vbox = gtk_vbox_new (FALSE, 2);
+    gtk_container_add (GTK_CONTAINER (expander), vbox);
+    
+    /* Vendor */
+    vendor = battery_get_property_string (bat->udi, "battery.vendor");
+    battery_add_overview_item (vbox, sg, _("<b>Vendor</b>"), vendor);
+    
+    technology = battery_get_property_string (bat->udi, "battery.technology");
+    battery_add_overview_item (vbox, sg, _("<b>Technology:</b>"), technology);
+    
+    if (battery_get_property_int (bat->udi, "battery.reporting.design") &&
+	battery_get_property_string (bat->udi, "battery.reporting.unit"))
+    {
+        designcap = g_strdup_printf ("%d %s",
+                                     battery_get_property_int    (bat->udi, "battery.reporting.design"),
+                                     battery_get_property_string (bat->udi, "battery.reporting.unit"));
+        battery_add_overview_item (vbox, sg, _("<b>Design Capacity:</b>"), designcap);
+    }
+    
+    path = battery_get_property_string (bat->udi, "linux.acpi_path");
+    battery_add_overview_item (vbox, sg, _("<b>ACPI Path:</b>"), path);
 }
 
 static void
@@ -156,6 +166,7 @@ battery_overview (GtkWidget      *widget,
                   BatteryPlugin  *battery)
 {
     GtkWidget     *dialog, *window, *dialog_vbox;
+    GtkSizeGroup  *sg;
     guint          i;
     BatteryStatus *bat;
 
@@ -195,6 +206,8 @@ battery_overview (GtkWidget      *widget,
     
     g_object_set_data (G_OBJECT (battery->plugin), "overview", dialog);
     
+    sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+    
     dialog_vbox = GTK_DIALOG (dialog)->vbox;
 
 #ifndef USE_NEW_DIALOG
@@ -208,7 +221,7 @@ battery_overview (GtkWidget      *widget,
     {
         bat = g_ptr_array_index (battery->batteries, i);
     
-        battery_add_overview (dialog_vbox, bat);
+        battery_add_overview (dialog_vbox, bat, sg);
     }
 
     g_signal_connect(dialog, "response",

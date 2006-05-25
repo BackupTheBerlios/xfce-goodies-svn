@@ -41,10 +41,32 @@ static GTimer         *update_timer;
 static LibHalContext  *context;
 static DBusConnection *dbus_connection;
 
+const gchar *
+battery_get_property_string (const gchar *udi,
+                             const gchar *key)
+{
+    if (G_LIKELY (libhal_device_exists           (context, udi, NULL) &&
+	          libhal_device_property_exists  (context, udi, key, NULL)))
+        return libhal_device_get_property_string (context, udi, key, NULL);
+    else
+	return NULL;
+}
+
+gint
+battery_get_property_int (const gchar *udi,
+                          const gchar *key)
+{
+    if (G_LIKELY (libhal_device_exists           (context, udi, NULL) &&
+	          libhal_device_property_exists  (context, udi, key, NULL)))
+        return libhal_device_get_property_int (context, udi, key, NULL);
+    else
+	return 0;
+}
+
 static gboolean
 battery_store_propery (LibHalContext *ctx,
-                       const char    *udi,
-                       const char    *key,
+                       const gchar   *udi,
+                       const gchar   *key,
                        BatteryStatus *bat,
                        DBusError      error)
 {
@@ -87,12 +109,12 @@ battery_store_propery (LibHalContext *ctx,
 
 static void
 hal_property_modified (LibHalContext *ctx,
-                       const char    *udi,
-                       const char    *key,
+                       const gchar   *udi,
+                       const gchar   *key,
                        dbus_bool_t    is_removed,
                        dbus_bool_t    is_added)
 {
-    unsigned int   i;
+    guint          i;
     DBusError      error;
     BatteryPlugin *battery;
     BatteryStatus *bat;

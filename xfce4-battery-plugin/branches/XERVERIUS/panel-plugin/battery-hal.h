@@ -24,17 +24,23 @@
 
 G_BEGIN_DECLS
 
-void
-battery_remove           (BatteryStatus *bat);
+const gchar *
+battery_get_property_string (const gchar *udi, const gchar *key);
+
+gint
+battery_get_property_int    (const gchar *udi, const gchar *key);
 
 void
-battery_rescan_batteries (BatteryPlugin *battery);
+battery_remove              (BatteryStatus *bat);
+
+void
+battery_rescan_batteries    (BatteryPlugin *battery);
 
 gboolean
-battery_start_monitor    (BatteryPlugin *battery);
+battery_start_monitor       (BatteryPlugin *battery);
 
 void
-battery_stop_monitor     (BatteryPlugin *battery);
+battery_stop_monitor        (BatteryPlugin *battery);
 
 G_END_DECLS
 
