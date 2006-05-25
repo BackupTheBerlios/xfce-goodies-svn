@@ -19,13 +19,17 @@
 #include <config.h>
 #endif
 
+#include <string.h>
 #include <sys/stat.h>
+#include <glib.h>
+#include <gmodule.h>
+#include <gtk/gtk.h>
+
 #include <libxfce4util/libxfce4util.h>
 #include <libxfcegui4/libxfcegui4.h>
-#include <libxml/parser.h>
-#include <gtk/gtk.h>
-#include <string.h>
 #include <libxfce4panel/xfce-panel-plugin.h>
+
+#include <libxml/parser.h>
 
 #include "parsers.h"
 #include "get_data.h"
@@ -716,12 +720,19 @@ xfceweather_free (XfcePanelPlugin  *plugin,
         data->updatetimeout = 0;
     }
     
-    g_free (data->location_code);
-    free_get_data_buffer ();  
-    
-    g_array_free (data->labels, TRUE);
-
+    free_get_data_buffer ();
     xmlCleanupParser ();
+    
+    /* Free Tooltip */
+    gtk_tooltips_set_tip (data->tooltips, data->tooltipbox, NULL, NULL);
+    g_object_unref (data->tooltips);
+    
+    /* Free chars */
+    g_free (data->location_code);
+    g_free (data->proxy_host);
+    
+    /* Free Array */
+    g_array_free (data->labels, TRUE);
 
     g_free (data);
 }
