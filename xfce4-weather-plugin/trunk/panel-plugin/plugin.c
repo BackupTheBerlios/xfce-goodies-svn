@@ -596,13 +596,11 @@ xfceweather_create_options (XfcePanelPlugin  *plugin,
 
     xfce_panel_plugin_block_menu (plugin);
 #ifdef USE_NEW_DIALOG
-    dlg = xfce_titled_dialog_new_with_buttons (_("Weather Plugin"),
+    dlg = xfce_titled_dialog_new_with_buttons (_("Weather Update"),
                           NULL,
                           GTK_DIALOG_NO_SEPARATOR,
                           GTK_STOCK_CLOSE, GTK_RESPONSE_OK,
                           NULL);
-    xfce_titled_dialog_set_subtitle (XFCE_TITLED_DIALOG (dlg),
-                     _("Configure the weather plugin"));
 #else
     dlg = gtk_dialog_new_with_buttons (_("Properties"), 
         GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (plugin))),
@@ -612,7 +610,7 @@ xfceweather_create_options (XfcePanelPlugin  *plugin,
         NULL);
 #endif
     gtk_container_set_border_width (GTK_CONTAINER (dlg), 2);
-    gtk_window_set_icon_name  (GTK_WINDOW (dlg), "gtk-properties");
+    gtk_window_set_icon_name  (GTK_WINDOW (dlg), "xfce4-settings");
 
 #ifndef USE_NEW_DIALOG
     header = xfce_create_header (NULL, _("Weather Update"));
