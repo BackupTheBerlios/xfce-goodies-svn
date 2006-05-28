@@ -72,5 +72,6 @@ panel-plugin/Makefile
 po/Makefile.in
 icons/Makefile
 icons/liquid/Makefile
+icon/48x48/Makefile
 ])
 
