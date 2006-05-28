@@ -14,7 +14,8 @@ icons_DATA =				\
 	battery-charging-080.svg	\
 	battery-charging-100.svg	\
 	battery-charged.svg		\
-	battery-missing.svg
+	battery-missing.svg		\
+	battery.svg
 
 EXTRA_DIST =				\
 	$(icons_DATA)

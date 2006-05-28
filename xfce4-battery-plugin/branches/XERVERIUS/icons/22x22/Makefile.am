@@ -14,7 +14,8 @@ icons_DATA =				\
 	battery-charging-080.png	\
 	battery-charging-100.png	\
 	battery-charged.png		\
-	battery-missing.png
+	battery-missing.png		\
+	battery.png
 
 EXTRA_DIST =				\
 	$(icons_DATA)
