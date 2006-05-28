@@ -153,8 +153,8 @@ clipman_configure (XfcePanelPlugin *plugin,
     
 #ifdef USE_NEW_DIALOG
     dialog = xfce_titled_dialog_new_with_buttons (_("Clipboard Manager"),
-                                                  NULL,
-                                                  GTK_DIALOG_NO_SEPARATOR,
+                                                  GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (plugin))),
+                                                  GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_NO_SEPARATOR,
                                                   GTK_STOCK_CLOSE, GTK_RESPONSE_OK,
                                                   NULL);
 /*    xfce_titled_dialog_set_subtitle (XFCE_TITLED_DIALOG (dialog),
