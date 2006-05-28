@@ -376,8 +376,6 @@ battery_configure (XfcePanelPlugin *plugin,
                                                   GTK_DIALOG_NO_SEPARATOR,
                                                   GTK_STOCK_CLOSE, GTK_RESPONSE_OK,
                                                   NULL);
-    xfce_titled_dialog_set_subtitle (XFCE_TITLED_DIALOG (dialog),
-                                     _("Configure the battery monitor plugin"));
 #else
     dialog = gtk_dialog_new_with_buttons (_("Configure Battery Monitor"), 
                                           GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (plugin))),
@@ -388,9 +386,7 @@ battery_configure (XfcePanelPlugin *plugin,
 #endif
 
     gtk_window_set_position   (GTK_WINDOW (dialog), GTK_WIN_POS_CENTER);
-    gtk_window_set_icon_name  (GTK_WINDOW (dialog), "gtk-properties");
-    gtk_window_set_keep_above (GTK_WINDOW (dialog), TRUE);
-    gtk_window_stick          (GTK_WINDOW (dialog));
+    gtk_window_set_icon_name  (GTK_WINDOW (dialog), "xfce4-settings");
     
     g_object_set_data (G_OBJECT (battery->plugin), "configure", dialog);
     
