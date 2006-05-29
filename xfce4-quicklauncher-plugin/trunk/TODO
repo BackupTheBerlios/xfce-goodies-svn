@@ -1,17 +1,8 @@
-For Version 1.0 (discontinued):
-***************
--allow manually config of nblines ==> done
--readd autosetting of nblines?
--translations (at least in french) ==>done
--use eventboxes and gdk_pixbuf instead of buttons ==> done
--make icons growing when the mouse is on ==>done
--add an icon for this plugin
--add tooltips ==>partially done
--add separators?
--any idea?
-
 For Vesrion 2.0
-**************
+***************
 -drag 'n drop support (with the app-finder for example)
 -use more themed icons
-
+-replace xfce_icon_theme_load_category and friends
+-add an icon for this plugin
+-readd autosetting of nblines?
+-any idea?

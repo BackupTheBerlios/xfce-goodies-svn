@@ -491,8 +491,10 @@ void cmd_changed(GtkCellRendererText *cellrenderertext, gchar *arg1, gchar *arg2
 
 void  file_chooser_preview_img (FileChooser *chooser, gpointer user_data)
 {
+	gchar *filename;
+
 	g_assert(GTK_IS_IMAGE(user_data));
-	gchar *filename = file_chooser_get_filename(chooser);
+	filename = file_chooser_get_filename(chooser);
 	if(g_file_test(filename, G_FILE_TEST_IS_REGULAR))
 	{
 		file_chooser_set_preview_widget_active(chooser, TRUE);

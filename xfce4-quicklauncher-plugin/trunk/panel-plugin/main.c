@@ -32,6 +32,9 @@
 #include <libxfcegui4/libxfcegui4.h>
 #include <string.h>
 
+//TO DO:
+//+replace xfce_icon_theme_load_category and friends
+
 
 /* Quicklauncher funcs */
 
@@ -114,8 +117,8 @@ void quicklauncher_orientation_changed(XfcePanelPlugin *plugin,
 gboolean quicklauncher_set_size(XfcePanelPlugin *plugin, gint size,
 							t_quicklauncher *quicklauncher)
 {
-	DBG ("setting size %d", size);
 	GList *liste;
+	DBG ("setting size %d", size);
 	quicklauncher->icon_size = (int) (0.75 * size/quicklauncher->nb_lines);
 	for(liste = quicklauncher->launchers;
 		liste ; liste = g_list_next(liste) )
@@ -147,8 +150,9 @@ void quicklauncher_save(XfcePanelPlugin *plugin, t_quicklauncher *quicklauncher)
 void
 quicklauncher_configure(XfcePanelPlugin *plugin, t_quicklauncher *quicklauncher)
 {
+	t_qck_launcher_opt_dlg* dlg;
 	xfce_panel_plugin_block_menu(plugin);
-	t_qck_launcher_opt_dlg* dlg = create_qck_launcher_dlg();
+	dlg = create_qck_launcher_dlg();
 	qck_launcher_opt_dlg_set_quicklauncher(quicklauncher);
 	gtk_dialog_run(GTK_DIALOG(dlg->dialog));
 	xfce_panel_plugin_unblock_menu(plugin);
@@ -200,10 +204,10 @@ quicklauncher_remove_element(t_quicklauncher *quicklauncher, gint num)
 void
 quicklauncher_organize(t_quicklauncher *quicklauncher)
 {
-	DBG ("Organize quicklauncher");
 	gint i, j, launch_per_line, nb_lines;
 	GList *toplace;
 
+	DBG ("Organize quicklauncher");
 	g_assert( (!quicklauncher->table || GTK_IS_TABLE(quicklauncher->table)) && GTK_IS_CONTAINER(quicklauncher->plugin));
 	if (quicklauncher->launchers)
 	{
@@ -306,11 +310,12 @@ quicklauncher_load_default(t_quicklauncher *quicklauncher)
 t_quicklauncher *
 quicklauncher_new (XfcePanelPlugin *plugin)
 {
-	DBG ("create quicklauncher");
 	t_quicklauncher *quicklauncher;
-
+	gchar *filename;
+	
+	DBG ("create quicklauncher");
 	quicklauncher = g_new0(t_quicklauncher, 1);
-	gchar *filename = xfce_panel_plugin_save_location(plugin, TRUE);
+	filename = xfce_panel_plugin_save_location(plugin, TRUE);
 	quicklauncher->icon_size = (gint) (0.75 * xfce_panel_plugin_get_size(plugin)/2);
 	DBG ("icon size: %d", quicklauncher->icon_size);
 	if((!filename) || (!quicklauncher_load_config(quicklauncher, filename) ) )
@@ -344,11 +349,13 @@ gboolean quicklauncher_load_config(t_quicklauncher *quicklauncher, const gchar* 
 {
 
 	XfceRc* rcfile;
+	gint i;
+	
 	if( (rcfile = xfce_rc_simple_open(filename, TRUE) ))
 	{
 		xfce_rc_set_group(rcfile, NULL);
 		quicklauncher->nb_lines = xfce_rc_read_int_entry(rcfile, "nb_lines", 1);
-		gint i = xfce_rc_read_int_entry(rcfile, "nb_launcher", 0);
+		i = xfce_rc_read_int_entry(rcfile, "nb_launcher", 0);
 		g_assert(i >= 0);
 		while(i)
 		{
@@ -365,15 +372,18 @@ gboolean quicklauncher_load_config(t_quicklauncher *quicklauncher, const gchar* 
 void
 quicklauncher_save_config(t_quicklauncher *quicklauncher, const gchar* filename)
 {
-	guint16 i = quicklauncher->nb_launcher; //hope it always works
-	XfceRc* rcfile = xfce_rc_simple_open(filename, FALSE);
+	XfceRc* rcfile;
+	GList* liste;
+	guint16 i;
+	//guint16 i = quicklauncher->nb_launcher; //hope it always works ==> seems that it does not ;)
+	i = quicklauncher->nb_launcher;
+	rcfile = xfce_rc_simple_open(filename, FALSE);
 	if(!rcfile) return;
 
 	xfce_rc_set_group(rcfile, NULL);
 	xfce_rc_write_int_entry(rcfile, "nb_lines", quicklauncher->nb_lines);
 	xfce_rc_write_int_entry(rcfile, "nb_launcher", quicklauncher->nb_launcher);
 	xfce_rc_flush(rcfile);
-	GList* liste;
 	for( liste = quicklauncher->launchers; liste; liste = g_list_next(liste), --i)
 		launcher_save_config((t_launcher*)liste->data, rcfile, i);
 
@@ -389,8 +399,8 @@ quicklauncher_save_config(t_quicklauncher *quicklauncher, const gchar* filename)
 GdkPixbuf *
 _create_pixbuf(gint id, const gchar* name, gint size)
 {
-	DBG ("creating pixbuf %d", size);
 	GdkPixbuf  *pixbuf;
+	DBG ("creating pixbuf %d", size);
 	if(id != XFCE_ICON_CATEGORY_EXTERN)
 		pixbuf = xfce_icon_theme_load_category(DEFAULT_ICON_THEME, id, size);
 	else
